@@ -38,10 +38,10 @@ Nawyki budują rutynę użytkowniczki i są podzielone na 4 grupy:
 Artykuły budują autorytet ekspertów:
 1.  **Profiles**: Artykuł pokaże się tylko użytkowniczkom oznaczonym tymi profilami. **Artykuły zależą tylko od Programu**.
 
-### D. Pielęgnacja Skóry (Skin Care)
+### D. Rytuał Pielęgnacyjny (Care Ritual)
 Codzienne krótkie porady wyświetlane na dashboardzie:
 1.  **Tip**: Krótka porada (np. o oczyszczaniu czy nawilżaniu).
-2.  **Phases**: Wybierz fazy cyklu, dla których porada jest adekwatna. System będzie je losował codziennie w danej fazie.
+2.  **Phases**: Wybierz fazy cyklu (Folikularna / Lutealna), dla których porada jest adekwatna. System będzie je losował codziennie w danej fazie.
 
 ### E. Trening (Training)
 Sugestie aktywności fizycznej:
@@ -59,8 +59,8 @@ Inspiracja na każdy dzień dla wszystkich:
 ## 3. Zależności w skrócie
 Aby personalizacja działała poprawnie, trzymaj się tych zasad:
 - **Program (Profil)** steruje: Dietą, Nawykami i Artykułami.
-- **Faza Cyklu** steruje: Treningiem i Pielęgnacją skóry.
-- **Cytaty** są wspólne dla wszystkich.
+- **Faza Cyklu** steruje: Treningiem i Rytuałem pielęgnacyjnym (2 fazy: Folikularna i Lutealna).
+- **Cytaty** zależą od fazy cyklu.
 
 *Dawniej aplikacja używała logiki "Dual-Match", obecnie przeszliśmy na uproszczony model: Program (Core) / Faza (Wellness).*
 

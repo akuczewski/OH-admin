@@ -77,10 +77,8 @@ export default {
 
     // --- 3. Seed Motivation Quotes ---
     const quotes = [
-      { text: "Słuchaj swojego ciała. Czas menstruacji to czas regeneracji i wsłuchania się w intuicję.", author: "Mądrość Natury", assignedPhase: "menstrual" },
-      { text: "Nowa energia! Faza pęcherzykowa to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
-      { text: "Promieniejesz! Twoja pewność siebie i libido są teraz na najwyższym poziomie.", author: "Blask Owulacji", assignedPhase: "ovulation" },
-      { text: "Zwolnij. Twoje ciało przygotowuje się do nowego cyklu. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
+      { text: "Nowa energia! Faza folikularna to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
+      { text: "Zwolnij. Twoje ciało jest w fazie lutealnej. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
     ];
 
     for (const data of quotes) {

@@ -21,9 +21,7 @@
         "assignedPhase": {
             "type": "enumeration",
             "enum": [
-                "menstrual",
                 "follicular",
-                "ovulation",
                 "luteal"
             ]
         }
