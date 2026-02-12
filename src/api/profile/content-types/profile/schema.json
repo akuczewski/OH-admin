@@ -1,0 +1,37 @@
+{
+    "kind": "collectionType",
+    "collectionName": "profiles",
+    "info": {
+        "singularName": "profile",
+        "pluralName": "profiles",
+        "displayName": "Profil",
+        "description": "Profile zdrowotne użytkowniczek"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "slug": {
+            "type": "uid",
+            "targetField": "name",
+            "required": true
+        },
+        "description": {
+            "type": "text"
+        },
+        "mainColor": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
+        }
+    }
+}

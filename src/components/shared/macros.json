@@ -1,0 +1,22 @@
+{
+    "collectionName": "components_shared_macros",
+    "info": {
+        "displayName": "Makroskładniki",
+        "icon": "chart-pie"
+    },
+    "options": {},
+    "attributes": {
+        "protein": {
+            "type": "integer"
+        },
+        "carbs": {
+            "type": "integer"
+        },
+        "fat": {
+            "type": "integer"
+        },
+        "fiber": {
+            "type": "integer"
+        }
+    }
+}

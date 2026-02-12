@@ -1,0 +1,22 @@
+{
+    "kind": "collectionType",
+    "collectionName": "motivation_quotes",
+    "info": {
+        "singularName": "motivation-quote",
+        "pluralName": "motivation-quotes",
+        "displayName": "Cytat motywacyjny",
+        "description": "Krótkie teksty motywacyjne wyświetlane wszystkim użytkownikom"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "text": {
+            "type": "text",
+            "required": true
+        },
+        "author": {
+            "type": "string"
+        }
+    }
+}

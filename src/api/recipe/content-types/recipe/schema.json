@@ -1,0 +1,65 @@
+{
+    "kind": "collectionType",
+    "collectionName": "recipes",
+    "info": {
+        "singularName": "recipe",
+        "pluralName": "recipes",
+        "displayName": "Przepis"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "description": {
+            "type": "text"
+        },
+        "kcal": {
+            "type": "integer"
+        },
+        "preparation": {
+            "type": "richtext"
+        },
+        "prepTime": {
+            "type": "integer"
+        },
+        "image": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
+        },
+        "mealSlot": {
+            "type": "enumeration",
+            "enum": [
+                "sniadanie",
+                "sniadanie-2",
+                "obiad",
+                "przekaska",
+                "kolacja"
+            ]
+        },
+        "macros": {
+            "type": "component",
+            "repeatable": false,
+            "component": "shared.macros"
+        },
+        "ingredients": {
+            "type": "component",
+            "repeatable": true,
+            "component": "shared.ingredient"
+        },
+        "profiles": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::profile.profile"
+        },
+        "tags": {
+            "type": "string"
+        }
+    }
+}

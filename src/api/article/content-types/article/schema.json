@@ -1,0 +1,42 @@
+{
+    "kind": "collectionType",
+    "collectionName": "articles",
+    "info": {
+        "singularName": "article",
+        "pluralName": "articles",
+        "displayName": "Artykuł"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "title": {
+            "type": "string",
+            "required": true
+        },
+        "content": {
+            "type": "richtext"
+        },
+        "readTime": {
+            "type": "integer"
+        },
+        "thumbnail": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
+        },
+        "profiles": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::profile.profile"
+        },
+        "author": {
+            "type": "string"
+        },
+        "tag": {
+            "type": "string"
+        }
+    }
+}

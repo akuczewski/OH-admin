@@ -1,0 +1,19 @@
+{
+    "kind": "singleType",
+    "collectionName": "instructions",
+    "info": {
+        "singularName": "instruction",
+        "pluralName": "instructions",
+        "displayName": "Instrukcja dla Eksperta",
+        "description": "Dokładna instrukcja obsługi systemu dla twórców treści"
+    },
+    "options": {
+        "draftAndPublish": false
+    },
+    "attributes": {
+        "content": {
+            "type": "richtext",
+            "required": true
+        }
+    }
+}

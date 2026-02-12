@@ -1,0 +1,54 @@
+{
+    "kind": "collectionType",
+    "collectionName": "trainings",
+    "info": {
+        "singularName": "training",
+        "pluralName": "trainings",
+        "displayName": "Trening",
+        "description": "Plany treningowe na każdy dzień cyklu"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "title": {
+            "type": "string",
+            "required": true
+        },
+        "description": {
+            "type": "richtext"
+        },
+        "duration": {
+            "type": "integer"
+        },
+        "intensity": {
+            "type": "enumeration",
+            "enum": [
+                "low",
+                "medium",
+                "high"
+            ]
+        },
+        "phases": {
+            "type": "enumeration",
+            "enum": [
+                "menstrual",
+                "follicular",
+                "ovulation",
+                "luteal"
+            ],
+            "multiple": true,
+            "required": true
+        },
+        "videoUrl": {
+            "type": "string"
+        },
+        "thumbnail": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
+        }
+    }
+}

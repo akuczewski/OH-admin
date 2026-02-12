@@ -1,0 +1,77 @@
+{
+    "kind": "collectionType",
+    "collectionName": "habits",
+    "info": {
+        "singularName": "habit",
+        "pluralName": "habits",
+        "displayName": "Nawyk"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "name": {
+            "type": "string",
+            "required": true
+        },
+        "description": {
+            "type": "text"
+        },
+        "category": {
+            "type": "enumeration",
+            "enum": [
+                "zywienie",
+                "suplementacja",
+                "ruch",
+                "pielegnacja",
+                "mindfulness"
+            ],
+            "required": true
+        },
+        "unit": {
+            "type": "enumeration",
+            "enum": [
+                "tak-nie",
+                "licznik",
+                "minuty"
+            ],
+            "default": "tak-nie"
+        },
+        "dailyGoal": {
+            "type": "integer"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "type": {
+            "type": "enumeration",
+            "enum": [
+                "foundation",
+                "program",
+                "phase",
+                "additional"
+            ],
+            "required": true,
+            "default": "program"
+        },
+        "profiles": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::profile.profile"
+        },
+        "phases": {
+            "type": "enumeration",
+            "enum": [
+                "menstrual",
+                "follicular",
+                "ovulation",
+                "luteal"
+            ],
+            "multiple": true
+        },
+        "priority": {
+            "type": "integer",
+            "default": 0
+        }
+    }
+}

@@ -1,0 +1,37 @@
+{
+    "kind": "collectionType",
+    "collectionName": "skin_cares",
+    "info": {
+        "singularName": "skin-care",
+        "pluralName": "skin-cares",
+        "displayName": "Pielęgnacja skóry",
+        "description": "Dłuższe porady pielęgnacyjne dopasowane do fazy cyklu"
+    },
+    "options": {
+        "draftAndPublish": true
+    },
+    "attributes": {
+        "tip": {
+            "type": "text",
+            "required": true
+        },
+        "phases": {
+            "type": "enumeration",
+            "enum": [
+                "menstrual",
+                "follicular",
+                "ovulation",
+                "luteal"
+            ],
+            "multiple": true,
+            "required": true
+        },
+        "image": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
+        }
+    }
+}
