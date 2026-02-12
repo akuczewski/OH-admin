@@ -75,6 +75,32 @@ export default {
       console.error('[SEED] Failed to seed tutorial:', error);
     }
 
+    // --- 3. Seed Motivation Quotes ---
+    const quotes = [
+      { text: "Słuchaj swojego ciała. Czas menstruacji to czas regeneracji i wsłuchania się w intuicję.", author: "Mądrość Natury", assignedPhase: "menstrual" },
+      { text: "Nowa energia! Faza pęcherzykowa to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
+      { text: "Promieniejesz! Twoja pewność siebie i libido są teraz na najwyższym poziomie.", author: "Blask Owulacji", assignedPhase: "ovulation" },
+      { text: "Zwolnij. Twoje ciało przygotowuje się do nowego cyklu. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
+    ];
+
+    for (const data of quotes) {
+      // @ts-ignore
+      const existing = await strapi.documents('api::motivation-quote.motivation-quote').findMany({
+        filters: { text: data.text },
+      });
+
+      if (existing.length === 0) {
+        // @ts-ignore
+        await strapi.documents('api::motivation-quote.motivation-quote').create({
+          data: {
+            ...data,
+            publishedAt: new Date(),
+          },
+          status: 'published',
+        });
+      }
+    }
+
     console.log('[SEED] Seeding completed.');
 
     // --- 3. Firestore Sync Lifecycles ---

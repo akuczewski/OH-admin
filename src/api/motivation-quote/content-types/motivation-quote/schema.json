@@ -17,6 +17,15 @@
         },
         "author": {
             "type": "string"
+        },
+        "assignedPhase": {
+            "type": "enumeration",
+            "enum": [
+                "menstrual",
+                "follicular",
+                "ovulation",
+                "luteal"
+            ]
         }
     }
 }
