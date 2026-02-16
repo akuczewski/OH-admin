@@ -18,9 +18,7 @@
         "phases": {
             "type": "enumeration",
             "enum": [
-                "menstrual",
                 "follicular",
-                "ovulation",
                 "luteal"
             ],
             "multiple": true,

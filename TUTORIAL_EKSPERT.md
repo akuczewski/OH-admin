@@ -13,15 +13,26 @@ Na start (MVP) skupiamy się na 4 głównych programach:
 
 ---
 
-## 2. Jak dodawać treści (Zasady Tagowania)
+## 2. Fazy Cyklu
+Aplikacja używa uproszczonego modelu **2 faz**:
+- **Folikularna** (follicular) — od menstruacji do owulacji
+- **Lutealna** (luteal) — od owulacji do menstruacji
+
+> [!IMPORTANT]
+> Przy dodawaniu treści powiązanych z fazami (treningi, rytuały, cytaty), zawsze wybieraj jedną z powyższych faz.
+
+---
+
+## 3. Jak dodawać treści (Zasady Tagowania)
 
 ### A. Przepisy (Recipes)
 Twoje serce bazy danych — Dieta:
 1.  **Profiles (Programy)**: Zaznacz wszystkie programy, dla których ten przepis jest wskazany (np. "Opanuj Cukier" dla przepisów o niskim indeksie glikemicznym). **Dieta zależy tylko od Programu**, nie od fazy cyklu.
 2.  **Meal Slot**: Wybierz, czy to śniadanie, obiad, czy przekąska.
 3.  **Makroskładniki**: Wpisz wartości dla jednej porcji.
+4.  **Składniki**: Dodaj listę składników z ilością i jednostką (używane do generowania listy zakupów).
 
-### A. Nawyki (Habits)
+### B. Nawyki (Habits)
 Nawyki budują rutynę użytkowniczki i są podzielone na 4 grupy:
 1.  **Fundamenty (foundation)**: Codzienne nawyki, niezależne od fazy cyklu. Są podstawą dbania o siebie.
 2.  **Program (program)**: Nawyki wynikające z wybranego programu (np. "Opanuj Cukier"). Zależą od **Profilu**.
@@ -37,47 +48,56 @@ Nawyki budują rutynę użytkowniczki i są podzielone na 4 grupy:
 ### C. Artykuły (Knowledge Base)
 Artykuły budują autorytet ekspertów:
 1.  **Profiles**: Artykuł pokaże się tylko użytkowniczkom oznaczonym tymi profilami. **Artykuły zależą tylko od Programu**.
+2.  **Tag**: Kategoria artykułu (np. DIETA, BEAUTY, ZDROWIE, WELLNESS, SUPLEMENTY).
+3.  **Author**: Autor artykułu (wyświetlany w aplikacji).
 
-### D. Rytuał Pielęgnacyjny (Care Ritual)
+### D. Objawy (Symptoms) ✨ NOWE
+Objawy pozwalają użytkowniczkom codziennie śledzić swoje samopoczucie:
+1.  **Name**: Nazwa objawu wyświetlana w aplikacji (np. "Wzdęcia", "Zmęczenie").
+2.  **Category**: Kategoria objawu — `mood` (nastrój), `body` (ciało), `energy` (energia), `digestion` (trawienie).
+3.  **Icon**: Emoji lub nazwa ikony (opcjonalnie).
+4.  **Priority**: Kolejność wyświetlania w danej kategorii.
+
+> [!NOTE]
+> Objawy są **niezależne od profilu i fazy cyklu** — każda użytkowniczka widzi pełną listę w zakładce "Dodaj Objawy". Historia jest zapisywana lokalnie na urządzeniu.
+
+### E. Rytuał Pielęgnacyjny (Care Ritual)
 Codzienne krótkie porady wyświetlane na dashboardzie:
 1.  **Tip**: Krótka porada (np. o oczyszczaniu czy nawilżaniu).
-2.  **Phases**: Wybierz fazy cyklu (Folikularna / Lutealna), dla których porada jest adekwatna. System będzie je losował codziennie w danej fazie.
+2.  **Phases**: Wybierz fazy cyklu (Folikularna / Lutealna), dla których porada jest adekwatna.
 
-### E. Trening (Training)
+### F. Trening (Training)
 Sugestie aktywności fizycznej:
 1.  **Title & Description**: Nazwa i krótki opis treningu.
-2.  **Phases**: Kluczowe dla dopasowania intensywności do cyklu (np. joga w fazie menstruacyjnej, siłowy w owulacyjnej).
+2.  **Phases**: Kluczowe dla dopasowania intensywności do cyklu.
 3.  **Intensity**: Low, Medium lub High.
 
-### F. Cytat Motywacyjny (Motivation Quote)
-Inspiracja na każdy dzień dla wszystkich:
+### G. Cytat Motywacyjny (Motivation Quote)
+Inspiracja na każdy dzień:
 1.  **Text**: Krótka, motywująca myśl.
 2.  **Author**: Kto jest autorem (opcjonalnie).
+3.  **assignedPhase**: Faza cyklu, w której cytat będzie wyświetlany.
 
 ---
 
-## 3. Zależności w skrócie
-Aby personalizacja działała poprawnie, trzymaj się tych zasad:
-- **Program (Profil)** steruje: Dietą, Nawykami i Artykułami.
-- **Faza Cyklu** steruje: Treningiem i Rytuałem pielęgnacyjnym (2 fazy: Folikularna i Lutealna).
-- **Cytaty** zależą od fazy cyklu.
+## 4. Zależności w skrócie
 
-*Dawniej aplikacja używała logiki "Dual-Match", obecnie przeszliśmy na uproszczony model: Program (Core) / Faza (Wellness).*
+| Co steruje | Czym |
+| :--- | :--- |
+| **Program (Profil)** | Dietą, Nawykami programowymi, Artykułami |
+| **Faza Cyklu** | Treningiem, Rytuałem pielęgnacyjnym, Cytatami, Nawykami fazowymi |
+| **Niezależne** | Objawy, Nawyki fundamentowe, Nawyki dodatkowe |
 
 ---
 
 ## 5. Import Masowy (CSV / Excel)
 Jeśli masz bardzo dużo danych do wprowadzenia, możesz skorzystać z funkcji importu:
-1.  **Pobierz Szablony**: W folderze `/cms/TEMPLATES/` znajdziesz pliki `habits.csv`, `recipes.csv`, `articles.csv`, `skin-care.csv`, `training.csv` oraz `motivation-quotes.csv`.
-2.  **Wypełnij Dane**: Otwórz je w Excelu lub Google Sheets, wpisz treści i zapisz z powrotem jako **CSV (Comma Separated Values)**.
-3.  **Wgraj w Strapi**:
-    - Przejdź do **Content Manager**.
-    - Wybierz odpowiedni typ (np. Przepis).
-    - Kliknij przycisk **Import/Export** (pojawi się na górze listy po lewej).
-    - Wybierz plik i zmapuj pola (powinny zmatchować się automatycznie).
+1.  **Pobierz Szablony**: W folderze `/cms/TEMPLATES/` znajdziesz szablony CSV.
+2.  **Wypełnij Dane**: Otwórz je w Excelu lub Google Sheets, wpisz treści i zapisz jako **CSV**.
+3.  **Wgraj w Strapi**: Content Manager → wybierz typ → Import/Export.
 
 > [!WARNING]
-> **Relacje (Profile)**: Przy imporcie masowym relacje do profili mogą wymagać ręcznego sprawdzenia w panelu Strapi, chyba że wpiszesz dokładne ID profilu w kolumnie `profiles`.
+> **Relacje (Profile)**: Przy imporcie masowym relacje do profili mogą wymagać ręcznego sprawdzenia w panelu Strapi.
 
 ---
 
