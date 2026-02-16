@@ -30,7 +30,7 @@ Panel będzie dostępny pod `http://localhost:1337/admin`.
 | **habit** | Nawyk | Nawyki (fundament / program / faza / dodatkowe) |
 | **article** | Artykuł | Baza wiedzy — artykuły tagowane per profil |
 | **symptom** | Objaw | Objawy codzienne (nastrój / ciało / energia / trawienie) |
-| **skin-care** | Rytuał pielęgnacyjny | Porady pielęgnacyjne per faza cyklu (folikularna / lutealna) |
+| **skin-care** | Rytuał pielęgnacyjny | Porady pielęgnacyjne z nazwą, opisem i zdjęciem per faza cyklu |
 | **training** | Trening | Plany treningowe z intensywnością per faza cyklu |
 | **motivation-quote** | Cytat motywacyjny | Cytaty wyświetlane na dashboardzie |
 | **instruction** | Instrukcja dla Eksperta | Instrukcja obsługi CMS (singleType) |
@@ -47,8 +47,8 @@ Panel będzie dostępny pod `http://localhost:1337/admin`.
 ## Model Faz Cyklu
 
 Aplikacja używa uproszczonego modelu **2 faz**:
-- **Folikularna** (follicular) — od menstruacji do owulacji
-- **Lutealna** (luteal) — od owulacji do menstruacji
+- **Folikularna** (follicular) — rozpoczyna się od menstruacji. Dojrzewa pęcherzyk jajnikowy, rośnie poziom estrogenów.
+- **Lutealna** (luteal) — rozpoczyna się po owulacji. Dominuje progesteron, mogą nasilać się objawy PMS.
 
 > [!IMPORTANT]
 > Wszystkie content types używające faz (training, skin-care, motivation-quote, habit) muszą korzystać wyłącznie z tych 2 wartości.

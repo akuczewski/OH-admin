@@ -5,15 +5,18 @@
         "singularName": "skin-care",
         "pluralName": "skin-cares",
         "displayName": "Rytuał pielęgnacyjny",
-        "description": "Dłuższe porady pielęgnacyjne dopasowane do fazy cyklu"
+        "description": "Porady pielęgnacyjne dopasowane do fazy cyklu"
     },
     "options": {
         "draftAndPublish": true
     },
     "attributes": {
-        "tip": {
-            "type": "text",
+        "name": {
+            "type": "string",
             "required": true
+        },
+        "description": {
+            "type": "richtext"
         },
         "phases": {
             "type": "enumeration",

@@ -15,8 +15,8 @@ Na start (MVP) skupiamy się na 4 głównych programach:
 
 ## 2. Fazy Cyklu
 Aplikacja używa uproszczonego modelu **2 faz**:
-- **Folikularna** (follicular) — od menstruacji do owulacji
-- **Lutealna** (luteal) — od owulacji do menstruacji
+- **Folikularna** (follicular) — rozpoczyna się od menstruacji. W tej fazie dojrzewa pęcherzyk jajnikowy i rośnie poziom estrogenów. Użytkowniczka zazwyczaj ma więcej energii i jest w lepszym nastroju.
+- **Lutealna** (luteal) — rozpoczyna się po owulacji. Dominuje progesteron, organizm przygotowuje się na ewentualną ciążę. Mogą nasilać się objawy PMS.
 
 > [!IMPORTANT]
 > Przy dodawaniu treści powiązanych z fazami (treningi, rytuały, cytaty), zawsze wybieraj jedną z powyższych faz.
@@ -62,9 +62,11 @@ Objawy pozwalają użytkowniczkom codziennie śledzić swoje samopoczucie:
 > Objawy są **niezależne od profilu i fazy cyklu** — każda użytkowniczka widzi pełną listę w zakładce "Dodaj Objawy". Historia jest zapisywana lokalnie na urządzeniu.
 
 ### E. Rytuał Pielęgnacyjny (Care Ritual)
-Codzienne krótkie porady wyświetlane na dashboardzie:
-1.  **Tip**: Krótka porada (np. o oczyszczaniu czy nawilżaniu).
-2.  **Phases**: Wybierz fazy cyklu (Folikularna / Lutealna), dla których porada jest adekwatna.
+Porady pielęgnacyjne dopasowane do fazy cyklu:
+1.  **Name**: Nazwa rytuału (np. "Nawilżanie intensywne", "Oczyszczanie głębokie").
+2.  **Description**: Szczegółowy opis rytuału — jakie kroki wykonać, jakie produkty zastosować.
+3.  **Phases**: Wybierz fazy cyklu (Folikularna / Lutealna), dla których rytuał jest adekwatny.
+4.  **Image**: Zdjęcie ilustrujące rytuał (format `.webp` lub `.jpg`, zoptymalizowane pod mobile).
 
 ### F. Trening (Training)
 Sugestie aktywności fizycznej:
