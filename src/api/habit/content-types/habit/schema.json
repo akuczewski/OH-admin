@@ -70,6 +70,19 @@
         "priority": {
             "type": "integer",
             "default": 0
+        },
+        "content": {
+            "type": "richtext"
+        },
+        "videoUrl": {
+            "type": "string"
+        },
+        "image": {
+            "type": "media",
+            "allowedTypes": [
+                "images"
+            ],
+            "multiple": false
         }
     }
 }
