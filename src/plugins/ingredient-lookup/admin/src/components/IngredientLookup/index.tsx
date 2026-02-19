@@ -3,7 +3,7 @@ import {
     ComboboxOption,
     Field
 } from '@strapi/design-system';
-import { useFetchClient } from '@strapi/helper-plugin';
+import { useFetchClient } from '@strapi/strapi/admin'; // Strapi 5 standard import
 import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 

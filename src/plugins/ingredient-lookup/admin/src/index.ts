@@ -1,10 +1,8 @@
 
-import { prefixPluginTranslations } from '@strapi/helper-plugin';
 import IngredientLookupIcon from './components/IngredientLookupIcon';
-import pluginId from './pluginId';
 
 export default {
-    register(app) {
+    register(app: any) {
         app.customFields.register({
             name: 'ingredient-lookup',
             pluginId: 'ingredient-lookup',
@@ -27,13 +25,13 @@ export default {
         });
     },
 
-    async registerTrads({ locales }) {
+    async registerTrads({ locales }: { locales: string[] }) {
         const importedTrads = await Promise.all(
-            locales.map((locale) => {
+            locales.map((locale: string) => {
                 return import(`./translations/${locale}.json`)
                     .then(({ default: data }) => {
                         return {
-                            data: prefixPluginTranslations(data, pluginId),
+                            data, // In Strapi 5, prefixing is handled differently or data can be returned directly
                             locale,
                         };
                     })
