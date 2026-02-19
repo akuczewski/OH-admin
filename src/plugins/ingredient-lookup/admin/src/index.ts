@@ -1,10 +1,9 @@
-import { Search } from '@strapi/icons';
 // @ts-ignore
 // @ts-ignore
-import IngredientLookup from './components/IngredientLookup';
 
 export default {
     register(app: any) {
+        /*
         console.log('[PLUGIN] Registering ingredient-lookup...');
 
         app.customFields.register({
@@ -39,6 +38,7 @@ export default {
         });
 
         console.log('[PLUGIN] ingredient-lookup registered successfully.');
+        */
     },
 
     async registerTrads({ locales }: { locales: string[] }) {

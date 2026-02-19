@@ -27,8 +27,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
-    "styled-components": "^6.0.0",
-    "ingredient-lookup": "file:src/plugins/ingredient-lookup"
+    "styled-components": "^6.0.0"
   },
   "devDependencies": {
     "@types/html-to-text": "^9.0.4",
