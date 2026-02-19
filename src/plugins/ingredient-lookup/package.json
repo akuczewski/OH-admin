@@ -6,7 +6,9 @@
         "name": "ingredient-lookup",
         "description": "Ingredient search from Firebase Firestore",
         "kind": "plugin",
-        "displayName": "Ingredient Lookup"
+        "displayName": "Ingredient Lookup",
+        "admin": "./admin/src/index.ts",
+        "server": "./server/index.ts"
     },
     "dependencies": {},
     "devDependencies": {}

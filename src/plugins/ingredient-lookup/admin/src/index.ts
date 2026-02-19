@@ -1,9 +1,8 @@
-
 import IngredientLookupIcon from './components/IngredientLookupIcon';
+import pluginId from './pluginId';
 
 export default {
     register(app: any) {
-        const pluginId = 'ingredient-lookup'; // Define pluginId here
         app.customFields.register({
             name: 'ingredient-lookup',
             pluginId: pluginId,
@@ -19,9 +18,6 @@ export default {
             icon: IngredientLookupIcon,
             components: {
                 Input: async () => import('./components/IngredientLookup'),
-            },
-            options: {
-                // No extra options for now
             },
         });
 

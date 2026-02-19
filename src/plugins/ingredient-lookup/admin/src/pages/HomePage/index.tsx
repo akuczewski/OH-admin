@@ -3,9 +3,8 @@ import {
     Alert,
     Box,
     Button,
-    ContentLayout,
+    Field,
     Flex,
-    HeaderLayout,
     Loader,
     Main,
     TextInput,
@@ -43,27 +42,31 @@ const HomePage = () => {
 
     return (
         <Main>
-            <HeaderLayout
-                title="Smart Recipe Importer"
-                subtitle="Wklej link do przepisu (np. z Kwestii Smaku), a AI przygotuje dla Ciebie Draft w CMS."
-                as="h2"
-            />
-            <ContentLayout>
+            <Box padding={10} background="neutral100">
+                <Flex direction="column" alignItems="start" gap={2}>
+                    <Typography variant="alpha" as="h1">Smart Recipe Importer</Typography>
+                    <Typography variant="epsilon" textColor="neutral600">
+                        Wklej link do przepisu (np. z Kwestii Smaku), a AI przygotuje dla Ciebie Draft w CMS.
+                    </Typography>
+                </Flex>
+            </Box>
+
+            <Box padding={8}>
                 <Box padding={8} background="neutral0" hasRadius shadow="filterShadow">
                     <Flex direction="column" alignItems="stretch" gap={4}>
                         <Typography variant="beta">Importuj z URL</Typography>
 
-                        <Box>
+                        <Field.Root name="url">
+                            <Field.Label>Link do przepisu</Field.Label>
                             <TextInput
                                 placeholder="https://www.kwestiasmaku.com/..."
-                                label="Link do przepisu"
                                 name="url"
-                                hint="AI pobierze treść, wyliczy makra i zmapuje składniki na bazę Firebase."
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
                                 value={url}
                                 disabled={isLoading}
                             />
-                        </Box>
+                            <Field.Hint>AI pobierze treść, wyliczy makra i zmapuje składniki na bazę Firebase.</Field.Hint>
+                        </Field.Root>
 
                         <Button
                             variant="default"
@@ -82,19 +85,23 @@ const HomePage = () => {
                         )}
 
                         {error && (
-                            <Alert title="Błąd" variant="danger" onClose={() => setError(null)} closeLabel="Zamknij">
-                                {error}
-                            </Alert>
+                            <Box paddingTop={4}>
+                                <Alert title="Błąd" variant="danger" onClose={() => setError(null)} closeLabel="Zamknij">
+                                    {error}
+                                </Alert>
+                            </Box>
                         )}
 
                         {success && (
-                            <Alert title="Gotowe!" variant="success" onClose={() => setSuccess(null)} closeLabel="Zamknij">
-                                {success}
-                            </Alert>
+                            <Box paddingTop={4}>
+                                <Alert title="Gotowe!" variant="success" onClose={() => setSuccess(null)} closeLabel="Zamknij">
+                                    {success}
+                                </Alert>
+                            </Box>
                         )}
                     </Flex>
                 </Box>
-            </ContentLayout>
+            </Box>
         </Main>
     );
 };
