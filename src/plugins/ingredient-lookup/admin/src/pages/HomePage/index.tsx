@@ -12,7 +12,7 @@ import {
 } from '@strapi/design-system';
 import { Magic } from '@strapi/icons';
 import { useFetchClient } from '@strapi/strapi/admin';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const HomePage = () => {
     const [url, setUrl] = useState('');
@@ -59,17 +59,17 @@ const HomePage = () => {
                         <Field.Root
                             name="url"
                             hint="AI pobierze treść, wyliczy makra i zmapuje składniki na bazę Firebase."
-                            error={error ? true : false}
+                            error={error ? error : undefined}
                         >
                             <Field.Label>Link do przepisu</Field.Label>
                             <TextInput
                                 placeholder="https://www.kwestiasmaku.com/..."
-                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
+                                onChange={(e) => setUrl((e.currentTarget as HTMLInputElement).value)}
                                 value={url}
                                 disabled={isLoading}
                             />
                             <Field.Hint />
-                            {error && <Field.Error>{error}</Field.Error>}
+                            <Field.Error />
                         </Field.Root>
 
                         <Button
