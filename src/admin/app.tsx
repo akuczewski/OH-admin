@@ -8,7 +8,7 @@ export default {
     config: {
         locales: ['pl'],
     },
-    bootstrap(app: any) {
+    register(app: any) {
         console.log('[APP] Registering global ingredient-lookup custom field...');
 
         app.customFields.register({
@@ -30,5 +30,8 @@ export default {
         });
 
         console.log('[APP] Global custom field registered.');
+    },
+    bootstrap(app: any) {
+        // ...
     },
 };
