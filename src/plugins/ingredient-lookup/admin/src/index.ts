@@ -1,5 +1,7 @@
 import { Search } from '@strapi/icons';
 // @ts-ignore
+// @ts-ignore
+import IngredientLookup from './components/IngredientLookup';
 
 export default {
     register(app: any) {
@@ -19,7 +21,7 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => import('./components/IngredientLookup'),
+                Input: async () => IngredientLookup,
             },
         });
 
