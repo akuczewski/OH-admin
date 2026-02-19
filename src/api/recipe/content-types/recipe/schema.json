@@ -26,6 +26,11 @@
         "prepTime": {
             "type": "integer"
         },
+        "servings": {
+            "type": "integer",
+            "default": 1,
+            "min": 1
+        },
         "image": {
             "type": "media",
             "allowedTypes": [

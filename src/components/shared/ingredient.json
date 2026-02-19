@@ -14,7 +14,20 @@
             "type": "decimal"
         },
         "unit": {
-            "type": "string"
+            "type": "enumeration",
+            "enum": [
+                "g",
+                "ml",
+                "szt",
+                "lyzka",
+                "lyzeczka",
+                "szklanka",
+                "szczypta",
+                "plaster",
+                "garstka",
+                "opakowanie"
+            ],
+            "required": true
         }
     }
 }
