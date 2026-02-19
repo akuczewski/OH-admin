@@ -1,39 +1,39 @@
 
-import { Search } from '@strapi/icons';
-// @ts-ignore
-import IngredientLookup from '../plugins/ingredient-lookup/admin/src/components/IngredientLookup/index';
 
 export default {
     config: {
         locales: ['pl'],
     },
     register(app: any) {
-        console.log('[APP] Registering global ingredient-lookup custom field (register phase)...');
+        console.log('[APP] Registering dummy ingredient-lookup custom field...');
 
-        try {
-            app.customFields.register({
-                name: 'ingredient-lookup',
-                pluginId: 'ingredient-lookup',
-                type: 'string',
-                intlLabel: {
-                    id: 'ingredient-lookup.label',
-                    defaultMessage: 'Ingredient Lookup (Firebase)',
+        app.customFields.register({
+            name: 'ingredient-lookup',
+            pluginId: 'ingredient-lookup',
+            type: 'string',
+            intlLabel: {
+                id: 'ingredient-lookup.label',
+                defaultMessage: 'Ingredient Lookup (Dummy)',
+            },
+            intlDescription: {
+                id: 'ingredient-lookup.description',
+                defaultMessage: 'Search and select an ingredient',
+            },
+            components: {
+                Input: async () => {
+                    return (props: any) => (
+                        <div style={{ padding: '10px', border: '1px solid red' }}>
+                            <label>{props.name}</label>
+                            <input
+                                {...props}
+                                style={{ width: '100%', background: 'black', color: 'white' }}
+                                onChange={(e) => props.onChange({ target: { name: props.name, value: e.target.value, type: 'string' } })}
+                            />
+                            <p style={{ color: 'red' }}>If you see this red box, registration works!</p>
+                        </div>
+                    );
                 },
-                intlDescription: {
-                    id: 'ingredient-lookup.description',
-                    defaultMessage: 'Search and select an ingredient from the global database',
-                },
-                icon: Search,
-                components: {
-                    Input: async () => IngredientLookup,
-                },
-            });
-            console.log('[APP] Custom field registered successfully.');
-        } catch (err) {
-            console.error('[APP] Failed to register custom field:', err);
-        }
-    },
-    bootstrap(app: any) {
-        console.log('[APP] Bootstrap phase');
+            },
+        });
     },
 };
