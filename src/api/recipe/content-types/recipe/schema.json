@@ -65,6 +65,12 @@
         },
         "tags": {
             "type": "string"
+        },
+        "sourceUrl": {
+            "type": "string"
+        },
+        "author": {
+            "type": "string"
         }
     }
 }
