@@ -6,7 +6,6 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Plugin =>
     },
     'ingredient-lookup': {
         enabled: true,
-        resolve: './plugins/ingredient-lookup'
     },
 });
 
