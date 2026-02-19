@@ -45,7 +45,11 @@ export default {
                                         color: 'white'
                                     }}
                                     value={props.value || ''}
-                                    onChange={(e) => props.onChange({ target: { name: props.name, value: e.target.value, type: 'string' } })}
+                                    onChange={(e) => {
+                                        if (props.onChange) {
+                                            props.onChange({ target: { name: props.name, value: e.target.value, type: 'string' } });
+                                        }
+                                    }}
                                     placeholder="Wpisz nazwę..."
                                 />
                                 <p style={{ fontSize: '10px', color: '#7b79ff', marginTop: '6px' }}>
