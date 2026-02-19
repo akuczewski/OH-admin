@@ -7,8 +7,8 @@
         "description": "Ingredient search from Firebase Firestore",
         "kind": "plugin",
         "displayName": "Ingredient Lookup",
-        "admin": "./admin/src/index.ts",
-        "server": "./server/index.ts"
+        "admin": "./strapi-admin.ts",
+        "server": "./strapi-server.ts"
     },
     "dependencies": {},
     "devDependencies": {}

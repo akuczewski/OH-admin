@@ -1,4 +1,3 @@
-import IngredientLookup from './components/IngredientLookup';
 import IngredientLookupIcon from './components/IngredientLookupIcon';
 import pluginId from './pluginId';
 
@@ -18,7 +17,7 @@ export default {
             },
             icon: IngredientLookupIcon,
             components: {
-                Input: async () => IngredientLookup,
+                Input: async () => import('./components/IngredientLookup'),
             },
         });
 
