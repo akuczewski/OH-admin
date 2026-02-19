@@ -1,0 +1,15 @@
+{
+    "name": "ingredient-lookup",
+    "version": "0.0.1",
+    "description": "Custom ingredient lookup plugin for OH! Club",
+    "strapi": {
+        "name": "ingredient-lookup",
+        "description": "Ingredient search from Firebase Firestore",
+        "kind": "plugin",
+        "displayName": "Ingredient Lookup",
+        "admin": "./strapi-admin.ts",
+        "server": "./strapi-server.ts"
+    },
+    "dependencies": {},
+    "devDependencies": {}
+}
