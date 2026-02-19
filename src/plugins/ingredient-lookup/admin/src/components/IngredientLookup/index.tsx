@@ -3,8 +3,9 @@ import {
     ComboboxOption,
     Field
 } from '@strapi/design-system';
+// @ts-ignore
 import { useFetchClient } from '@strapi/strapi/admin'; // Strapi 5 standard import
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 const IngredientLookup = ({
