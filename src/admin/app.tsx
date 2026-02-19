@@ -1,8 +1,7 @@
 
 import { Search } from '@strapi/icons';
 // @ts-ignore
-// @ts-ignore
-import IngredientLookup from '../plugins/ingredient-lookup/admin/src/components/IngredientLookup/index';
+import IngredientLookup from 'ingredient-lookup/strapi-admin';
 
 export default {
     config: {
