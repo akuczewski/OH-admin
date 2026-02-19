@@ -1,3 +1,4 @@
+import IngredientLookup from './components/IngredientLookup';
 import IngredientLookupIcon from './components/IngredientLookupIcon';
 import pluginId from './pluginId';
 
@@ -8,21 +9,21 @@ export default {
             pluginId: pluginId,
             type: 'string',
             intlLabel: {
-                id: 'ingredient-lookup.label',
+                id: `${pluginId}.label`,
                 defaultMessage: 'Ingredient Lookup (Firebase)',
             },
             intlDescription: {
-                id: 'ingredient-lookup.description',
+                id: `${pluginId}.description`,
                 defaultMessage: 'Search and select an ingredient from the global database',
             },
             icon: IngredientLookupIcon,
             components: {
-                Input: async () => import('./components/IngredientLookup'),
+                Input: async () => IngredientLookup,
             },
         });
 
         app.addMenuLink({
-            to: `plugins/${pluginId}`,
+            to: `/plugins/${pluginId}`,
             icon: IngredientLookupIcon,
             intlLabel: {
                 id: `${pluginId}.menu.label`,

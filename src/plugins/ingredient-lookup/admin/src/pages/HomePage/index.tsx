@@ -41,10 +41,10 @@ const HomePage = () => {
     };
 
     return (
-        <Main>
+        <Main aria-busy={isLoading}>
             <Box padding={10} background="neutral100">
                 <Flex direction="column" alignItems="start" gap={2}>
-                    <Typography variant="alpha" as="h1">Smart Recipe Importer</Typography>
+                    <Typography variant="alpha">Smart Recipe Importer</Typography>
                     <Typography variant="epsilon" textColor="neutral600">
                         Wklej link do przepisu (np. z Kwestii Smaku), a AI przygotuje dla Ciebie Draft w CMS.
                     </Typography>
@@ -56,16 +56,20 @@ const HomePage = () => {
                     <Flex direction="column" alignItems="stretch" gap={4}>
                         <Typography variant="beta">Importuj z URL</Typography>
 
-                        <Field.Root name="url">
+                        <Field.Root
+                            name="url"
+                            hint="AI pobierze treść, wyliczy makra i zmapuje składniki na bazę Firebase."
+                            error={error ? true : false}
+                        >
                             <Field.Label>Link do przepisu</Field.Label>
                             <TextInput
                                 placeholder="https://www.kwestiasmaku.com/..."
-                                name="url"
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setUrl(e.target.value)}
                                 value={url}
                                 disabled={isLoading}
                             />
-                            <Field.Hint>AI pobierze treść, wyliczy makra i zmapuje składniki na bazę Firebase.</Field.Hint>
+                            <Field.Hint />
+                            {error && <Field.Error>{error}</Field.Error>}
                         </Field.Root>
 
                         <Button
