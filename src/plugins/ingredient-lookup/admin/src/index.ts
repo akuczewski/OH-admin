@@ -3,9 +3,10 @@ import IngredientLookupIcon from './components/IngredientLookupIcon';
 
 export default {
     register(app: any) {
+        const pluginId = 'ingredient-lookup'; // Define pluginId here
         app.customFields.register({
             name: 'ingredient-lookup',
-            pluginId: 'ingredient-lookup',
+            pluginId: pluginId,
             type: 'string',
             intlLabel: {
                 id: 'ingredient-lookup.label',
@@ -21,6 +22,19 @@ export default {
             },
             options: {
                 // No extra options for now
+            },
+        });
+
+        app.addMenuLink({
+            to: `plugins/${pluginId}`,
+            icon: IngredientLookupIcon,
+            intlLabel: {
+                id: `${pluginId}.menu.label`,
+                defaultMessage: 'Smart Import',
+            },
+            Component: async () => {
+                const { default: HomePage } = await import('./pages/HomePage');
+                return HomePage;
             },
         });
     },
