@@ -11,6 +11,7 @@ import {
     Typography,
 } from '@strapi/design-system';
 import { Magic } from '@strapi/icons';
+// @ts-ignore
 import { useFetchClient } from '@strapi/strapi/admin';
 import { useState } from 'react';
 
