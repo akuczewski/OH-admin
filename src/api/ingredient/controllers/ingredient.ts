@@ -1,6 +1,17 @@
 
 import { db } from '../../../lib/firebase';
 
+const UNIT_CONVERSIONS: Record<string, number> = {
+    'g': 1,
+    'ml': 1,
+    'lyzka': 15,
+    'lyzeczka': 5,
+    'szklanka': 250,
+    'szczypta': 1,
+    'garstka': 30,
+    'plaster': 20,
+};
+
 export default {
     async search(ctx) {
         const { q } = ctx.query;
@@ -35,5 +46,63 @@ export default {
             console.error('[INGREDIENT SEARCH] Error:', error);
             return ctx.internalServerError('Failed to search ingredients');
         }
+    },
+
+    async calculateMacros(ctx) {
+        const { ingredients } = ctx.request.body;
+
+        if (!ingredients || !Array.isArray(ingredients)) {
+            return ctx.badRequest('Expected an array of ingredients');
+        }
+
+        let totalKcal = 0;
+        let totalProtein = 0;
+        let totalCarbs = 0;
+        let totalFat = 0;
+        let totalFiber = 0;
+
+        for (const ing of ingredients) {
+            if (!ing.name || !ing.amount) continue;
+
+            try {
+                const doc = await db.collection('ingredients').doc(ing.name).get();
+                if (!doc.exists) continue;
+
+                const nutrition = doc.data();
+                if (!nutrition) continue;
+
+                let weightInGrams = 0;
+                const unit = ing.unit || 'g';
+                const amount = parseFloat(ing.amount) || 0;
+
+                if (UNIT_CONVERSIONS[unit]) {
+                    weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                } else if (unit === 'szt' || unit === 'opakowanie') {
+                    weightInGrams = amount * (nutrition.averagePieceWeight || 100);
+                } else {
+                    weightInGrams = amount;
+                }
+
+                const factor = weightInGrams / 100;
+
+                totalKcal += (nutrition.kcal || 0) * factor;
+                totalProtein += (nutrition.protein || 0) * factor;
+                totalCarbs += (nutrition.carbs || 0) * factor;
+                totalFat += (nutrition.fat || 0) * factor;
+                totalFiber += (nutrition.fiber || 0) * factor;
+            } catch (err) {
+                console.error(`[MACRO-CALC] Error fetching ingredient ${ing.name}:`, err);
+            }
+        }
+
+        return {
+            kcal: Math.round(totalKcal),
+            macros: {
+                protein: Math.round(totalProtein),
+                carbs: Math.round(totalCarbs),
+                fat: Math.round(totalFat),
+                fiber: Math.round(totalFiber),
+            }
+        };
     },
 };

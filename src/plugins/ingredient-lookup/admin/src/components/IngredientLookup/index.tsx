@@ -4,7 +4,7 @@ import {
     Field
 } from '@strapi/design-system';
 // @ts-ignore
-import { useFetchClient } from '@strapi/strapi/admin'; // Strapi 5 standard import
+import { useFetchClient, useForm } from '@strapi/strapi/admin'; // Strapi 5 standard import
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -22,7 +22,21 @@ const IngredientLookup = ({
     const [options, setOptions] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(value || '');
-    const { get } = useFetchClient();
+    const { get, post } = useFetchClient();
+
+    // Grab the current form values and the change handler
+    const formContext = useForm('IngredientLookup', (state) => state);
+    const values = formContext?.values || {};
+    const onFormChange = formContext?.onChange;
+
+    useEffect(() => {
+        // Trigger macro calculation whenever ingredients change
+        if (values?.ingredients && Array.isArray(values.ingredients) && onFormChange) {
+            // Only trigger if we are the FIRST ingredient row to avoid duplicate API calls
+            // or just use a shared debounce timer outside the component
+            triggerMacroCalculation(values.ingredients, post, onFormChange);
+        }
+    }, [values?.ingredients, post, onFormChange]);
 
     useEffect(() => {
         if (searchValue.length < 2) {
@@ -77,3 +91,34 @@ const IngredientLookup = ({
 };
 
 export default IngredientLookup;
+
+// Global debounce timer to prevent multiple calculations if multiple components trigger it
+let calculationTimer: any;
+
+const triggerMacroCalculation = (ingredients: any[], post: any, onChange: any) => {
+    clearTimeout(calculationTimer);
+    calculationTimer = setTimeout(async () => {
+        try {
+            // Optional: skip calculation if no ingredients have an amount
+            const hasAmount = ingredients.some((img: any) => img.name && img.amount);
+            if (!hasAmount) return;
+
+            const { data } = await post('/api/ingredients/calculate-macros', {
+                ingredients
+            });
+
+            const result = data?.data || data;
+
+            if (result && result.macros) {
+                console.log('[MACRO-CALC] Updating frontend form with macros:', result);
+                onChange({ target: { name: 'kcal', value: result.kcal, type: 'integer' } });
+                onChange({ target: { name: 'macros.protein', value: result.macros.protein, type: 'integer' } });
+                onChange({ target: { name: 'macros.carbs', value: result.macros.carbs, type: 'integer' } });
+                onChange({ target: { name: 'macros.fat', value: result.macros.fat, type: 'integer' } });
+                onChange({ target: { name: 'macros.fiber', value: result.macros.fiber, type: 'integer' } });
+            }
+        } catch (err) {
+            console.error('[MACRO-CALC] Failed to request macro calculation:', err);
+        }
+    }, 800);
+};
