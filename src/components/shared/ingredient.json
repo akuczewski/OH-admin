@@ -9,7 +9,7 @@
         "name": {
             "type": "string",
             "required": true,
-            "customField": "plugin::ingredient-lookup.ingredient-lookup"
+            "customField": "plugin::ingredient-lookup.ingredient"
         },
         "amount": {
             "type": "decimal"

@@ -1,13 +1,21 @@
 
 import { Search } from '@strapi/icons';
 // @ts-ignore
-import IngredientLookup from './components/IngredientLookup';
+import { Input } from './components/IngredientLookup';
 
 export default {
     register(app: any) {
-        console.log('[PLUGIN] Registering ingredient-lookup plugin custom fields...');
+        console.log('[PLUGIN-INGREDIENT] Registering custom field...');
 
-        const fieldBase = {
+        // Hard marker to prove code execution in the browser
+        if (typeof window !== 'undefined') {
+            (window as any).INGREDIENT_LOOKUP_LOADED = true;
+            // Un-comment the line below if you want a visual pop-up to be 100% sure
+            // alert('Ingredient Plugin Registered'); 
+        }
+
+        app.customFields.register({
+            name: 'ingredient', // Singular name matching the error
             pluginId: 'ingredient-lookup',
             type: 'string',
             intlLabel: {
@@ -16,23 +24,12 @@ export default {
             },
             intlDescription: {
                 id: 'ingredient-lookup.description',
-                defaultMessage: 'Search and select an ingredient',
+                defaultMessage: 'Search and select an ingredient from Firebase',
             },
             icon: Search,
             components: {
-                Input: async () => IngredientLookup,
+                Input: async () => Input,
             },
-        };
-
-        // Register both to be safe
-        app.customFields.register({
-            ...fieldBase,
-            name: 'ingredient-lookup',
-        });
-
-        app.customFields.register({
-            ...fieldBase,
-            name: 'ingredient',
         });
 
         app.addMenuLink({
@@ -48,7 +45,7 @@ export default {
             },
         });
 
-        console.log('[PLUGIN] Custom fields (ingredient, ingredient-lookup) registered successfully.');
+        console.log('[PLUGIN-INGREDIENT] Custom field "ingredient" registered.');
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
