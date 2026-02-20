@@ -1,10 +1,19 @@
 
-export default ({ strapi }) => {
-    console.log('[PLUGIN SERVER] Registering ingredient-lookup custom field...');
+export default ({ strapi }: { strapi: any }) => {
+    console.log('[PLUGIN SERVER] Registering ingredient-lookup custom fields...');
+
+    // Register both to be safe and match admin-side
     strapi.customFields.register({
         name: 'ingredient-lookup',
         pluginId: 'ingredient-lookup',
         type: 'string',
     });
-    console.log('[PLUGIN SERVER] ingredient-lookup custom field registered.');
+
+    strapi.customFields.register({
+        name: 'ingredient',
+        pluginId: 'ingredient-lookup',
+        type: 'string',
+    });
+
+    console.log('[PLUGIN SERVER] Custom fields (ingredient, ingredient-lookup) registered.');
 };

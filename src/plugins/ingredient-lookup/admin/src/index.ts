@@ -1,27 +1,38 @@
+
+import { Search } from '@strapi/icons';
 // @ts-ignore
-// @ts-ignore
+import IngredientLookup from './components/IngredientLookup';
 
 export default {
     register(app: any) {
-        /*
-        console.log('[PLUGIN] Registering ingredient-lookup...');
+        console.log('[PLUGIN] Registering ingredient-lookup plugin custom fields...');
 
-        app.customFields.register({
-            name: 'ingredient-lookup',
+        const fieldBase = {
             pluginId: 'ingredient-lookup',
             type: 'string',
             intlLabel: {
                 id: 'ingredient-lookup.label',
-                defaultMessage: 'Ingredient Lookup (Firebase)',
+                defaultMessage: 'Ingredient Lookup',
             },
             intlDescription: {
                 id: 'ingredient-lookup.description',
-                defaultMessage: 'Search and select an ingredient from the global database',
+                defaultMessage: 'Search and select an ingredient',
             },
             icon: Search,
             components: {
                 Input: async () => IngredientLookup,
             },
+        };
+
+        // Register both to be safe
+        app.customFields.register({
+            ...fieldBase,
+            name: 'ingredient-lookup',
+        });
+
+        app.customFields.register({
+            ...fieldBase,
+            name: 'ingredient',
         });
 
         app.addMenuLink({
@@ -37,12 +48,10 @@ export default {
             },
         });
 
-        console.log('[PLUGIN] ingredient-lookup registered successfully.');
-        */
+        console.log('[PLUGIN] Custom fields (ingredient, ingredient-lookup) registered successfully.');
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
-        console.log('[PLUGIN] Registering translations for:', locales);
         const importedTrads = await Promise.all(
             locales.map((locale: string) => {
                 return import(`./translations/${locale}.json`)
