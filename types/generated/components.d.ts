@@ -8,8 +8,24 @@ export interface SharedIngredient extends Struct.ComponentSchema {
   };
   attributes: {
     amount: Schema.Attribute.Decimal;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    unit: Schema.Attribute.String;
+    name: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.CustomField<'plugin::ingredient-lookup.ingredient'>;
+    unit: Schema.Attribute.Enumeration<
+      [
+        'g',
+        'ml',
+        'szt',
+        'lyzka',
+        'lyzeczka',
+        'szklanka',
+        'szczypta',
+        'plaster',
+        'garstka',
+        'opakowanie',
+      ]
+    > &
+      Schema.Attribute.Required;
   };
 }
 

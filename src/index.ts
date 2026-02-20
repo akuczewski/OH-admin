@@ -3,6 +3,91 @@ import fs from 'fs';
 import path from 'path';
 import { db } from './lib/firebase';
 
+const UNIT_CONVERSIONS: Record<string, number> = {
+  'g': 1,
+  'ml': 1,
+  'lyzka': 15,
+  'lyzeczka': 5,
+  'szklanka': 250,
+  'szczypta': 1,
+  'garstka': 30,
+  'plaster': 20, /* Default estimate if averagePieceWeight is missing */
+};
+
+async function calculateRecipeMacros(data: any) {
+  if (!data.ingredients || !Array.isArray(data.ingredients)) {
+    return null;
+  }
+
+  let totalKcal = 0;
+  let totalProtein = 0;
+  let totalCarbs = 0;
+  let totalFat = 0;
+  let totalFiber = 0;
+
+  console.log(`[MACRO-CALC] Calculating for recipe: ${data.name}`);
+
+  for (const ing of data.ingredients) {
+    if (!ing.name || !ing.amount) continue;
+
+    try {
+      const doc = await db.collection('ingredients').doc(ing.name).get();
+
+      if (!doc.exists) {
+        console.warn(`[MACRO-CALC] Ingredient not found in Firebase: ${ing.name}`);
+        continue;
+      }
+
+      const nutrition = doc.data();
+      if (!nutrition) continue;
+
+      let factor = 0;
+      const unit = ing.unit || 'g';
+      const amount = parseFloat(ing.amount) || 0;
+
+      if (nutrition.unitType === 'piece') {
+        if (unit === 'szt' || unit === 'opakowanie') {
+          factor = amount;
+        } else if (UNIT_CONVERSIONS[unit]) {
+          const weightInGrams = amount * UNIT_CONVERSIONS[unit];
+          factor = weightInGrams / (nutrition.averagePieceWeight || 100);
+        } else {
+          factor = amount;
+        }
+      } else {
+        let weightInGrams = 0;
+        if (UNIT_CONVERSIONS[unit]) {
+          weightInGrams = amount * UNIT_CONVERSIONS[unit];
+        } else if (unit === 'szt' || unit === 'opakowanie') {
+          weightInGrams = amount * (nutrition.averagePieceWeight || 100);
+        } else {
+          weightInGrams = amount;
+        }
+        factor = weightInGrams / 100;
+      }
+
+      totalKcal += (nutrition.kcal || 0) * factor;
+      totalProtein += (nutrition.protein || 0) * factor;
+      totalCarbs += (nutrition.carbs || 0) * factor;
+      totalFat += (nutrition.fat || 0) * factor;
+      totalFiber += (nutrition.fiber || 0) * factor;
+
+    } catch (err) {
+      console.error(`[MACRO-CALC] Error fetching ingredient ${ing.name}:`, err);
+    }
+  }
+
+  return {
+    kcal: Math.round(totalKcal),
+    macros: {
+      protein: Math.round(totalProtein),
+      carbs: Math.round(totalCarbs),
+      fat: Math.round(totalFat),
+      fiber: Math.round(totalFiber),
+    }
+  };
+}
+
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
     strapi.customFields.register({
@@ -166,10 +251,30 @@ export default {
         models: [uid],
         async afterCreate(event) {
           const { result } = event;
+
+          if (uid === 'api::recipe.recipe' && result.ingredients) {
+            // Run entirely outside the lifecycle transaction to prevent transaction rollback/striping bugs in Strapi 5
+            setTimeout(() => {
+              handleRecipeMacrosUpdate(result.id, result.documentId, result).catch(e => console.error(e));
+            }, 100);
+          }
+
           await syncToFirestore(uid, result, 'create');
         },
         async afterUpdate(event) {
-          const { result } = event;
+          const { result, params } = event;
+
+          if (uid === 'api::recipe.recipe' && result) {
+            // Trigger macro recalculation only if ingredients were updated
+            // Due to Strapi structure, we sometimes only get ingredients in result, sometimes in params.data
+            if (params.data?.ingredients) {
+              // Run entirely outside the lifecycle transaction
+              setTimeout(() => {
+                handleRecipeMacrosUpdate(result.id, result.documentId, result).catch(e => console.error(e));
+              }, 100);
+            }
+          }
+
           await syncToFirestore(uid, result, 'update');
         },
         async afterDelete(event) {
@@ -182,3 +287,66 @@ export default {
     console.log('[FIREBASE] Sync lifecycles registered for all content types.');
   },
 };
+
+async function handleRecipeMacrosUpdate(id: number, documentId: string, recipeData: any) {
+  if (!recipeData.ingredients) return;
+  try {
+    const calculated = await calculateRecipeMacros(recipeData);
+    if (!calculated) return;
+
+    // First, save the updated kcal directly
+    await strapi.db.query('api::recipe.recipe').update({
+      where: { documentId },
+      data: { kcal: calculated.kcal }
+    });
+
+    // Check if recipe already has a linked component
+    const existingRecipe = await strapi.documents('api::recipe.recipe').findOne({
+      documentId: documentId,
+      populate: ['macros']
+    });
+
+    let macrosId = existingRecipe?.macros?.id;
+
+    if (macrosId) {
+      // Update existing physical component row
+      await strapi.db.query('shared.macros').update({
+        where: { id: macrosId },
+        data: calculated.macros
+      });
+      console.log(`[MACRO-CALC] Updated existing macros component row ID: ${macrosId}`);
+    } else {
+      // Create new physical component row
+      const newMacros = await strapi.db.query('shared.macros').create({
+        data: calculated.macros
+      });
+      macrosId = newMacros.id;
+      console.log(`[MACRO-CALC] Created new macros component row ID: ${macrosId}`);
+    }
+
+    // Link the component row ID to the recipe ID via Strapi's polymorphic CMP table
+    const knex = strapi.db.getConnection();
+    const existingLink = await knex('recipes_cmps')
+      .where({ entity_id: id, field: 'macros', component_type: 'shared.macros' })
+      .first();
+
+    if (existingLink) {
+      await knex('recipes_cmps')
+        .where({ id: existingLink.id })
+        .update({ cmp_id: macrosId });
+    } else {
+      await knex('recipes_cmps').insert({
+        entity_id: id,
+        cmp_id: macrosId,
+        component_type: 'shared.macros',
+        field: 'macros',
+        "order": 1
+      });
+    }
+
+    console.log(`[MACRO-CALC] Successfully attached macros to recipe ${documentId} via raw SQL pivot`);
+
+  } catch (err) {
+    console.error('[MACRO-CALC] Critical error modifying DB components:', err);
+  }
+}
