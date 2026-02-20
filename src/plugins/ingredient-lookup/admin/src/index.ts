@@ -1,7 +1,8 @@
-
 import { Search } from '@strapi/icons';
 // @ts-ignore
 import { Input } from './components/IngredientLookup';
+// @ts-ignore
+import RecalculateButton from './components/RecalculateButton';
 
 export default {
     register(app: any) {
@@ -45,7 +46,13 @@ export default {
             },
         });
 
-        console.log('[PLUGIN-INGREDIENT] Custom field "ingredient" registered.');
+        // Inject the globally available Recalculate Macros button into the sidebar of the Edit View
+        app.injectContentManagerComponent('editView', 'right-links', {
+            name: 'recalculate-macros-button',
+            Component: RecalculateButton,
+        });
+
+        console.log('[PLUGIN-INGREDIENT] Custom field "ingredient" and injection zones registered.');
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
