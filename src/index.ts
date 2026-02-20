@@ -273,13 +273,36 @@ export default {
         },
         async beforeUpdate(event) {
           const { params } = event;
-          if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
-            console.log('[MACRO-CALC] beforeUpdate: Calculating macros atomicaly');
-            const calculated = await calculateRecipeMacros(params.data);
-            if (calculated) {
-              params.data.kcal = calculated.kcal;
-              params.data.macros = calculated.macros;
-              console.log('[MACRO-CALC] beforeUpdate: Set macros:', calculated);
+          if (uid === 'api::recipe.recipe') {
+            console.log('[MACRO-CALC] beforeUpdate: Triggered recalculation');
+            // We use a shallow copy to prevent modifying the original params.data prematurely
+            const payload = { ...params.data };
+
+            // If ingredients are not in the payload, fetch them from the database
+            if (!payload.ingredients) {
+              try {
+                const existing = await strapi.db.query('api::recipe.recipe').findOne({
+                  where: params.where,
+                  populate: ['ingredients']
+                });
+                if (existing && existing.ingredients) {
+                  payload.ingredients = existing.ingredients;
+                  console.log(`[MACRO-CALC] beforeUpdate: Fetched ${existing.ingredients.length} existing ingredients from DB`);
+                }
+              } catch (err) {
+                console.error('[MACRO-CALC] beforeUpdate: Failed to fetch existing ingredients:', err);
+              }
+            }
+
+            if (payload.ingredients) {
+              const calculated = await calculateRecipeMacros(payload);
+              if (calculated) {
+                params.data.kcal = calculated.kcal;
+                params.data.macros = calculated.macros;
+                console.log(`[MACRO-CALC] beforeUpdate: Persistence successful. Kcal: ${calculated.kcal}`);
+              }
+            } else {
+              console.log('[MACRO-CALC] beforeUpdate: No ingredients found to calculate');
             }
           }
         },

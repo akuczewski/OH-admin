@@ -66,12 +66,9 @@ const IngredientLookup = ({
                 console.log('[MACRO-CALC] Updating kcal to:', result.kcal);
                 onFormChange('kcal', result.kcal);
 
-                // Update macros object fields individually to ensure nested state updates
-                console.log('[MACRO-CALC] Updating individual macro fields...');
-                onFormChange('macros.protein', result.macros.protein);
-                onFormChange('macros.carbs', result.macros.carbs);
-                onFormChange('macros.fat', result.macros.fat);
-                onFormChange('macros.fiber', result.macros.fiber);
+                // Update macros component as a single object to ensure Strapi 5 sees it correctly
+                console.log('[MACRO-CALC] Updating macros object:', result.macros);
+                onFormChange('macros', result.macros);
             } else {
                 console.warn('[MACRO-CALC] No macros returned from API');
             }
@@ -87,9 +84,9 @@ const IngredientLookup = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC] Auto-triggering calculation due to ingredients change');
+            console.log('[MACRO-CALC] Auto-triggering calculation. Ingredients:', values.ingredients.length);
             handleCalculateMacros();
-        }, 1500); // Wait 1.5s after last change
+        }, 500); // Wait 500ms after last change (snappier)
 
         return () => clearTimeout(timer);
     }, [JSON.stringify(values.ingredients)]);
