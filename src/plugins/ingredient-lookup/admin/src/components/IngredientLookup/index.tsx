@@ -101,7 +101,7 @@ const IngredientLookup = ({
         <Field.Root name={name} id={name} error={error} hint={description} required={required}>
             <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
                 <Field.Label>{formatMessage(intlLabel)}</Field.Label>
-                {name === 'ingredients.0.name' && (
+                {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
                     <Button variant="secondary" size="S" onClick={handleCalculateMacros} loading={isCalculating}>
                         Przelicz makra
                     </Button>
