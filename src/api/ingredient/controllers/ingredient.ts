@@ -71,19 +71,35 @@ export default {
                 const nutrition = doc.data();
                 if (!nutrition) continue;
 
-                let weightInGrams = 0;
+                let factor = 0;
                 const unit = ing.unit || 'g';
                 const amount = parseFloat(ing.amount) || 0;
 
-                if (UNIT_CONVERSIONS[unit]) {
-                    weightInGrams = amount * UNIT_CONVERSIONS[unit];
-                } else if (unit === 'szt' || unit === 'opakowanie') {
-                    weightInGrams = amount * (nutrition.averagePieceWeight || 100);
+                if (nutrition.unitType === 'piece') {
+                    // Firebase piece logic: macros are given per 1 piece
+                    // If recipe unit is 'szt' or 'opakowanie', amount is pieces
+                    if (unit === 'szt' || unit === 'opakowanie') {
+                        factor = amount;
+                    } else if (UNIT_CONVERSIONS[unit]) {
+                        // User chose a weight unit for a piece-based ingredient?
+                        // E.g. 50g of Pineapple. We need averagePieceWeight to convert.
+                        const weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                        factor = weightInGrams / (nutrition.averagePieceWeight || 100);
+                    } else {
+                        factor = amount;
+                    }
                 } else {
-                    weightInGrams = amount;
+                    // Firebase weight logic: macros are given per 100g
+                    let weightInGrams = 0;
+                    if (UNIT_CONVERSIONS[unit]) {
+                        weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                    } else if (unit === 'szt' || unit === 'opakowanie') {
+                        weightInGrams = amount * (nutrition.averagePieceWeight || 100);
+                    } else {
+                        weightInGrams = amount;
+                    }
+                    factor = weightInGrams / 100;
                 }
-
-                const factor = weightInGrams / 100;
 
                 totalKcal += (nutrition.kcal || 0) * factor;
                 totalProtein += (nutrition.protein || 0) * factor;

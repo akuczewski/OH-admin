@@ -40,19 +40,30 @@ async function calculateRecipeMacros(data: any) {
             const nutrition = doc.data();
             if (!nutrition) continue;
 
-            let weightInGrams = 0;
+            let factor = 0;
             const unit = ing.unit || 'g';
             const amount = parseFloat(ing.amount) || 0;
 
-            if (UNIT_CONVERSIONS[unit]) {
-                weightInGrams = amount * UNIT_CONVERSIONS[unit];
-            } else if (unit === 'szt' || unit === 'opakowanie') {
-                weightInGrams = amount * (nutrition.averagePieceWeight || 100); // Fallback to 100g if unknown
+            if (nutrition.unitType === 'piece') {
+                if (unit === 'szt' || unit === 'opakowanie') {
+                    factor = amount;
+                } else if (UNIT_CONVERSIONS[unit]) {
+                    const weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                    factor = weightInGrams / (nutrition.averagePieceWeight || 100);
+                } else {
+                    factor = amount;
+                }
             } else {
-                weightInGrams = amount; // Default to 1:1
+                let weightInGrams = 0;
+                if (UNIT_CONVERSIONS[unit]) {
+                    weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                } else if (unit === 'szt' || unit === 'opakowanie') {
+                    weightInGrams = amount * (nutrition.averagePieceWeight || 100);
+                } else {
+                    weightInGrams = amount;
+                }
+                factor = weightInGrams / 100;
             }
-
-            const factor = weightInGrams / 100;
 
             totalKcal += (nutrition.kcal || 0) * factor;
             totalProtein += (nutrition.protein || 0) * factor;
@@ -60,7 +71,7 @@ async function calculateRecipeMacros(data: any) {
             totalFat += (nutrition.fat || 0) * factor;
             totalFiber += (nutrition.fiber || 0) * factor;
 
-            console.log(`[MACRO-CALC] Added ${ing.name}: ${weightInGrams}g -> ${(nutrition.kcal * factor).toFixed(1)} kcal`);
+            console.log(`[MACRO-CALC] Added ${ing.name}: amount ${amount} ${unit} -> ${(nutrition.kcal * factor).toFixed(1)} kcal`);
         } catch (err) {
             console.error(`[MACRO-CALC] Error fetching ingredient ${ing.name}:`, err);
         }
