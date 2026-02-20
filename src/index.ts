@@ -5,8 +5,6 @@ import { db } from './lib/firebase';
 
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
-    console.log('--- V6-SERVER-REGISTER-START ---');
-
     strapi.customFields.register({
       name: 'ingredient',
       // @ts-ignore
@@ -20,8 +18,6 @@ export default {
       plugin: 'ingredient-lookup',
       type: 'string',
     });
-
-    console.log('--- V6-SERVER-REGISTER-SUCCESS ---');
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
