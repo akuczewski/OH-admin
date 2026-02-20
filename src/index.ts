@@ -90,7 +90,7 @@ export default {
     }
 
     // --- 3. Seed Motivation Quotes ---
-    const quotes = [
+    const quotes: any[] = [
       { text: "Nowa energia! Faza folikularna to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
       { text: "Zwolnij. Twoje ciało jest w fazie lutealnej. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
     ];
