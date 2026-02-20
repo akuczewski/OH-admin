@@ -1,20 +1,20 @@
 
 import { Search } from '@strapi/icons';
 
-// Self-contained V5 component to avoid any import/loop issues
-const IngredientSearchV5 = (props: any) => {
+// Self-contained V6 component to avoid any import/loop issues
+const IngredientSearchV6 = (props: any) => {
     return (
-        <div style={{ padding: '12px', border: '2px solid #00ff00', borderRadius: '4px', backgroundColor: '#1a1a2e', color: 'white' }}>
-            <label style={{ color: '#00ff00', fontSize: '12px', marginBottom: '4px', display: 'block', fontWeight: 'bold' }}>
-                Smart Ingredient (V5-FINAL)
+        <div style={{ padding: '12px', border: '3px solid #ff00ff', borderRadius: '8px', backgroundColor: '#1a1a2e', color: 'white' }}>
+            <label style={{ color: '#ff00ff', fontSize: '14px', marginBottom: '8px', display: 'block', fontWeight: 'bold' }}>
+                Smart Ingredient (V6-REFRESH)
             </label>
             <input
                 {...props}
                 style={{
                     width: '100%',
-                    padding: '8px',
+                    padding: '10px',
                     borderRadius: '4px',
-                    border: '1px solid #00ff00',
+                    border: '1px solid #ff00ff',
                     backgroundColor: '#0f0f1b',
                     color: 'white'
                 }}
@@ -24,10 +24,10 @@ const IngredientSearchV5 = (props: any) => {
                         props.onChange({ target: { name: props.name, value: e.target.value, type: 'string' } });
                     }
                 }}
-                placeholder="Szukaj składnika (V5)..."
+                placeholder="Wyszukaj składnik (V6)..."
             />
-            <p style={{ fontSize: '10px', color: '#00ff00', marginTop: '6px' }}>
-                V5: Jeśli to widzisz, rejestracja GLOBALNA działa poprawnie.
+            <p style={{ fontSize: '11px', color: '#ff00ff', marginTop: '8px' }}>
+                V6: Jeśli to widzisz, moduł został poprawnie załadowany jako obiekt default.
             </p>
         </div>
     );
@@ -38,7 +38,7 @@ export default {
         locales: ['pl'],
     },
     register(app: any) {
-        console.log('--- V5-GLOBAL-REGISTER-START ---');
+        console.log('--- V6-GLOBAL-REGISTER-START ---');
 
         const fieldBase = {
             pluginId: 'ingredient-lookup',
@@ -53,7 +53,8 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => IngredientSearchV5,
+                // IMPORTANT: Strapi 5 often expects an object with a default property
+                Input: async () => ({ default: IngredientSearchV6 }),
             },
         };
 
@@ -62,19 +63,19 @@ export default {
                 ...fieldBase,
                 name: 'ingredient',
             });
-            console.log('--- V5-REGISTERED-SINGULAR ---');
+            console.log('--- V6-REGISTERED-SINGULAR ---');
 
             app.customFields.register({
                 ...fieldBase,
                 name: 'ingredient-lookup',
             });
-            console.log('--- V5-REGISTERED-PLURAL ---');
+            console.log('--- V6-REGISTERED-PLURAL ---');
 
         } catch (err) {
-            console.error('--- V5-REGISTER-ERROR ---', err);
+            console.error('--- V6-REGISTER-ERROR ---', err);
         }
     },
     bootstrap(app: any) {
-        console.log('--- V5-GLOBAL-BOOTSTRAP ---');
+        console.log('--- V6-GLOBAL-BOOTSTRAP ---');
     },
 };

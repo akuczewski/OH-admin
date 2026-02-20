@@ -1,6 +1,6 @@
 {
   "name": "cms",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "A Strapi application",
   "scripts": {
@@ -23,6 +23,7 @@
     "better-sqlite3": "12.4.1",
     "firebase-admin": "^13.6.1",
     "html-to-text": "^9.0.5",
+    "ingredient-lookup": "file:src/plugins/ingredient-lookup",
     "openai": "^6.22.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
