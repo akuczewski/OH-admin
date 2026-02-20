@@ -1,7 +1,9 @@
 import {
+    Button,
     Combobox,
     ComboboxOption,
-    Field
+    Field,
+    Flex
 } from '@strapi/design-system';
 // @ts-ignore
 import { useFetchClient, useForm } from '@strapi/strapi/admin'; // Strapi 5 standard import
@@ -24,19 +26,47 @@ const IngredientLookup = ({
     const [searchValue, setSearchValue] = useState(value || '');
     const { get, post } = useFetchClient();
 
+    const [isCalculating, setIsCalculating] = useState(false);
+
     // Grab the current form values and the change handler
     const formContext = useForm('IngredientLookup', (state) => state);
     const values = formContext?.values || {};
     const onFormChange = formContext?.onChange;
 
-    useEffect(() => {
-        // Trigger macro calculation whenever ingredients change
-        if (values?.ingredients && Array.isArray(values.ingredients) && onFormChange) {
-            // Only trigger if we are the FIRST ingredient row to avoid duplicate API calls
-            // or just use a shared debounce timer outside the component
-            triggerMacroCalculation(values.ingredients, post, onFormChange);
+    const handleCalculateMacros = async () => {
+        if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
+            return;
         }
-    }, [values?.ingredients, post, onFormChange]);
+
+        setIsCalculating(true);
+        try {
+            const { data } = await post('/api/ingredients/calculate-macros', {
+                ingredients: values.ingredients
+            });
+
+            const result = data?.data || data;
+
+            if (result && result.macros) {
+                console.log('[MACRO-CALC] Updating frontend form with macros:', result);
+
+                // Update using string path signature for React Hook Form / Formik
+                onFormChange('kcal', result.kcal);
+
+                if (!values.macros) {
+                    onFormChange('macros', result.macros);
+                } else {
+                    onFormChange('macros.protein', result.macros.protein);
+                    onFormChange('macros.carbs', result.macros.carbs);
+                    onFormChange('macros.fat', result.macros.fat);
+                    onFormChange('macros.fiber', result.macros.fiber);
+                }
+            }
+        } catch (err) {
+            console.error('[MACRO-CALC] Failed to calculate macros:', err);
+        } finally {
+            setIsCalculating(false);
+        }
+    };
 
     useEffect(() => {
         if (searchValue.length < 2) {
@@ -69,7 +99,14 @@ const IngredientLookup = ({
 
     return (
         <Field.Root name={name} id={name} error={error} hint={description} required={required}>
-            <Field.Label>{formatMessage(intlLabel)}</Field.Label>
+            <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
+                <Field.Label>{formatMessage(intlLabel)}</Field.Label>
+                {name === 'ingredients.0.name' && (
+                    <Button variant="secondary" size="S" onClick={handleCalculateMacros} loading={isCalculating}>
+                        Przelicz makra
+                    </Button>
+                )}
+            </Flex>
             <Combobox
                 placeholder="Zacznij pisać nazwę składnika..."
                 disabled={disabled}
@@ -91,34 +128,3 @@ const IngredientLookup = ({
 };
 
 export default IngredientLookup;
-
-// Global debounce timer to prevent multiple calculations if multiple components trigger it
-let calculationTimer: any;
-
-const triggerMacroCalculation = (ingredients: any[], post: any, onChange: any) => {
-    clearTimeout(calculationTimer);
-    calculationTimer = setTimeout(async () => {
-        try {
-            // Optional: skip calculation if no ingredients have an amount
-            const hasAmount = ingredients.some((img: any) => img.name && img.amount);
-            if (!hasAmount) return;
-
-            const { data } = await post('/api/ingredients/calculate-macros', {
-                ingredients
-            });
-
-            const result = data?.data || data;
-
-            if (result && result.macros) {
-                console.log('[MACRO-CALC] Updating frontend form with macros:', result);
-                onChange({ target: { name: 'kcal', value: result.kcal, type: 'integer' } });
-                onChange({ target: { name: 'macros.protein', value: result.macros.protein, type: 'integer' } });
-                onChange({ target: { name: 'macros.carbs', value: result.macros.carbs, type: 'integer' } });
-                onChange({ target: { name: 'macros.fat', value: result.macros.fat, type: 'integer' } });
-                onChange({ target: { name: 'macros.fiber', value: result.macros.fiber, type: 'integer' } });
-            }
-        } catch (err) {
-            console.error('[MACRO-CALC] Failed to request macro calculation:', err);
-        }
-    }, 800);
-};
