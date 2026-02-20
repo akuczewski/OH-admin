@@ -46,13 +46,25 @@ export default {
             },
         });
 
-        // Inject the globally available Recalculate Macros button into the sidebar of the Edit View
-        app.injectContentManagerComponent('editView', 'right-links', {
-            name: 'recalculate-macros-button',
-            Component: RecalculateButton,
+        app.customFields.register({
+            name: 'calculator',
+            pluginId: 'ingredient-lookup',
+            type: 'boolean',
+            intlLabel: {
+                id: 'ingredient-lookup.calculator.label',
+                defaultMessage: 'Macro Calculator Button',
+            },
+            intlDescription: {
+                id: 'ingredient-lookup.calculator.description',
+                defaultMessage: 'Button to recalculate macros from Firebase',
+            },
+            icon: Search,
+            components: {
+                Input: async () => RecalculateButton,
+            },
         });
 
-        console.log('[PLUGIN-INGREDIENT] Custom field "ingredient" and injection zones registered.');
+        console.log('[PLUGIN-INGREDIENT] Custom fields registered.');
     },
 
     async registerTrads({ locales }: { locales: string[] }) {

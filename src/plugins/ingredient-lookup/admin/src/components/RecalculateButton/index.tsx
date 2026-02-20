@@ -1,9 +1,11 @@
-import { Button } from '@strapi/design-system';
+import { Button, Field, Flex } from '@strapi/design-system';
 // @ts-ignore
 import { useCMEditViewDataManager, useFetchClient } from '@strapi/strapi/admin';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
-const RecalculateButton = () => {
+const RecalculateButton = ({ name, error, description, required, intlLabel }: any) => {
+    const { formatMessage } = useIntl();
     const { modifiedData, onChange } = useCMEditViewDataManager();
     const { post } = useFetchClient();
     const [isCalculating, setIsCalculating] = useState(false);
@@ -48,14 +50,20 @@ const RecalculateButton = () => {
     };
 
     return (
-        <Button
-            variant="secondary"
-            onClick={handleCalculateMacros}
-            loading={isCalculating}
-            fullWidth
-        >
-            Przelicz makra
-        </Button>
+        <Field.Root name={name} id={name} error={error} hint={description} required={required}>
+            <Flex direction="column" alignItems="flex-start" gap={1}>
+                {intlLabel && <Field.Label>{formatMessage(intlLabel)}</Field.Label>}
+                <Button
+                    variant="secondary"
+                    onClick={handleCalculateMacros}
+                    loading={isCalculating}
+                >
+                    Przelicz makra
+                </Button>
+            </Flex>
+            <Field.Hint />
+            <Field.Error />
+        </Field.Root>
     );
 };
 
