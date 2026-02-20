@@ -23,10 +23,7 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => {
-                    console.log('!!! LOADING CUSTOM FIELD COMPONENT (GLOBAL) !!!');
-                    return IngredientLookup;
-                },
+                Input: async () => IngredientLookup,
             },
         };
 

@@ -4,7 +4,25 @@ import path from 'path';
 import { db } from './lib/firebase';
 
 export default {
-  register() { },
+  register({ strapi }: { strapi: Core.Strapi }) {
+    console.log('!!! ROOT SERVER REGISTER START !!!');
+
+    strapi.customFields.register({
+      name: 'ingredient',
+      // @ts-ignore
+      pluginId: 'ingredient-lookup',
+      type: 'string',
+    });
+
+    strapi.customFields.register({
+      name: 'ingredient-lookup',
+      // @ts-ignore
+      pluginId: 'ingredient-lookup',
+      type: 'string',
+    });
+
+    console.log('!!! ROOT SERVER REGISTER SUCCESS !!!');
+  },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     // --- 1. Seed Profiles ---
