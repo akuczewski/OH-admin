@@ -5,23 +5,23 @@ import { db } from './lib/firebase';
 
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
-    console.log('!!! ROOT SERVER REGISTER START !!!');
+    console.log('!!! ROOT SERVER REGISTER START (V4) !!!');
 
     strapi.customFields.register({
       name: 'ingredient',
       // @ts-ignore
-      pluginId: 'ingredient-lookup',
+      plugin: 'ingredient-lookup',
       type: 'string',
     });
 
     strapi.customFields.register({
       name: 'ingredient-lookup',
       // @ts-ignore
-      pluginId: 'ingredient-lookup',
+      plugin: 'ingredient-lookup',
       type: 'string',
     });
 
-    console.log('!!! ROOT SERVER REGISTER SUCCESS !!!');
+    console.log('!!! ROOT SERVER REGISTER SUCCESS (V4) !!!');
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
