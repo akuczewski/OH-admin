@@ -9,11 +9,5 @@ export default ({ strapi }: { strapi: any }) => {
         type: 'string',
     });
 
-    strapi.customFields.register({
-        name: 'calculator',
-        pluginId: 'ingredient-lookup',
-        type: 'boolean',
-    });
-
     console.log('[PLUGIN SERVER] Custom fields registered.');
 };

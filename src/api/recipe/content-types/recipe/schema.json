@@ -48,10 +48,6 @@
                 "kolacja"
             ]
         },
-        "macroCalculator": {
-            "type": "boolean",
-            "customField": "plugin::ingredient-lookup.calculator"
-        },
         "macros": {
             "type": "component",
             "repeatable": false,

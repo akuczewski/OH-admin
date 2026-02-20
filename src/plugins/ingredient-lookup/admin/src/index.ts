@@ -1,8 +1,6 @@
 import { Search } from '@strapi/icons';
 // @ts-ignore
 import Input from './components/IngredientLookup';
-// @ts-ignore
-import RecalculateButton from './components/RecalculateButton';
 
 export default {
     register(app: any) {
@@ -46,25 +44,6 @@ export default {
             },
         });
 
-        app.customFields.register({
-            name: 'calculator',
-            pluginId: 'ingredient-lookup',
-            type: 'boolean',
-            intlLabel: {
-                id: 'ingredient-lookup.calculator.label',
-                defaultMessage: 'Macro Calculator Button',
-            },
-            intlDescription: {
-                id: 'ingredient-lookup.calculator.description',
-                defaultMessage: 'Button to recalculate macros from Firebase',
-            },
-            icon: Search,
-            components: {
-                Input: async () => RecalculateButton,
-            },
-        });
-
-        console.log('[PLUGIN-INGREDIENT] Custom fields registered.');
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
