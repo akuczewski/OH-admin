@@ -31,9 +31,16 @@ const IngredientLookup = ({
     // Grab the current form values and the change handler
     const { values, onChange: onFormChange } = useForm();
 
+    console.log('[MACRO-CALC] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
+
     const handleCalculateMacros = async () => {
+        console.log('[MACRO-CALC] frontend Calculate button clicked. Values:', values);
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
-            console.error('[MACRO-CALC] Form values or onChange missing');
+            console.error('[MACRO-CALC] Cannot calculate: ', {
+                hasIngredients: !!values.ingredients,
+                isArray: Array.isArray(values.ingredients),
+                hasOnChange: !!onFormChange
+            });
             return;
         }
 
@@ -53,12 +60,14 @@ const IngredientLookup = ({
             const result = res?.data || res;
 
             if (result && result.macros) {
-                console.log('[MACRO-CALC] Updating form with result:', result);
+                console.log('[MACRO-CALC] Received macros from API:', result);
 
                 // Update kcal
+                console.log('[MACRO-CALC] Updating kcal to:', result.kcal);
                 onFormChange('kcal', result.kcal);
 
                 // Update macros object fields individually to ensure nested state updates
+                console.log('[MACRO-CALC] Updating individual macro fields...');
                 onFormChange('macros.protein', result.macros.protein);
                 onFormChange('macros.carbs', result.macros.carbs);
                 onFormChange('macros.fat', result.macros.fat);

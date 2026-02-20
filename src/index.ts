@@ -25,7 +25,7 @@ async function calculateRecipeMacros(data: any) {
   let totalFat = 0;
   let totalFiber = 0;
 
-  console.log(`[MACRO-CALC] Calculating for recipe: ${data.name}`);
+  console.log(`[MACRO-CALC] Starting calculation for: ${data.name || 'Unknown'}. Ingredients:`, JSON.stringify(data.ingredients));
 
   for (const ing of data.ingredients) {
     if (!ing.name || !ing.amount) continue;
@@ -45,9 +45,11 @@ async function calculateRecipeMacros(data: any) {
       }
 
       if (!doc.exists || !nutrition) {
-        console.warn(`[MACRO-CALC] Ingredient not found in Firebase: ${ing.name}`);
+        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase for name/ID: "${ing.name}"`);
         continue;
       }
+
+      console.log(`[MACRO-CALC] Found ingredient "${ing.name}":`, { kcal: nutrition.kcal, unitType: nutrition.unitType });
 
       let factor = 0;
       const unit = ing.unit || 'g';
@@ -297,10 +299,19 @@ export default {
 };
 
 async function handleRecipeMacrosUpdate(id: number, documentId: string, recipeData: any) {
-  if (!recipeData.ingredients) return;
+  console.log(`[MACRO-CALC] Backend trigger for recipe ${documentId} (id: ${id})`);
+  if (!recipeData.ingredients) {
+    console.log(`[MACRO-CALC] No ingredients found in recipe data for ${documentId}`);
+    return;
+  }
   try {
     const calculated = await calculateRecipeMacros(recipeData);
-    if (!calculated) return;
+    if (!calculated) {
+      console.log(`[MACRO-CALC] Calculation returned null for ${documentId}`);
+      return;
+    }
+
+    console.log(`[MACRO-CALC] Calculated results for ${documentId}:`, calculated);
 
     // First, save the updated kcal directly
     await strapi.db.query('api::recipe.recipe').update({
