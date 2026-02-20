@@ -62,9 +62,21 @@ export const Input = ({
         onChange({ target: { name, value: selectedValue, type: 'string' } });
     };
 
+    const label = intlLabel?.id
+        ? formatMessage(intlLabel)
+        : (intlLabel?.defaultMessage || name);
+
+    const hint = description?.id
+        ? formatMessage(description)
+        : (description?.defaultMessage || description || '');
+
+    const errorMessage = error?.id
+        ? formatMessage(error)
+        : (error?.defaultMessage || error || '');
+
     return (
-        <Field.Root name={name} id={name} error={error} hint={description} required={required}>
-            <Field.Label>{formatMessage(intlLabel)}</Field.Label>
+        <Field.Root name={name} id={name} error={errorMessage} hint={hint} required={required}>
+            <Field.Label>{label}</Field.Label>
             <Combobox
                 placeholder="Zacznij pisać nazwę składnika..."
                 disabled={disabled}
