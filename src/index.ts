@@ -5,7 +5,7 @@ import { db } from './lib/firebase';
 
 export default {
   register({ strapi }: { strapi: Core.Strapi }) {
-    console.log('!!! ROOT SERVER REGISTER START (V4) !!!');
+    console.log('--- V5-SERVER-REGISTER-START ---');
 
     strapi.customFields.register({
       name: 'ingredient',
@@ -21,7 +21,7 @@ export default {
       type: 'string',
     });
 
-    console.log('!!! ROOT SERVER REGISTER SUCCESS (V4) !!!');
+    console.log('--- V5-SERVER-REGISTER-SUCCESS ---');
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {

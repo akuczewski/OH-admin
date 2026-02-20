@@ -1,12 +1,12 @@
 
 import { Search } from '@strapi/icons';
 
-// Versioned, self-contained dummy component to stop all loops and import issues
-const SimpleInput = (props: any) => {
+// Self-contained V5 component to avoid any import/loop issues
+const IngredientSearchV5 = (props: any) => {
     return (
-        <div style={{ padding: '12px', border: '2px solid #7b79ff', borderRadius: '4px', backgroundColor: '#212134', color: 'white' }}>
-            <label style={{ color: '#d9d9d9', fontSize: '12px', marginBottom: '4px', display: 'block' }}>
-                Smart Ingredient (V4)
+        <div style={{ padding: '12px', border: '2px solid #00ff00', borderRadius: '4px', backgroundColor: '#1a1a2e', color: 'white' }}>
+            <label style={{ color: '#00ff00', fontSize: '12px', marginBottom: '4px', display: 'block', fontWeight: 'bold' }}>
+                Smart Ingredient (V5-FINAL)
             </label>
             <input
                 {...props}
@@ -14,8 +14,8 @@ const SimpleInput = (props: any) => {
                     width: '100%',
                     padding: '8px',
                     borderRadius: '4px',
-                    border: '1px solid #4a4a6a',
-                    backgroundColor: '#181826',
+                    border: '1px solid #00ff00',
+                    backgroundColor: '#0f0f1b',
                     color: 'white'
                 }}
                 value={props.value || ''}
@@ -24,10 +24,10 @@ const SimpleInput = (props: any) => {
                         props.onChange({ target: { name: props.name, value: e.target.value, type: 'string' } });
                     }
                 }}
-                placeholder="Wpisz nazwę (V4)..."
+                placeholder="Szukaj składnika (V5)..."
             />
-            <p style={{ fontSize: '10px', color: '#7b79ff', marginTop: '6px' }}>
-                If you see this, registration is DEFINITIVELY working.
+            <p style={{ fontSize: '10px', color: '#00ff00', marginTop: '6px' }}>
+                V5: Jeśli to widzisz, rejestracja GLOBALNA działa poprawnie.
             </p>
         </div>
     );
@@ -38,7 +38,7 @@ export default {
         locales: ['pl'],
     },
     register(app: any) {
-        console.log('!!! GLOBAL REGISTER START (V4) !!!');
+        console.log('--- V5-GLOBAL-REGISTER-START ---');
 
         const fieldBase = {
             pluginId: 'ingredient-lookup',
@@ -49,11 +49,11 @@ export default {
             },
             intlDescription: {
                 id: 'ingredient-lookup.description',
-                defaultMessage: 'Search and select an ingredient from Firebase',
+                defaultMessage: 'Search and select an ingredient',
             },
             icon: Search,
             components: {
-                Input: async () => SimpleInput,
+                Input: async () => IngredientSearchV5,
             },
         };
 
@@ -62,19 +62,19 @@ export default {
                 ...fieldBase,
                 name: 'ingredient',
             });
-            console.log('!!! REGISTERED: plugin::ingredient-lookup.ingredient !!!');
+            console.log('--- V5-REGISTERED-SINGULAR ---');
 
             app.customFields.register({
                 ...fieldBase,
                 name: 'ingredient-lookup',
             });
-            console.log('!!! REGISTERED: plugin::ingredient-lookup.ingredient-lookup !!!');
+            console.log('--- V5-REGISTERED-PLURAL ---');
 
         } catch (err) {
-            console.error('!!! GLOBAL REGISTER ERROR !!!', err);
+            console.error('--- V5-REGISTER-ERROR ---', err);
         }
     },
     bootstrap(app: any) {
-        console.log('!!! GLOBAL BOOTSTRAP (V4) !!!');
+        console.log('--- V5-GLOBAL-BOOTSTRAP ---');
     },
 };
