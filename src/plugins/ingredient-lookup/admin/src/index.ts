@@ -1,8 +1,4 @@
 import { Search } from '@strapi/icons';
-// @ts-ignore
-import { Input } from './components/IngredientLookup';
-// @ts-ignore
-import RecalculateButton from './components/RecalculateButton';
 
 export default {
     register(app: any) {
@@ -29,7 +25,7 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => Input,
+                Input: async () => import('./components/IngredientLookup'),
             },
         });
 
@@ -60,7 +56,7 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => RecalculateButton,
+                Input: async () => import('./components/RecalculateButton'),
             },
         });
 
