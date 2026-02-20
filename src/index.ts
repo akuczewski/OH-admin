@@ -259,32 +259,36 @@ export default {
     Object.keys(collectionsToSync).forEach((uid) => {
       strapi.db.lifecycles.subscribe({
         models: [uid],
+        async beforeCreate(event) {
+          const { params } = event;
+          if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
+            console.log('[MACRO-CALC] beforeCreate: Calculating macros atomicaly');
+            const calculated = await calculateRecipeMacros(params.data);
+            if (calculated) {
+              params.data.kcal = calculated.kcal;
+              params.data.macros = calculated.macros;
+              console.log('[MACRO-CALC] beforeCreate: Set macros:', calculated);
+            }
+          }
+        },
+        async beforeUpdate(event) {
+          const { params } = event;
+          if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
+            console.log('[MACRO-CALC] beforeUpdate: Calculating macros atomicaly');
+            const calculated = await calculateRecipeMacros(params.data);
+            if (calculated) {
+              params.data.kcal = calculated.kcal;
+              params.data.macros = calculated.macros;
+              console.log('[MACRO-CALC] beforeUpdate: Set macros:', calculated);
+            }
+          }
+        },
         async afterCreate(event) {
           const { result } = event;
-
-          if (uid === 'api::recipe.recipe' && result.ingredients) {
-            // Run entirely outside the lifecycle transaction to prevent transaction rollback/striping bugs in Strapi 5
-            setTimeout(() => {
-              handleRecipeMacrosUpdate(result.id, result.documentId, result).catch(e => console.error(e));
-            }, 100);
-          }
-
           await syncToFirestore(uid, result, 'create');
         },
         async afterUpdate(event) {
-          const { result, params } = event;
-
-          if (uid === 'api::recipe.recipe' && result) {
-            // Trigger macro recalculation only if ingredients were updated
-            // Due to Strapi structure, we sometimes only get ingredients in result, sometimes in params.data
-            if (params.data?.ingredients) {
-              // Run entirely outside the lifecycle transaction
-              setTimeout(() => {
-                handleRecipeMacrosUpdate(result.id, result.documentId, result).catch(e => console.error(e));
-              }, 100);
-            }
-          }
-
+          const { result } = event;
           await syncToFirestore(uid, result, 'update');
         },
         async afterDelete(event) {
@@ -298,100 +302,4 @@ export default {
   },
 };
 
-async function handleRecipeMacrosUpdate(id: number, documentId: string, recipeData: any) {
-  console.log(`[MACRO-CALC] Backend trigger for recipe ${documentId} (id: ${id})`);
-  if (!recipeData.ingredients) {
-    console.log(`[MACRO-CALC] No ingredients found in recipe data for ${documentId}`);
-    return;
-  }
-  try {
-    const calculated = await calculateRecipeMacros(recipeData);
-    if (!calculated) {
-      console.log(`[MACRO-CALC] Calculation returned null for ${documentId}`);
-      return;
-    }
 
-    console.log(`[MACRO-CALC] Calculated results for ${documentId}:`, calculated);
-
-    // First, save the updated kcal directly
-    await strapi.db.query('api::recipe.recipe').update({
-      where: { documentId },
-      data: { kcal: calculated.kcal }
-    });
-
-    // Check if recipe already has a linked component
-    const existingRecipe = await strapi.documents('api::recipe.recipe').findOne({
-      documentId: documentId,
-      populate: ['macros']
-    });
-
-    let macrosId = existingRecipe?.macros?.id;
-
-    if (macrosId) {
-      // Update existing physical component row
-      await strapi.db.query('shared.macros').update({
-        where: { id: macrosId },
-        data: calculated.macros
-      });
-      console.log(`[MACRO-CALC] Updated existing macros component row ID: ${macrosId}`);
-    } else {
-      // Create new physical component row
-      const newMacros = await strapi.db.query('shared.macros').create({
-        data: calculated.macros
-      });
-      macrosId = newMacros.id;
-      console.log(`[MACRO-CALC] Created new macros component row ID: ${macrosId}`);
-    }
-
-    // Link the component row ID to the recipe ID via Strapi's polymorphic CMP table
-    const knex = strapi.db.getConnection();
-
-    // Attempt to resolve the correct pivot table name for components in Strapi 5
-    // In SQLite it's usually {content_type}_cmps, in Postgres it might be different.
-    // We'll check for recipes_cmps first, then fallback to recipes_components or use metadata
-    let pivotTable = 'recipes_cmps';
-
-    try {
-      const hasCmps = await knex.schema.hasTable('recipes_cmps');
-      if (!hasCmps) {
-        const hasComponents = await knex.schema.hasTable('recipes_components');
-        if (hasComponents) pivotTable = 'recipes_components';
-        else {
-          // Last resort: try to find any join table associated with the macros field
-          const metadata = strapi.db.metadata.get('api::recipe.recipe');
-          // @ts-ignore
-          const attr = metadata?.attributes?.macros;
-          // @ts-ignore
-          if (attr?.joinTable?.name) pivotTable = attr.joinTable.name;
-        }
-      }
-    } catch (e) {
-      console.warn('[MACRO-CALC] Error resolving pivot table name, defaulting to recipes_cmps');
-    }
-
-    console.log(`[MACRO-CALC] Using pivot table: ${pivotTable} for recipe ${id}`);
-
-    const existingLink = await knex(pivotTable)
-      .where({ entity_id: id, field: 'macros', component_type: 'shared.macros' })
-      .first();
-
-    if (existingLink) {
-      await knex(pivotTable)
-        .where({ id: existingLink.id })
-        .update({ cmp_id: macrosId });
-    } else {
-      await knex(pivotTable).insert({
-        entity_id: id,
-        cmp_id: macrosId,
-        component_type: 'shared.macros',
-        field: 'macros',
-        "order": 1
-      });
-    }
-
-    console.log(`[MACRO-CALC] Successfully attached macros to recipe ${documentId} via raw SQL pivot`);
-
-  } catch (err) {
-    console.error('[MACRO-CALC] Critical error modifying DB components:', err);
-  }
-}

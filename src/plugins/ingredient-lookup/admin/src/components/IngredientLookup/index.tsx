@@ -82,6 +82,18 @@ const IngredientLookup = ({
         }
     };
 
+    // Auto-calculate macros when ingredients change
+    useEffect(() => {
+        if (!values.ingredients || values.ingredients.length === 0) return;
+
+        const timer = setTimeout(() => {
+            console.log('[MACRO-CALC] Auto-triggering calculation due to ingredients change');
+            handleCalculateMacros();
+        }, 1500); // Wait 1.5s after last change
+
+        return () => clearTimeout(timer);
+    }, [JSON.stringify(values.ingredients)]);
+
     useEffect(() => {
         if (searchValue.length < 2) {
             setOptions([]);
