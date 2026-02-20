@@ -29,37 +29,42 @@ const IngredientLookup = ({
     const [isCalculating, setIsCalculating] = useState(false);
 
     // Grab the current form values and the change handler
-    const formContext = useForm('IngredientLookup', (state) => state);
-    const values = formContext?.values || {};
-    const onFormChange = formContext?.onChange;
+    const { values, onChange: onFormChange } = useForm();
 
     const handleCalculateMacros = async () => {
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
+            console.error('[MACRO-CALC] Form values or onChange missing');
             return;
         }
 
         setIsCalculating(true);
         try {
-            const { data } = await post('/api/ingredients/calculate-macros', {
-                ingredients: values.ingredients
+            // Use the stored slugs instead of names if possible for better accuracy
+            const ingredientsToCalculate = values.ingredients.map(ing => ({
+                name: ing.slug || ing.name,
+                amount: ing.amount,
+                unit: ing.unit
+            }));
+
+            const { data: res } = await post('/api/ingredients/calculate-macros', {
+                ingredients: ingredientsToCalculate
             });
 
-            const result = data?.data || data;
+            const result = res?.data || res;
 
             if (result && result.macros) {
-                console.log('[MACRO-CALC] Updating frontend form with macros:', result);
+                console.log('[MACRO-CALC] Updating form with result:', result);
 
-                // Update using string path signature for React Hook Form / Formik
+                // Update kcal
                 onFormChange('kcal', result.kcal);
 
-                if (!values.macros) {
-                    onFormChange('macros', result.macros);
-                } else {
-                    onFormChange('macros.protein', result.macros.protein);
-                    onFormChange('macros.carbs', result.macros.carbs);
-                    onFormChange('macros.fat', result.macros.fat);
-                    onFormChange('macros.fiber', result.macros.fiber);
-                }
+                // Update macros object fields individually to ensure nested state updates
+                onFormChange('macros.protein', result.macros.protein);
+                onFormChange('macros.carbs', result.macros.carbs);
+                onFormChange('macros.fat', result.macros.fat);
+                onFormChange('macros.fiber', result.macros.fiber);
+            } else {
+                console.warn('[MACRO-CALC] No macros returned from API');
             }
         } catch (err) {
             console.error('[MACRO-CALC] Failed to calculate macros:', err);
@@ -94,7 +99,15 @@ const IngredientLookup = ({
     };
 
     const handleSelect = (selectedValue) => {
+        // Update the primary name field
         onChange({ target: { name, value: selectedValue, type: 'string' } });
+
+        // Update the hidden slug field if we find a match in the loaded options
+        const match = options.find((opt: any) => opt.name === selectedValue);
+        if (match && onFormChange && name.includes('.name')) {
+            const slugPath = name.replace('.name', '.slug');
+            onFormChange(slugPath, (match as any).slug);
+        }
     };
 
     return (

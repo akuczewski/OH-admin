@@ -11,6 +11,9 @@
             "required": true,
             "customField": "plugin::ingredient-lookup.ingredient"
         },
+        "slug": {
+            "type": "string"
+        },
         "amount": {
             "type": "decimal"
         },

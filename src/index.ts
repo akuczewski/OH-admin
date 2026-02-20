@@ -31,15 +31,23 @@ async function calculateRecipeMacros(data: any) {
     if (!ing.name || !ing.amount) continue;
 
     try {
-      const doc = await db.collection('ingredients').doc(ing.name).get();
+      // Try direct lookup by name as ID first
+      let doc = await db.collection('ingredients').doc(ing.name).get();
+      let nutrition = doc.data();
 
+      // If not found by ID, search by 'name' field
       if (!doc.exists) {
+        const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
+        if (!snapshot.empty) {
+          doc = snapshot.docs[0];
+          nutrition = doc.data() as any;
+        }
+      }
+
+      if (!doc.exists || !nutrition) {
         console.warn(`[MACRO-CALC] Ingredient not found in Firebase: ${ing.name}`);
         continue;
       }
-
-      const nutrition = doc.data();
-      if (!nutrition) continue;
 
       let factor = 0;
       const unit = ing.unit || 'g';
@@ -326,16 +334,42 @@ async function handleRecipeMacrosUpdate(id: number, documentId: string, recipeDa
 
     // Link the component row ID to the recipe ID via Strapi's polymorphic CMP table
     const knex = strapi.db.getConnection();
-    const existingLink = await knex('recipes_cmps')
+
+    // Attempt to resolve the correct pivot table name for components in Strapi 5
+    // In SQLite it's usually {content_type}_cmps, in Postgres it might be different.
+    // We'll check for recipes_cmps first, then fallback to recipes_components or use metadata
+    let pivotTable = 'recipes_cmps';
+
+    try {
+      const hasCmps = await knex.schema.hasTable('recipes_cmps');
+      if (!hasCmps) {
+        const hasComponents = await knex.schema.hasTable('recipes_components');
+        if (hasComponents) pivotTable = 'recipes_components';
+        else {
+          // Last resort: try to find any join table associated with the macros field
+          const metadata = strapi.db.metadata.get('api::recipe.recipe');
+          // @ts-ignore
+          const attr = metadata?.attributes?.macros;
+          // @ts-ignore
+          if (attr?.joinTable?.name) pivotTable = attr.joinTable.name;
+        }
+      }
+    } catch (e) {
+      console.warn('[MACRO-CALC] Error resolving pivot table name, defaulting to recipes_cmps');
+    }
+
+    console.log(`[MACRO-CALC] Using pivot table: ${pivotTable} for recipe ${id}`);
+
+    const existingLink = await knex(pivotTable)
       .where({ entity_id: id, field: 'macros', component_type: 'shared.macros' })
       .first();
 
     if (existingLink) {
-      await knex('recipes_cmps')
+      await knex(pivotTable)
         .where({ id: existingLink.id })
         .update({ cmp_id: macrosId });
     } else {
-      await knex('recipes_cmps').insert({
+      await knex(pivotTable).insert({
         entity_id: id,
         cmp_id: macrosId,
         component_type: 'shared.macros',

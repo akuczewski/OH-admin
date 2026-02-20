@@ -65,11 +65,20 @@ export default {
             if (!ing.name || !ing.amount) continue;
 
             try {
-                const doc = await db.collection('ingredients').doc(ing.name).get();
-                if (!doc.exists) continue;
+                // Try direct lookup by name as ID first
+                let doc = await db.collection('ingredients').doc(ing.name).get();
+                let nutrition = doc.data();
 
-                const nutrition = doc.data();
-                if (!nutrition) continue;
+                // If not found by ID, search by 'name' field
+                if (!doc.exists) {
+                    const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
+                    if (!snapshot.empty) {
+                        doc = snapshot.docs[0];
+                        nutrition = doc.data();
+                    }
+                }
+
+                if (!doc.exists || !nutrition) continue;
 
                 let factor = 0;
                 const unit = ing.unit || 'g';
