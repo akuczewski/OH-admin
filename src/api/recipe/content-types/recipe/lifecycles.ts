@@ -77,28 +77,77 @@ async function calculateRecipeMacros(data: any) {
         }
     }
 
-    // Update the data object
-    data.kcal = Math.round(totalKcal);
-    data.macros = {
-        protein: Math.round(totalProtein),
-        carbs: Math.round(totalCarbs),
-        fat: Math.round(totalFat),
-        fiber: Math.round(totalFiber),
+    // Return the calculated data instead of mutating
+    return {
+        kcal: Math.round(totalKcal),
+        macros: {
+            protein: Math.round(totalProtein),
+            carbs: Math.round(totalCarbs),
+            fat: Math.round(totalFat),
+            fiber: Math.round(totalFiber),
+        }
     };
-
-    console.log(`[MACRO-CALC] Final: ${data.kcal} kcal, P:${data.macros.protein}g, C:${data.macros.carbs}g, F:${data.macros.fat}g`);
 }
 
 export default {
-    async beforeCreate(event: any) {
-        await calculateRecipeMacros(event.params.data);
+    async afterCreate(event: any) {
+        const { result } = event;
+        if (!result || !result.ingredients) return;
+
+        const calculated = await calculateRecipeMacros(result);
+        if (calculated) {
+            try {
+                await strapi.documents('api::recipe.recipe').update({
+                    documentId: result.documentId,
+                    data: {
+                        kcal: calculated.kcal,
+                        macros: calculated.macros,
+                    },
+                });
+                console.log(`[MACRO-CALC] Successfully attached macros to new recipe ${result.documentId}`);
+            } catch (err) {
+                console.error('[MACRO-CALC] Failed to update recipe during afterCreate:', err);
+            }
+        }
     },
 
-    async beforeUpdate(event: any) {
-        // In beforeUpdate, event.params.data might be a partial update
-        // We only recalculate if ingredients are being updated
-        if (event.params.data.ingredients) {
-            await calculateRecipeMacros(event.params.data);
+    async afterUpdate(event: any) {
+        const { result, params } = event;
+        // Only run if ingredients were changed (they will be in params.data)
+        // or if the result itself has ingredients (meaning they were part of the update)
+        if (!result || (!params.data?.ingredients && !result.ingredients)) return;
+
+        // Use result for calculation as it contains the full, updated entry
+        const calculated = await calculateRecipeMacros(result);
+        if (calculated) {
+            // Check if values actually changed to prevent loop
+            const isSameKcal = result.kcal === calculated.kcal;
+            const isSameMacros = result.macros &&
+                result.macros.protein === calculated.macros.protein &&
+                result.macros.carbs === calculated.macros.carbs &&
+                result.macros.fat === calculated.macros.fat &&
+                result.macros.fiber === calculated.macros.fiber;
+
+            if (isSameKcal && isSameMacros) {
+                console.log(`[MACRO-CALC] Macros identical for ${result.documentId}, skipping update.`);
+                return;
+            }
+
+            try {
+                // Determine existing macro component ID if any
+                const existingMacros = result.macros ? { id: result.macros.id, ...calculated.macros } : calculated.macros;
+
+                await strapi.documents('api::recipe.recipe').update({
+                    documentId: result.documentId,
+                    data: {
+                        kcal: calculated.kcal,
+                        macros: existingMacros,
+                    },
+                });
+                console.log(`[MACRO-CALC] Successfully updated macros for recipe ${result.documentId}`);
+            } catch (err) {
+                console.error('[MACRO-CALC] Failed to update recipe during afterUpdate:', err);
+            }
         }
     },
 };
