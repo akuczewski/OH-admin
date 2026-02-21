@@ -1,6 +1,7 @@
 import { Search } from '@strapi/icons';
 // @ts-ignore
 import Input from './components/IngredientLookup';
+import RecipeImporterButton from './components/RecipeImporterButton';
 
 export default {
     register(app: any) {
@@ -37,7 +38,7 @@ export default {
 
         app.getPlugin('content-manager').injectComponent('listView', 'actions', {
             name: 'RecipeImporterButton',
-            Component: () => import('./components/RecipeImporterButton'),
+            Component: RecipeImporterButton,
         });
 
     },
