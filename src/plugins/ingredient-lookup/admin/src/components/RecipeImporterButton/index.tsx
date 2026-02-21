@@ -8,10 +8,12 @@ import {
 } from '@strapi/design-system';
 import { Download } from '@strapi/icons';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 // @ts-ignore
 import { useFetchClient } from '@strapi/admin/strapi-admin';
 
 const RecipeImporterButton = () => {
+    const location = useLocation();
     const [isRecipePage, setIsRecipePage] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [url, setUrl] = useState('');
@@ -22,8 +24,8 @@ const RecipeImporterButton = () => {
     const { post } = useFetchClient();
 
     useEffect(() => {
-        setIsRecipePage(window.location.pathname.includes('api::recipe.recipe'));
-    }, [window.location.pathname]);
+        setIsRecipePage(location.pathname.includes('api::recipe.recipe'));
+    }, [location]);
 
     if (!isRecipePage) {
         return null;
