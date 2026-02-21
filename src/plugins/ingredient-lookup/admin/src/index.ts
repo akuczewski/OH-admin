@@ -42,10 +42,7 @@ export default {
                 id: 'ingredient-lookup.menu.label',
                 defaultMessage: 'Smart Import',
             },
-            Component: async () => {
-                const { default: HomePage } = await import('./pages/HomePage');
-                return HomePage;
-            },
+            Component: () => import('./pages/HomePage'),
             permissions: [],
         });
 
