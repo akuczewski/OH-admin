@@ -7,14 +7,12 @@ import {
     Typography
 } from '@strapi/design-system';
 import { Download } from '@strapi/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 // @ts-ignore
 import { useFetchClient } from '@strapi/admin/strapi-admin';
 
 const RecipeImporterButton = () => {
-    // Only show this button on the Recipe collection page
-    const isRecipePage = window.location.pathname.includes('api::recipe.recipe');
-
+    const [isRecipePage, setIsRecipePage] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -22,6 +20,10 @@ const RecipeImporterButton = () => {
     const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
     const { post } = useFetchClient();
+
+    useEffect(() => {
+        setIsRecipePage(window.location.pathname.includes('api::recipe.recipe'));
+    }, [window.location.pathname]);
 
     if (!isRecipePage) {
         return null;
