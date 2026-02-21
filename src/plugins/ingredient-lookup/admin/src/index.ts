@@ -30,6 +30,11 @@ export default {
             },
         });
 
+        app.registerPlugin({
+            id: 'ingredient-lookup',
+            name: 'ingredient-lookup',
+        });
+
         app.addMenuLink({
             to: `/plugins/ingredient-lookup`,
             icon: Search,
@@ -41,6 +46,7 @@ export default {
                 const { default: HomePage } = await import('./pages/HomePage');
                 return HomePage;
             },
+            permissions: [],
         });
 
     },
