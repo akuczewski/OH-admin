@@ -1,3 +1,4 @@
+import { useFetchClient, useForm } from '@strapi/admin/strapi-admin'; // Correct Strapi 5 standard import
 import {
     Button,
     Combobox,
@@ -5,8 +6,6 @@ import {
     Field,
     Flex
 } from '@strapi/design-system';
-// @ts-ignore
-import { useFetchClient, useForm } from '@strapi/strapi/admin'; // Strapi 5 standard import
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 
@@ -28,8 +27,8 @@ export const Input = ({
 
     const [isCalculating, setIsCalculating] = useState(false);
 
-    // Grab the current form values and the change handler
-    const { values, onChange: onFormChange } = useForm();
+    // Grab the current form values and the change handler using Strapi 5's selector signature
+    const { values, onChange: onFormChange } = useForm('IngredientSearch', (state: any) => state);
 
     console.log('[MACRO-CALC V5.0 - STABILITY] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
 
@@ -109,7 +108,7 @@ export const Input = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC V5.0 - STABILITY] Auto-triggering calculation.');
+            console.log('[MACRO-CALC V5.2 - IMPORT FIX] Auto-triggering calculation.');
             handleCalculateMacros();
         }, 800); // Increased debounce slightly for stability
 
