@@ -31,25 +31,34 @@ async function calculateRecipeMacros(data: any) {
     if (!ing.name || !ing.amount) continue;
 
     try {
+      console.log(`[MACRO-CALC] Searching for ingredient: "${ing.name}"`);
       // Try direct lookup by name as ID first
       let doc = await db.collection('ingredients').doc(ing.name).get();
       let nutrition = doc.data();
 
       // If not found by ID, search by 'name' field
       if (!doc.exists) {
+        console.log(`[MACRO-CALC] Not found by ID "${ing.name}", searching by 'name' field...`);
         const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
         if (!snapshot.empty) {
           doc = snapshot.docs[0];
           nutrition = doc.data() as any;
+          console.log(`[MACRO-CALC] Found by 'name' field: "${ing.name}"`);
         }
       }
 
       if (!doc.exists || !nutrition) {
-        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase for name/ID: "${ing.name}"`);
+        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase: "${ing.name}"`);
         continue;
       }
 
-      console.log(`[MACRO-CALC] Found ingredient "${ing.name}":`, { kcal: nutrition.kcal, unitType: nutrition.unitType });
+      console.log(`[MACRO-CALC] Loaded data for "${ing.name}":`, {
+        kcal: nutrition.kcal,
+        unitType: nutrition.unitType,
+        protein: nutrition.protein,
+        carbs: nutrition.carbs,
+        fat: nutrition.fat
+      });
 
       let factor = 0;
       const unit = ing.unit || 'g';
@@ -274,35 +283,45 @@ export default {
         async beforeUpdate(event) {
           const { params } = event;
           if (uid === 'api::recipe.recipe') {
-            console.log('[MACRO-CALC] beforeUpdate: Triggered recalculation');
-            // We use a shallow copy to prevent modifying the original params.data prematurely
-            const payload = { ...params.data };
+            console.log('[MACRO-CALC] beforeUpdate: Fetching existing recipe for comparison');
 
-            // If ingredients are not in the payload, fetch them from the database
-            if (!payload.ingredients) {
-              try {
-                const existing = await strapi.db.query('api::recipe.recipe').findOne({
-                  where: params.where,
-                  populate: ['ingredients']
-                });
-                if (existing && existing.ingredients) {
-                  payload.ingredients = existing.ingredients;
-                  console.log(`[MACRO-CALC] beforeUpdate: Fetched ${existing.ingredients.length} existing ingredients from DB`);
+            try {
+              // We NEED to fetch existing macros ID for Strapi 5 to merge correctly
+              const existing = await strapi.db.query('api::recipe.recipe').findOne({
+                where: params.where,
+                populate: ['ingredients', 'macros']
+              });
+
+              const payload = { ...params.data };
+
+              // Use existing ingredients if not provided in update payload
+              if (!payload.ingredients && existing?.ingredients) {
+                payload.ingredients = existing.ingredients;
+                console.log(`[MACRO-CALC] beforeUpdate: Re-using ${existing.ingredients.length} existing ingredients`);
+              }
+
+              if (payload.ingredients && Array.isArray(payload.ingredients)) {
+                const calculated = await calculateRecipeMacros(payload);
+                if (calculated) {
+                  params.data.kcal = calculated.kcal;
+
+                  // CRITICAL: Include existing ID so Strapi 5 updates the same row instead of replacing
+                  if (existing?.macros?.id) {
+                    params.data.macros = {
+                      id: existing.macros.id,
+                      ...calculated.macros
+                    };
+                    console.log(`[MACRO-CALC] beforeUpdate: Merging with existing macros ID: ${existing.macros.id}`);
+                  } else {
+                    params.data.macros = calculated.macros;
+                    console.log('[MACRO-CALC] beforeUpdate: Creating new macros component');
+                  }
                 }
-              } catch (err) {
-                console.error('[MACRO-CALC] beforeUpdate: Failed to fetch existing ingredients:', err);
+              } else {
+                console.log('[MACRO-CALC] beforeUpdate: No ingredients available for calculation');
               }
-            }
-
-            if (payload.ingredients) {
-              const calculated = await calculateRecipeMacros(payload);
-              if (calculated) {
-                params.data.kcal = calculated.kcal;
-                params.data.macros = calculated.macros;
-                console.log(`[MACRO-CALC] beforeUpdate: Persistence successful. Kcal: ${calculated.kcal}`);
-              }
-            } else {
-              console.log('[MACRO-CALC] beforeUpdate: No ingredients found to calculate');
+            } catch (err) {
+              console.error('[MACRO-CALC] beforeUpdate error:', err);
             }
           }
         },

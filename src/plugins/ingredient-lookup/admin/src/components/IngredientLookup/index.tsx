@@ -58,19 +58,18 @@ const IngredientLookup = ({
             });
 
             const result = res?.data || res;
+            console.log('[MACRO-CALC] Full API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
-                console.log('[MACRO-CALC] Received macros from API:', result);
-
                 // Update kcal
-                console.log('[MACRO-CALC] Updating kcal to:', result.kcal);
+                console.log('[MACRO-CALC] Setting kcal:', result.kcal);
                 onFormChange('kcal', result.kcal);
 
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC] Updating macros object:', result.macros);
+                console.log('[MACRO-CALC] Setting macros object:', JSON.stringify(result.macros));
                 onFormChange('macros', result.macros);
             } else {
-                console.warn('[MACRO-CALC] No macros returned from API');
+                console.warn('[MACRO-CALC] API did not return valid macros structure:', result);
             }
         } catch (err) {
             console.error('[MACRO-CALC] Failed to calculate macros:', err);
