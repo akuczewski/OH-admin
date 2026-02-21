@@ -108,7 +108,7 @@ export const Input = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC V5.2 - IMPORT FIX] Auto-triggering calculation.');
+            console.log('[MACRO-CALC V5.3 - INTL FIX] Auto-triggering calculation.');
             handleCalculateMacros();
         }, 800); // Increased debounce slightly for stability
 
@@ -152,10 +152,22 @@ export const Input = ({
         }
     };
 
+    const label = intlLabel?.id
+        ? formatMessage(intlLabel)
+        : (intlLabel?.defaultMessage || name);
+
+    const hint = description?.id
+        ? formatMessage(description)
+        : (description?.defaultMessage || description || '');
+
+    const errorMessage = error?.id
+        ? formatMessage(error)
+        : (error?.defaultMessage || error || '');
+
     return (
-        <Field.Root name={name} id={name} error={error} hint={description} required={required}>
+        <Field.Root name={name} id={name} error={errorMessage} hint={hint} required={required}>
             <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
-                <Field.Label>{formatMessage(intlLabel)}</Field.Label>
+                <Field.Label>{label}</Field.Label>
                 {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
                     <Flex gap={2}>
                         <Button variant="tertiary" size="S" onClick={handleDebugForm}>
