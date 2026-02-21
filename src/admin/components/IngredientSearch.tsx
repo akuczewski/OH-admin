@@ -8,6 +8,7 @@ import {
 } from '@strapi/design-system';
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
+import { useDispatch } from 'react-redux';
 
 export const Input = ({
     name,
@@ -24,6 +25,7 @@ export const Input = ({
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(value || '');
     const { get, post } = useFetchClient();
+    const dispatch = useDispatch();
 
     const [isCalculating, setIsCalculating] = useState(false);
 
@@ -68,27 +70,41 @@ export const Input = ({
             console.log('[MACRO-CALC V5.0 - STABILITY] Full API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
+                // Determine form prefix: if this component is inside a dynamic zone or repeater, 'name' has a prefix.
+                // Assuming name is 'ingredients.0.name', the top level form is at the root.
+                // We dispatch globally.
+
+                const setFormValue = (keys: string, val: any) => {
+                    dispatch({
+                        type: 'ContentManager/CrudReducer/ON_CHANGE',
+                        keys,
+                        value: val,
+                    });
+                    // Also try the hook as a backup fallback
+                    if (onFormChange) onFormChange(keys, val);
+                };
+
                 // Update kcal
-                console.log('[MACRO-CALC V5.0 - STABILITY] Setting kcal:', result.kcal);
-                onFormChange('kcal', result.kcal);
+                console.log('[MACRO-CALC V5.4 - REDUX FIX] Setting kcal:', result.kcal);
+                setFormValue('kcal', result.kcal);
 
                 // Ensure macros object exists in state
                 if (!values.macros) {
-                    console.log('[MACRO-CALC V5.0 - STABILITY] Initializing macros object in form state');
-                    onFormChange('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
+                    console.log('[MACRO-CALC V5.4 - REDUX FIX] Initializing macros object in form state');
+                    setFormValue('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
                 }
 
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC V5.0 - STABILITY] Attempting to set macros object:', JSON.stringify(result.macros));
-                onFormChange('macros', result.macros);
+                console.log('[MACRO-CALC V5.4 - REDUX FIX] Attempting to set macros object:', JSON.stringify(result.macros));
+                setFormValue('macros', result.macros);
 
                 // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
-                onFormChange('macros.protein', result.macros.protein);
-                onFormChange('macros.carbs', result.macros.carbs);
-                onFormChange('macros.fat', result.macros.fat);
-                onFormChange('macros.fiber', result.macros.fiber);
+                setFormValue('macros.protein', result.macros.protein);
+                setFormValue('macros.carbs', result.macros.carbs);
+                setFormValue('macros.fat', result.macros.fat);
+                setFormValue('macros.fiber', result.macros.fiber);
 
-                console.log('[MACRO-CALC V5.0 - STABILITY] All form fields updated.');
+                console.log('[MACRO-CALC V5.4 - REDUX FIX] All form fields updated via Redux.');
             } else {
                 console.warn('[MACRO-CALC V5.0 - STABILITY] API did not return valid macros structure:', result);
             }
@@ -108,7 +124,7 @@ export const Input = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC V5.3 - INTL FIX] Auto-triggering calculation.');
+            console.log('[MACRO-CALC V5.4 - REDUX FIX] Auto-triggering calculation.');
             handleCalculateMacros();
         }, 800); // Increased debounce slightly for stability
 
