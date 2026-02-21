@@ -31,19 +31,19 @@ const IngredientLookup = ({
     // Grab the current form values and the change handler
     const { values, onChange: onFormChange } = useForm();
 
-    console.log('[MACRO-CALC V4.2] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
+    console.log('[MACRO-CALC V5.0 - STABILITY] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
 
     const handleDebugForm = () => {
-        console.log('--- [INGREDIENT-DEBUG V4.2] FORM STATE ---');
+        console.log('--- [INGREDIENT-DEBUG V5.0 - STABILITY] FORM STATE ---');
         console.log('Values:', JSON.stringify(values, null, 2));
         console.log('onFormChange exists:', !!onFormChange);
         console.log('-----------------------------------------');
     };
 
     const handleCalculateMacros = async () => {
-        console.log('[MACRO-CALC V4.2] Calculate triggered. Ingredients:', values?.ingredients?.length);
+        console.log('[MACRO-CALC V5.0 - STABILITY] Calculate triggered. Ingredients:', values?.ingredients?.length);
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
-            console.error('[MACRO-CALC V4.2] Cannot calculate: ', {
+            console.error('[MACRO-CALC V5.0 - STABILITY] Cannot calculate: ', {
                 hasIngredients: !!values.ingredients,
                 isArray: Array.isArray(values.ingredients),
                 hasOnChange: !!onFormChange
@@ -60,27 +60,27 @@ const IngredientLookup = ({
                 unit: ing.unit
             }));
 
-            console.log('[MACRO-CALC V4.2] Sending request to API...');
+            console.log('[MACRO-CALC V5.0 - STABILITY] Sending request to API...');
             const { data: res } = await post('/api/ingredients/calculate-macros', {
                 ingredients: ingredientsToCalculate
             });
 
             const result = res?.data || res;
-            console.log('[MACRO-CALC V4.2] Full API Response:', JSON.stringify(result));
+            console.log('[MACRO-CALC V5.0 - STABILITY] Full API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
                 // Update kcal
-                console.log('[MACRO-CALC V4.2] Setting kcal:', result.kcal);
+                console.log('[MACRO-CALC V5.0 - STABILITY] Setting kcal:', result.kcal);
                 onFormChange('kcal', result.kcal);
 
                 // Ensure macros object exists in state
                 if (!values.macros) {
-                    console.log('[MACRO-CALC V4.2] Initializing macros object in form state');
+                    console.log('[MACRO-CALC V5.0 - STABILITY] Initializing macros object in form state');
                     onFormChange('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
                 }
 
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC V4.2] Attempting to set macros object:', JSON.stringify(result.macros));
+                console.log('[MACRO-CALC V5.0 - STABILITY] Attempting to set macros object:', JSON.stringify(result.macros));
                 onFormChange('macros', result.macros);
 
                 // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
@@ -89,12 +89,16 @@ const IngredientLookup = ({
                 onFormChange('macros.fat', result.macros.fat);
                 onFormChange('macros.fiber', result.macros.fiber);
 
-                console.log('[MACRO-CALC V4.2] All form fields updated.');
+                console.log('[MACRO-CALC V5.0 - STABILITY] All form fields updated.');
             } else {
-                console.warn('[MACRO-CALC V4.2] API did not return valid macros structure:', result);
+                console.warn('[MACRO-CALC V5.0 - STABILITY] API did not return valid macros structure:', result);
             }
-        } catch (err) {
-            console.error('[MACRO-CALC V4.2] Failed to calculate macros:', err);
+        } catch (err: any) {
+            console.error('[MACRO-CALC V5.0 - STABILITY] Failed to calculate macros:', err);
+            // If the server is 503ing, give the user a clear hint
+            if (err.response?.status === 503) {
+                alert('Serwer jest przeciążony lub trwa restart (503). Spróbuj ponownie za 30 sekund.');
+            }
         } finally {
             setIsCalculating(false);
         }
@@ -105,7 +109,7 @@ const IngredientLookup = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC V4.2] Auto-triggering calculation.');
+            console.log('[MACRO-CALC V5.0 - STABILITY] Auto-triggering calculation.');
             handleCalculateMacros();
         }, 800); // Increased debounce slightly for stability
 
