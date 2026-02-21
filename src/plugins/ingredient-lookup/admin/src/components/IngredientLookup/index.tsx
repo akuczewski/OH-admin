@@ -31,12 +31,19 @@ const IngredientLookup = ({
     // Grab the current form values and the change handler
     const { values, onChange: onFormChange } = useForm();
 
-    console.log('[MACRO-CALC] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
+    console.log('[MACRO-CALC V4.2] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
+
+    const handleDebugForm = () => {
+        console.log('--- [INGREDIENT-DEBUG V4.2] FORM STATE ---');
+        console.log('Values:', JSON.stringify(values, null, 2));
+        console.log('onFormChange exists:', !!onFormChange);
+        console.log('-----------------------------------------');
+    };
 
     const handleCalculateMacros = async () => {
-        console.log('[MACRO-CALC] frontend Calculate button clicked. Values:', values);
+        console.log('[MACRO-CALC V4.2] Calculate triggered. Ingredients:', values?.ingredients?.length);
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
-            console.error('[MACRO-CALC] Cannot calculate: ', {
+            console.error('[MACRO-CALC V4.2] Cannot calculate: ', {
                 hasIngredients: !!values.ingredients,
                 isArray: Array.isArray(values.ingredients),
                 hasOnChange: !!onFormChange
@@ -53,20 +60,27 @@ const IngredientLookup = ({
                 unit: ing.unit
             }));
 
+            console.log('[MACRO-CALC V4.2] Sending request to API...');
             const { data: res } = await post('/api/ingredients/calculate-macros', {
                 ingredients: ingredientsToCalculate
             });
 
             const result = res?.data || res;
-            console.log('[MACRO-CALC] Full API Response:', JSON.stringify(result));
+            console.log('[MACRO-CALC V4.2] Full API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
                 // Update kcal
-                console.log('[MACRO-CALC] Setting kcal:', result.kcal);
+                console.log('[MACRO-CALC V4.2] Setting kcal:', result.kcal);
                 onFormChange('kcal', result.kcal);
 
+                // Ensure macros object exists in state
+                if (!values.macros) {
+                    console.log('[MACRO-CALC V4.2] Initializing macros object in form state');
+                    onFormChange('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
+                }
+
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC] Attempting to set macros object:', JSON.stringify(result.macros));
+                console.log('[MACRO-CALC V4.2] Attempting to set macros object:', JSON.stringify(result.macros));
                 onFormChange('macros', result.macros);
 
                 // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
@@ -75,12 +89,12 @@ const IngredientLookup = ({
                 onFormChange('macros.fat', result.macros.fat);
                 onFormChange('macros.fiber', result.macros.fiber);
 
-                console.log('[MACRO-CALC] All form fields updated.');
+                console.log('[MACRO-CALC V4.2] All form fields updated.');
             } else {
-                console.warn('[MACRO-CALC] API did not return valid macros structure:', result);
+                console.warn('[MACRO-CALC V4.2] API did not return valid macros structure:', result);
             }
         } catch (err) {
-            console.error('[MACRO-CALC] Failed to calculate macros:', err);
+            console.error('[MACRO-CALC V4.2] Failed to calculate macros:', err);
         } finally {
             setIsCalculating(false);
         }
@@ -91,9 +105,9 @@ const IngredientLookup = ({
         if (!values.ingredients || values.ingredients.length === 0) return;
 
         const timer = setTimeout(() => {
-            console.log('[MACRO-CALC] Auto-triggering calculation. Ingredients:', values.ingredients.length);
+            console.log('[MACRO-CALC V4.2] Auto-triggering calculation.');
             handleCalculateMacros();
-        }, 500); // Wait 500ms after last change (snappier)
+        }, 800); // Increased debounce slightly for stability
 
         return () => clearTimeout(timer);
     }, [JSON.stringify(values.ingredients)]);
@@ -140,9 +154,14 @@ const IngredientLookup = ({
             <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
                 <Field.Label>{formatMessage(intlLabel)}</Field.Label>
                 {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
-                    <Button variant="secondary" size="S" onClick={handleCalculateMacros} loading={isCalculating}>
-                        Przelicz makra
-                    </Button>
+                    <Flex gap={2}>
+                        <Button variant="tertiary" size="S" onClick={handleDebugForm}>
+                            DEBUG FORM
+                        </Button>
+                        <Button variant="secondary" size="S" onClick={handleCalculateMacros} loading={isCalculating}>
+                            Przelicz makra
+                        </Button>
+                    </Flex>
                 )}
             </Flex>
             <Combobox

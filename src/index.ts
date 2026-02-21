@@ -25,14 +25,14 @@ async function calculateRecipeMacros(data: any) {
   let totalFat = 0;
   let totalFiber = 0;
 
-  console.log(`[MACRO-CALC] Starting calculation for: ${data.name || 'Unknown'}. Ingredients:`, JSON.stringify(data.ingredients));
+  console.log(`[MACRO-CALC-V4] Starting calculation for: ${data.name || 'Unknown'}. Ingredients:`, JSON.stringify(data.ingredients));
 
   for (const ing of data.ingredients) {
     if (!ing.name || !ing.amount) continue;
 
     try {
       const searchId = ing.slug || ing.name;
-      console.log(`[MACRO-CALC] Searching for ingredient: "${searchId}" (name: "${ing.name}", slug: "${ing.slug}")`);
+      console.log(`[MACRO-CALC-V4] Searching for ingredient: "${searchId}" (name: "${ing.name}", slug: "${ing.slug}")`);
 
       // Try direct lookup by slug/name as ID
       let doc = await db.collection('ingredients').doc(searchId).get();
@@ -40,32 +40,32 @@ async function calculateRecipeMacros(data: any) {
 
       // Fallback: search by 'name' field
       if (!doc.exists) {
-        console.log(`[MACRO-CALC] Not found by ID "${searchId}", searching by 'name' field...`);
+        console.log(`[MACRO-CALC-V4] Not found by ID "${searchId}", searching by 'name' field...`);
         const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
         if (!snapshot.empty) {
           doc = snapshot.docs[0];
           nutrition = doc.data() as any;
-          console.log(`[MACRO-CALC] Found by 'name' field fallback: "${ing.name}"`);
+          console.log(`[MACRO-CALC-V4] Found by 'name' field fallback: "${ing.name}"`);
         }
       }
 
       // Secondary fallback: search by 'slug' field
       if (!doc.exists && ing.slug) {
-        console.log(`[MACRO-CALC] Still not found, searching by 'slug' field...`);
+        console.log(`[MACRO-CALC-V4] Still not found, searching by 'slug' field...`);
         const snapshot = await db.collection('ingredients').where('slug', '==', ing.slug).limit(1).get();
         if (!snapshot.empty) {
           doc = snapshot.docs[0];
           nutrition = doc.data() as any;
-          console.log(`[MACRO-CALC] Found by 'slug' field fallback: "${ing.slug}"`);
+          console.log(`[MACRO-CALC-V4] Found by 'slug' field fallback: "${ing.slug}"`);
         }
       }
 
       if (!doc.exists || !nutrition) {
-        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase: "${ing.name}" / "${ing.slug}"`);
+        console.warn(`[MACRO-CALC-V4] Ingredient NOT found in Firebase: "${ing.name}" / "${ing.slug}"`);
         continue;
       }
 
-      console.log(`[MACRO-CALC] Loaded nutrition for "${ing.name}":`, {
+      console.log(`[MACRO-CALC-V4] Loaded nutrition for "${ing.name}":`, {
         kcal: nutrition.kcal,
         protein: nutrition.protein,
         carbs: nutrition.carbs,
@@ -104,7 +104,7 @@ async function calculateRecipeMacros(data: any) {
       totalFiber += (nutrition.fiber || 0) * factor;
 
     } catch (err) {
-      console.error(`[MACRO-CALC] Error fetching ingredient ${ing.name}:`, err);
+      console.error(`[MACRO-CALC-V4] Error fetching ingredient ${ing.name}:`, err);
     }
   }
 
@@ -283,19 +283,19 @@ export default {
         async beforeCreate(event) {
           const { params } = event;
           if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
-            console.log('[MACRO-CALC] beforeCreate: Calculating macros atomicaly');
+            console.log('[MACRO-CALC-V4] beforeCreate: Calculating macros atomicaly');
             const calculated = await calculateRecipeMacros(params.data);
             if (calculated) {
               params.data.kcal = calculated.kcal;
               params.data.macros = calculated.macros;
-              console.log('[MACRO-CALC] beforeCreate: Set macros:', calculated);
+              console.log('[MACRO-CALC-V4] beforeCreate: Set macros:', calculated);
             }
           }
         },
         async beforeUpdate(event) {
           const { params } = event;
           if (uid === 'api::recipe.recipe') {
-            console.log('[MACRO-CALC] beforeUpdate: Fetching existing recipe for comparison');
+            console.log('[MACRO-CALC-V4] beforeUpdate: Fetching existing recipe for comparison');
 
             try {
               // We NEED to fetch existing macros ID for Strapi 5 to merge correctly
@@ -309,7 +309,7 @@ export default {
               // Use existing ingredients if not provided in update payload
               if (!payload.ingredients && existing?.ingredients) {
                 payload.ingredients = existing.ingredients;
-                console.log(`[MACRO-CALC] beforeUpdate: Re-using ${existing.ingredients.length} existing ingredients`);
+                console.log(`[MACRO-CALC-V4] beforeUpdate: Re-using ${existing.ingredients.length} existing ingredients`);
               }
 
               if (payload.ingredients && Array.isArray(payload.ingredients)) {

@@ -4,13 +4,12 @@ import Input from './components/IngredientLookup';
 
 export default {
     register(app: any) {
-        console.log('[PLUGIN-INGREDIENT] Registering custom field...');
+        console.log('--- [INGREDIENT-PLUGIN V4.2] REGISTERING ---');
 
         // Hard marker to prove code execution in the browser
         if (typeof window !== 'undefined') {
             (window as any).INGREDIENT_LOOKUP_LOADED = true;
-            // Un-comment the line below if you want a visual pop-up to be 100% sure
-            // alert('Ingredient Plugin Registered'); 
+            console.log('[INGREDIENT-PLUGIN V4.2] Window marker set.');
         }
 
         app.customFields.register({
