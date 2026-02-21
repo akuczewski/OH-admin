@@ -10,6 +10,8 @@
         "admin": "./strapi-admin",
         "server": "./strapi-server"
     },
-    "dependencies": {},
-    "devDependencies": {}
+    "dependencies": {
+        "axios": "^1.13.5",
+        "cheerio": "^1.2.0"
+    }
 }

@@ -1,127 +1,104 @@
-
+import { Core } from '@strapi/strapi';
 import axios from 'axios';
-import admin from 'firebase-admin';
-import { convert } from 'html-to-text';
-import OpenAI from 'openai';
+import * as cheerio from 'cheerio';
 
-export default ({ strapi }: { strapi: any }) => ({
-    async importFromUrl(url: string) {
-        const openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY,
-        });
+export default ({ strapi }: { strapi: Core.Strapi }) => ({
+    async fetchAndParseRecipe(url: string) {
+        try {
+            console.log(`[RECIPE-IMPORTER] Fetching URL: ${url}`);
 
-        // 1. Fetch and clean content
-        console.log(`[PLUGIN-IMPORT] Fetching: ${url}`);
-        const response = await axios.get(url, {
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            },
-            timeout: 15000
-        });
+            // 1. Fetch raw HTML
+            const response = await axios.get(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                }
+            });
+            const html = response.data;
+            const $ = cheerio.load(html);
 
-        const content = convert(response.data, {
-            wordwrap: 130,
-            selectors: [
-                { selector: 'a', options: { ignoreHref: true } },
-                { selector: 'img', format: 'skip' },
-                { selector: 'nav', format: 'skip' },
-                { selector: 'footer', format: 'skip' },
-                { selector: 'header', format: 'skip' },
-                { selector: 'script', format: 'skip' },
-                { selector: 'style', format: 'skip' },
-                { selector: 'aside', format: 'skip' }
-            ]
-        });
+            // 2. Look for Schema.org Recipe JSON-LD
+            let recipeData: any = null;
 
-        // 2. Get Ingredient Library (mapped from script logic)
-        const db = admin.firestore();
-        const snapshot = await db.collection('ingredients').get();
-        const library = snapshot.docs.map(doc => ({
-            name: doc.data().name,
-            slug: doc.id
-        }));
+            $('script[type="application/ld+json"]').each((_, element) => {
+                try {
+                    const jsonContent = $(element).html() || '';
+                    const parsed = JSON.parse(jsonContent);
 
-        const libraryText = library.map(ing => ing.name).join(', ');
+                    // JSON-LD can be an array or a single object. Sometimes it is nested in @graph.
+                    const arr = Array.isArray(parsed) ? parsed : (parsed['@graph'] || [parsed]);
 
-        // 3. AI Parsing
-        const prompt = `
-Jesteś ekspertem dietetykiem OH! Club. Twoim zadaniem jest przetworzenie podanego przepisu na ustrukturyzowany format JSON zgodny z naszym systemem.
+                    for (const item of arr) {
+                        if (item['@type'] === 'Recipe' || (Array.isArray(item['@type']) && item['@type'].includes('Recipe'))) {
+                            recipeData = item;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    // Ignore parse errors for individual blocks
+                }
+            });
 
-Dostępna baza składników:
-${libraryText}
+            if (!recipeData) {
+                // Fallback: Try to get basic OpenGraph tags if no Recipe schema exists
+                const ogTitle = $('meta[property="og:title"]').attr('content') || $('title').text();
+                const ogImage = $('meta[property="og:image"]').attr('content');
+                if (!ogTitle) {
+                    throw new Error('Nie znaleziono danych przepisu (Schema.org Recipe) pod tym adresem URL.');
+                }
 
-Instrukcje:
-1. Rozpoznaj składniki i dopasuj do bazy. Wybierz NAJBARDZIEJ PASUJĄCĄ nazwę z listy.
-2. Oblicz makroskładniki (kcal, białko, węgle, tłuszcz, błonnik) dla CAŁEGO przepisu.
-3. Jednostki: g, ml, szt, lyzka, lyzeczka, szklanka, szczypta, plaster, garstka, opakowanie.
-4. Przygotowanie: Markdown string.
-5. MealSlot: sniadanie, sniadanie-2, obiad, przekaska, kolacja.
-6. Pobierz autora/bloga.
+                recipeData = {
+                    name: ogTitle,
+                    image: ogImage ? [ogImage] : [],
+                    recipeIngredient: []
+                };
+            }
 
-Format:
-{
-  "name": "...",
-  "description": "...",
-  "kcal": 450,
-  "macros": { "protein": 20, "carbs": 50, "fat": 15, "fiber": 5 },
-  "ingredients": [ { "name": "DOKŁADNA NAZWA Z LISTY", "amount": 100, "unit": "g" } ],
-  "preparation": "...",
-  "prepTime": 20,
-  "servings": 1,
-  "mealSlot": "...",
-  "author": "..."
-}
+            console.log(`[RECIPE-IMPORTER] Found recipe: ${recipeData.name}, parsed ${recipeData.recipeIngredient?.length || 0} raw ingredients.`);
 
-Przepis:
-${content}
-Źródło: ${url}
-`;
-
-        const aiResponse = await openai.chat.completions.create({
-            model: "gpt-4o",
-            messages: [
-                { role: "system", content: "Jesteś asystentem API zwracającym tylko czysty JSON. Używaj tylko nazw z dostarczonej listy." },
-                { role: "user", content: prompt }
-            ],
-            response_format: { type: "json_object" }
-        });
-
-        const parsedData = JSON.parse(aiResponse.choices[0].message.content || '{}');
-
-        // 4. Normalize and Create Draft
-        if (parsedData.ingredients) {
-            parsedData.ingredients = parsedData.ingredients.map((ing: any) => {
-                const found = library.find(l => l.name.toLowerCase() === ing.name.toLowerCase());
+            // 3. Map raw strings to OH ingredients format
+            // In a real scenario we would do NLP or string matching against the 'ingredients' collection.
+            // For now, we wrap the raw strings in our ingredient component structure.
+            const mappedIngredients = (recipeData.recipeIngredient || []).map((rawStr: string) => {
+                // Simple heuristic: Try to split amount/unit from name
+                // "1 szklanka mąki" -> amount: "1", unit: "szklanka", name: "mąki"
+                // For MVP, we'll store the raw string in description and put a placeholder name
                 return {
-                    ...ing,
-                    name: found ? found.slug : ing.name
+                    name: rawStr, // the frontend or expert will fix mapping
+                    amount: 1, // default
+                    unit: 'g',
+                    description: rawStr
                 };
             });
-        }
 
-        // Map meal slots
-        const slotMap: Record<string, string> = {
-            'breakfast': 'sniadanie',
-            'lunch': 'obiad',
-            'dinner': 'kolacja',
-            'snack': 'przekaska',
-            'snack-2': 'sniadanie-2',
-            'breakfast-2': 'sniadanie-2'
-        };
-        if (slotMap[parsedData.mealSlot?.toLowerCase()]) {
-            parsedData.mealSlot = slotMap[parsedData.mealSlot.toLowerCase()];
-        }
-
-        // Use Strapi Document Service to create
-        const entry = await strapi.documents('api::recipe.recipe').create({
-            data: {
-                ...parsedData,
+            // 4. Create the Draft in Strapi Content-Manager
+            const entryData = {
+                name: recipeData.name,
                 sourceUrl: url,
-                publishedAt: null
-            },
-            status: 'draft'
-        });
+                servings: recipeData.recipeYield ? parseInt(String(recipeData.recipeYield)) : 1,
+                prepTime: recipeData.prepTime || null,
+                kcal: 0, // We'll let the user click 'Przelicz Makra' in the UI
+                ingredients: mappedIngredients,
+                // Add cover image URL as a simple text field if we want, or try to upload it 
+                // but downloading & uploading files is complex. We will ignore images for now to ensure stability.
+            };
 
-        return entry;
-    },
+            console.log('[RECIPE-IMPORTER] Creating draft in Strapi api::recipe.recipe...', entryData.name);
+
+            // Note: Strapi 5 uses documentId for the Document Service API
+            const createdDoc = await strapi.documents('api::recipe.recipe').create({
+                data: entryData,
+                status: 'draft'
+            });
+
+            return {
+                documentId: createdDoc.documentId,
+                title: createdDoc.name,
+                ingredientsFound: mappedIngredients.length,
+            };
+
+        } catch (error: any) {
+            console.error('[RECIPE-IMPORTER] Failed to fetch/parse:', error.message);
+            throw error;
+        }
+    }
 });
