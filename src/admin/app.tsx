@@ -8,7 +8,13 @@ export default {
         locales: ['pl'],
     },
     register(app: any) {
-        console.log('[IngredientLookup] Registering custom field...');
+        console.log('--- [INGREDIENT-PLUGIN V5.1 - STABILITY] REGISTERING ---');
+
+        // Hard marker to prove code execution in the browser
+        if (typeof window !== 'undefined') {
+            (window as any).INGREDIENT_LOOKUP_LOADED = true;
+            console.log('[INGREDIENT-PLUGIN V5.1 - STABILITY] Window marker set.');
+        }
 
         const fieldBase = {
             pluginId: 'ingredient-lookup',
