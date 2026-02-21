@@ -35,15 +35,9 @@ export default {
             name: 'ingredient-lookup',
         });
 
-        app.addMenuLink({
-            to: `/plugins/ingredient-lookup`,
-            icon: Search,
-            intlLabel: {
-                id: 'ingredient-lookup.menu.label',
-                defaultMessage: 'Smart Import',
-            },
-            Component: () => import('./pages/HomePage'),
-            permissions: [],
+        app.getPlugin('content-manager').injectComponent('listView', 'actions', {
+            name: 'RecipeImporterButton',
+            Component: () => import('./components/RecipeImporterButton'),
         });
 
     },
