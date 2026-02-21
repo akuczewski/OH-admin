@@ -11,6 +11,7 @@ export interface SharedIngredient extends Struct.ComponentSchema {
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<'plugin::ingredient-lookup.ingredient'>;
+    slug: Schema.Attribute.String;
     unit: Schema.Attribute.Enumeration<
       [
         'g',

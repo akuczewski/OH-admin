@@ -31,30 +31,42 @@ async function calculateRecipeMacros(data: any) {
     if (!ing.name || !ing.amount) continue;
 
     try {
-      console.log(`[MACRO-CALC] Searching for ingredient: "${ing.name}"`);
-      // Try direct lookup by name as ID first
-      let doc = await db.collection('ingredients').doc(ing.name).get();
+      const searchId = ing.slug || ing.name;
+      console.log(`[MACRO-CALC] Searching for ingredient: "${searchId}" (name: "${ing.name}", slug: "${ing.slug}")`);
+
+      // Try direct lookup by slug/name as ID
+      let doc = await db.collection('ingredients').doc(searchId).get();
       let nutrition = doc.data();
 
-      // If not found by ID, search by 'name' field
+      // Fallback: search by 'name' field
       if (!doc.exists) {
-        console.log(`[MACRO-CALC] Not found by ID "${ing.name}", searching by 'name' field...`);
+        console.log(`[MACRO-CALC] Not found by ID "${searchId}", searching by 'name' field...`);
         const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
         if (!snapshot.empty) {
           doc = snapshot.docs[0];
           nutrition = doc.data() as any;
-          console.log(`[MACRO-CALC] Found by 'name' field: "${ing.name}"`);
+          console.log(`[MACRO-CALC] Found by 'name' field fallback: "${ing.name}"`);
+        }
+      }
+
+      // Secondary fallback: search by 'slug' field
+      if (!doc.exists && ing.slug) {
+        console.log(`[MACRO-CALC] Still not found, searching by 'slug' field...`);
+        const snapshot = await db.collection('ingredients').where('slug', '==', ing.slug).limit(1).get();
+        if (!snapshot.empty) {
+          doc = snapshot.docs[0];
+          nutrition = doc.data() as any;
+          console.log(`[MACRO-CALC] Found by 'slug' field fallback: "${ing.slug}"`);
         }
       }
 
       if (!doc.exists || !nutrition) {
-        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase: "${ing.name}"`);
+        console.warn(`[MACRO-CALC] Ingredient NOT found in Firebase: "${ing.name}" / "${ing.slug}"`);
         continue;
       }
 
-      console.log(`[MACRO-CALC] Loaded data for "${ing.name}":`, {
+      console.log(`[MACRO-CALC] Loaded nutrition for "${ing.name}":`, {
         kcal: nutrition.kcal,
-        unitType: nutrition.unitType,
         protein: nutrition.protein,
         carbs: nutrition.carbs,
         fat: nutrition.fat

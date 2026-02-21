@@ -66,8 +66,16 @@ const IngredientLookup = ({
                 onFormChange('kcal', result.kcal);
 
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC] Setting macros object:', JSON.stringify(result.macros));
+                console.log('[MACRO-CALC] Attempting to set macros object:', JSON.stringify(result.macros));
                 onFormChange('macros', result.macros);
+
+                // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
+                onFormChange('macros.protein', result.macros.protein);
+                onFormChange('macros.carbs', result.macros.carbs);
+                onFormChange('macros.fat', result.macros.fat);
+                onFormChange('macros.fiber', result.macros.fiber);
+
+                console.log('[MACRO-CALC] All form fields updated.');
             } else {
                 console.warn('[MACRO-CALC] API did not return valid macros structure:', result);
             }
