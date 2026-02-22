@@ -8,8 +8,8 @@ import {
     TextInput,
     Typography
 } from '@strapi/design-system';
-// @ts-ignore
 import { Download } from '@strapi/icons';
+// @ts-ignore
 import { useFetchClient, useForm } from '@strapi/strapi/admin'; // Strapi 5 standard import
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
