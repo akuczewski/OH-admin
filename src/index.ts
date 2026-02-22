@@ -281,7 +281,7 @@ export default {
           }
         },
         async beforeUpdate(event) {
-          const { params } = event;
+          const { params, state } = event;
           if (uid === 'api::recipe.recipe') {
             console.log('[MACRO-CALC-V5] beforeUpdate: High-stability recalculation starting');
 
@@ -322,16 +322,16 @@ export default {
                 if (calculated) {
                   // Set values directly on params.data
                   params.data.kcal = calculated.kcal;
+                  state.calculatedMacros = calculated.macros;
 
                   if (existing.macros?.id) {
-                    params.data.macros = {
-                      id: existing.macros.id,
-                      ...calculated.macros
-                    };
-                    console.log(`[MACRO-CALC-V5] Merging with ID: ${existing.macros.id}`);
+                    state.existingMacrosId = existing.macros.id;
+                    // Delete macros from payload to prevent EntityManager from overwriting with frontend 0s
+                    delete params.data.macros;
+                    console.log(`[MACRO-CALC-V5] Scheduled forceful update for macros ID: ${existing.macros.id}`);
                   } else {
                     params.data.macros = calculated.macros;
-                    console.log('[MACRO-CALC-V5] Creating new macros component');
+                    console.log('[MACRO-CALC-V5] Creating new macros component attached to params');
                   }
                 }
               }
@@ -346,7 +346,30 @@ export default {
           await syncToFirestore(uid, result, 'create');
         },
         async afterUpdate(event) {
-          const { result } = event;
+          const { result, state } = event;
+
+          if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
+            try {
+              let macrosId = state.existingMacrosId;
+              if (!macrosId && result.macros?.id) {
+                macrosId = result.macros.id;
+              }
+
+              if (macrosId) {
+                await strapi.db.query('shared.macros').update({
+                  where: { id: macrosId },
+                  data: state.calculatedMacros
+                });
+                console.log('[MACRO-CALC-V5] Forcefully updated shared.macros in DB');
+              }
+            } catch (e) {
+              console.error('[MACRO-CALC-V5] Error forceful DB update for macros:', e);
+            }
+
+            // Inject correct macros into result for Firestore sync!
+            result.macros = state.calculatedMacros;
+          }
+
           await syncToFirestore(uid, result, 'update');
         },
         async afterDelete(event) {
