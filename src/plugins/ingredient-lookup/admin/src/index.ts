@@ -1,6 +1,4 @@
 import { Search } from '@strapi/icons';
-// @ts-ignore
-import Input from './components/IngredientLookup';
 import RecipeImporterButton from './components/RecipeImporterButton';
 
 export default {
@@ -27,7 +25,7 @@ export default {
             },
             icon: Search,
             components: {
-                Input: async () => Input,
+                Input: async () => import('./components/IngredientLookup'),
             },
         });
 

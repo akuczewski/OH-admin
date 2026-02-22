@@ -71,23 +71,23 @@ const IngredientLookup = ({
             if (result && result.macros) {
                 // Update kcal
                 console.log('[MACRO-CALC V5.0 - STABILITY] Setting kcal:', result.kcal);
-                onFormChange('kcal', result.kcal);
+                onFormChange({ target: { name: 'kcal', value: result.kcal, type: 'integer' } });
 
                 // Ensure macros object exists in state
                 if (!values.macros) {
                     console.log('[MACRO-CALC V5.0 - STABILITY] Initializing macros object in form state');
-                    onFormChange('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
+                    onFormChange({ target: { name: 'macros', value: { protein: 0, carbs: 0, fat: 0, fiber: 0 }, type: 'component' } });
                 }
 
                 // Update macros component as a single object to ensure Strapi 5 sees it correctly
                 console.log('[MACRO-CALC V5.0 - STABILITY] Attempting to set macros object:', JSON.stringify(result.macros));
-                onFormChange('macros', result.macros);
+                onFormChange({ target: { name: 'macros', value: result.macros, type: 'component' } });
 
                 // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
-                onFormChange('macros.protein', result.macros.protein);
-                onFormChange('macros.carbs', result.macros.carbs);
-                onFormChange('macros.fat', result.macros.fat);
-                onFormChange('macros.fiber', result.macros.fiber);
+                onFormChange({ target: { name: 'macros.protein', value: result.macros.protein, type: 'decimal' } });
+                onFormChange({ target: { name: 'macros.carbs', value: result.macros.carbs, type: 'decimal' } });
+                onFormChange({ target: { name: 'macros.fat', value: result.macros.fat, type: 'decimal' } });
+                onFormChange({ target: { name: 'macros.fiber', value: result.macros.fiber, type: 'decimal' } });
 
                 console.log('[MACRO-CALC V5.0 - STABILITY] All form fields updated.');
             } else {
@@ -149,7 +149,7 @@ const IngredientLookup = ({
         const match = options.find((opt: any) => opt.name === selectedValue);
         if (match && onFormChange && name.includes('.name')) {
             const slugPath = name.replace('.name', '.slug');
-            onFormChange(slugPath, (match as any).slug);
+            onFormChange({ target: { name: slugPath, value: (match as any).slug, type: 'string' } });
         }
     };
 
