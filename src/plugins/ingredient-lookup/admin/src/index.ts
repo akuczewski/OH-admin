@@ -5,12 +5,12 @@ import RecipeImporterButton from './components/RecipeImporterButton';
 
 export default {
     register(app: any) {
-        console.log('--- [INGREDIENT-PLUGIN V5.0 - STABILITY] REGISTERING ---');
+        console.log('--- [INGREDIENT-PLUGIN V5.2 - STABILITY] REGISTERING ---');
 
         // Hard marker to prove code execution in the browser
         if (typeof window !== 'undefined') {
             (window as any).INGREDIENT_LOOKUP_LOADED = true;
-            console.log('[INGREDIENT-PLUGIN V5.0 - STABILITY] Window marker set.');
+            console.log('[INGREDIENT-PLUGIN V5.2 - STABILITY] Window marker set.');
         }
 
         app.customFields.register({
@@ -36,11 +36,13 @@ export default {
             name: 'ingredient-lookup',
         });
 
+    },
+
+    bootstrap(app: any) {
         app.getPlugin('content-manager').injectComponent('listView', 'actions', {
             name: 'RecipeImporterButton',
             Component: RecipeImporterButton,
         });
-
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
