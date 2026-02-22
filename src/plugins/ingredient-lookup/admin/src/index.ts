@@ -39,7 +39,7 @@ export default {
     },
 
     bootstrap(app: any) {
-        app.getPlugin('content-manager').injectComponent('listView', 'actions', {
+        app.getPlugin('content-manager').injectComponent('editView', 'right-links', {
             name: 'RecipeImporterButton',
             Component: RecipeImporterButton,
         });

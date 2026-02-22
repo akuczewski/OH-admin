@@ -7,14 +7,13 @@ import {
     Typography
 } from '@strapi/design-system';
 import { Download } from '@strapi/icons';
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 // @ts-ignore
 import { useFetchClient } from '@strapi/admin/strapi-admin';
 
 const RecipeImporterButton = () => {
-    const location = useLocation();
-    const [isRecipePage, setIsRecipePage] = useState(false);
+    const { slug } = useParams<{ slug: string }>();
     const [isOpen, setIsOpen] = useState(false);
     const [url, setUrl] = useState('');
     const [isLoading, setIsLoading] = useState(false);
@@ -23,11 +22,7 @@ const RecipeImporterButton = () => {
 
     const { post } = useFetchClient();
 
-    useEffect(() => {
-        setIsRecipePage(location.pathname.includes('api::recipe.recipe'));
-    }, [location]);
-
-    if (!isRecipePage) {
+    if (slug !== 'api::recipe.recipe') {
         return null;
     }
 
@@ -39,13 +34,16 @@ const RecipeImporterButton = () => {
 
         try {
             const { data } = await post('/ingredient-lookup/import-url', { url });
-            setSuccessMsg(`Utworzono szkic: ${data.title} (${data.ingredientsFound} składników). Odśwież stronę.`);
+            setSuccessMsg(`Utworzono szkic: ${data.title} (${data.ingredientsFound} składników). Otwieranie...`);
             setUrl('');
 
-            // Auto-refresh after 2 seconds to show the new draft in the list
+            // Redirect to the newly created draft document
             setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+                const currentSegments = window.location.pathname.split('/');
+                currentSegments.pop(); // Remove "create" or the current document ID
+                currentSegments.push(data.documentId);
+                window.location.href = currentSegments.join('/');
+            }, 1500);
         } catch (err: any) {
             console.error('[RECIPE-IMPORTER] Error:', err);
             setError(err.response?.data?.error?.message || err.message || 'Wystąpił błąd pobierania.');
@@ -60,6 +58,7 @@ const RecipeImporterButton = () => {
                 variant="secondary"
                 startIcon={<Download />}
                 onClick={() => setIsOpen(true)}
+                fullWidth
             >
                 Importuj URL
             </Button>
