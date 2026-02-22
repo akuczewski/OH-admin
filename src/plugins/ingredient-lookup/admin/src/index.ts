@@ -1,6 +1,4 @@
 import { Search } from '@strapi/icons';
-// @ts-ignore
-import Input from './components/IngredientLookup';
 
 export default {
     register(app: any) {
