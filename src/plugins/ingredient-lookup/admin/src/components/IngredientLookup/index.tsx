@@ -2,10 +2,14 @@ import {
     Button,
     Combobox,
     ComboboxOption,
+    Dialog,
     Field,
-    Flex
+    Flex,
+    TextInput,
+    Typography
 } from '@strapi/design-system';
 // @ts-ignore
+import { Download } from '@strapi/icons';
 import { useFetchClient, useForm } from '@strapi/strapi/admin'; // Strapi 5 standard import
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
@@ -32,6 +36,42 @@ const IngredientLookup = ({
     const { values, onChange: onFormChange } = useForm();
 
     console.log('[MACRO-CALC V5.0 - STABILITY] Component Render. Values:', values, 'onChange exists:', !!onFormChange);
+
+    // Recipe Importer State
+    const [isImportOpen, setIsImportOpen] = useState(false);
+    const [importUrl, setImportUrl] = useState('');
+    const [isImporting, setIsImporting] = useState(false);
+    const [importError, setImportError] = useState<string | null>(null);
+    const [importSuccessMsg, setImportSuccessMsg] = useState<string | null>(null);
+
+    const isRecipePage = name.includes('ingredients'); // Simple check to ensure we only show import on Recipes
+
+
+    const handleImport = async () => {
+        if (!importUrl) return;
+        setIsImporting(true);
+        setImportError(null);
+        setImportSuccessMsg(null);
+
+        try {
+            const { data } = await post('/ingredient-lookup/import-url', { url: importUrl });
+            setImportSuccessMsg(`Utworzono szkic: ${data.title} (${data.ingredientsFound} składników). Otwieranie...`);
+            setImportUrl('');
+
+            // Redirect to the newly created draft document
+            setTimeout(() => {
+                const currentSegments = window.location.pathname.split('/');
+                currentSegments.pop(); // Remove "create" or the current document ID
+                currentSegments.push(data.documentId);
+                window.location.href = currentSegments.join('/');
+            }, 1500);
+        } catch (err: any) {
+            console.error('[RECIPE-IMPORTER] Error:', err);
+            setImportError(err.response?.data?.error?.message || err.message || 'Wystąpił błąd pobierania.');
+        } finally {
+            setIsImporting(false);
+        }
+    };
 
     const handleDebugForm = () => {
         console.log('--- [INGREDIENT-DEBUG V5.0 - STABILITY] FORM STATE ---');
@@ -159,11 +199,13 @@ const IngredientLookup = ({
                 <Field.Label>{formatMessage(intlLabel)}</Field.Label>
                 {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
                     <Flex gap={2}>
-                        <Button variant="tertiary" size="S" onClick={handleDebugForm}>
-                            DEBUG FORM
-                        </Button>
-                        <Button variant="secondary" size="S" onClick={handleCalculateMacros} loading={isCalculating}>
-                            Przelicz makra
+                        <Button
+                            variant="secondary"
+                            size="S"
+                            startIcon={<Download />}
+                            onClick={() => setIsImportOpen(true)}
+                        >
+                            Importuj URL
                         </Button>
                     </Flex>
                 )}
@@ -184,6 +226,48 @@ const IngredientLookup = ({
             </Combobox>
             <Field.Hint />
             <Field.Error />
+
+            {/* Recipe Import Dialog */}
+            {isRecipePage && (
+                <Dialog.Root open={isImportOpen} onOpenChange={setIsImportOpen}>
+                    <Dialog.Content>
+                        <Dialog.Header>Narzędzie Importu Przepisu</Dialog.Header>
+                        <Dialog.Body>
+                            <Flex direction="column" alignItems="stretch" gap={4}>
+                                <Typography variant="omega">
+                                    Wklej adres URL przepisu (np. z Kwestia Smaku, Moje Wypieki), a system spróbuje pobrać składniki i wygenerować Szkic przepisu.
+                                </Typography>
+
+                                <Field.Root name="recipe-url" error={importError}>
+                                    <Field.Label>Adres URL Przepisu</Field.Label>
+                                    <TextInput
+                                        placeholder="https://www.kwestiasmaku.com/przepis/..."
+                                        value={importUrl}
+                                        onChange={(e: any) => setImportUrl(e.target.value)}
+                                    />
+                                    <Field.Error />
+                                </Field.Root>
+
+                                {importSuccessMsg && (
+                                    <Typography variant="pi" textColor="success600" fontWeight="bold">
+                                        {importSuccessMsg}
+                                    </Typography>
+                                )}
+                            </Flex>
+                        </Dialog.Body>
+                        <Dialog.Footer>
+                            <Dialog.Cancel>
+                                <Button variant="tertiary" onClick={() => setIsImportOpen(false)}>Anuluj</Button>
+                            </Dialog.Cancel>
+                            <Dialog.Action>
+                                <Button onClick={handleImport} loading={isImporting} disabled={!importUrl || !!importSuccessMsg}>
+                                    Pobierz i Stwórz Szkic
+                                </Button>
+                            </Dialog.Action>
+                        </Dialog.Footer>
+                    </Dialog.Content>
+                </Dialog.Root>
+            )}
         </Field.Root>
     );
 };

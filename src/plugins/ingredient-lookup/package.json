@@ -1,6 +1,6 @@
 {
     "name": "ingredient-lookup",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "description": "Custom ingredient lookup plugin for OH! Club",
     "strapi": {
         "name": "ingredient-lookup",
