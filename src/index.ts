@@ -303,6 +303,18 @@ export default {
               if (!payload.ingredients && existing.ingredients) {
                 payload.ingredients = existing.ingredients;
                 console.log(`[MACRO-CALC-V5] Re-using ${existing.ingredients.length} existing ingredients`);
+              } else if (payload.ingredients && Array.isArray(payload.ingredients) && existing.ingredients) {
+                // Merge partial updates with existing ingredients to ensure we have all fields for calculation
+                payload.ingredients = payload.ingredients.map((incomingIng: any) => {
+                  if (incomingIng.id) {
+                    const existingIng = existing.ingredients.find((ei: any) => ei.id === incomingIng.id);
+                    if (existingIng) {
+                      return { ...existingIng, ...incomingIng };
+                    }
+                  }
+                  return incomingIng;
+                });
+                console.log(`[MACRO-CALC-V5] Merged ${payload.ingredients.length} ingredients from payload with existing data`);
               }
 
               if (payload.ingredients && Array.isArray(payload.ingredients)) {
