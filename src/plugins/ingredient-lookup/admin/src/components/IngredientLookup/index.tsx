@@ -194,38 +194,40 @@ const IngredientLookup = ({
     };
 
     return (
-        <Field.Root name={name} id={name} error={error} hint={description} required={required}>
-            <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
-                <Field.Label>{formatMessage(intlLabel)}</Field.Label>
-                {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
-                    <Flex gap={2}>
-                        <Button
-                            variant="secondary"
-                            size="S"
-                            startIcon={<Download />}
-                            onClick={() => setIsImportOpen(true)}
-                        >
-                            Importuj URL
-                        </Button>
-                    </Flex>
-                )}
-            </Flex>
-            <Combobox
-                placeholder="Zacznij pisać nazwę składnika..."
-                disabled={disabled}
-                value={value}
-                onChange={handleSelect}
-                onInputChange={handleInputChange}
-                loading={isLoading}
-            >
-                {options.map((opt: any) => (
-                    <ComboboxOption key={opt.slug} value={opt.name}>
-                        {opt.name} ({opt.category})
-                    </ComboboxOption>
-                ))}
-            </Combobox>
-            <Field.Hint />
-            <Field.Error />
+        <>
+            <Field.Root name={name} id={name} error={error} hint={description} required={required}>
+                <Flex justifyContent="space-between" alignItems="center" marginBottom={1}>
+                    <Field.Label>{formatMessage(intlLabel)}</Field.Label>
+                    {(name?.startsWith('ingredients.') && name?.endsWith('.name')) && (
+                        <Flex gap={2}>
+                            <Button
+                                variant="secondary"
+                                size="S"
+                                startIcon={<Download />}
+                                onClick={() => setIsImportOpen(true)}
+                            >
+                                Importuj URL
+                            </Button>
+                        </Flex>
+                    )}
+                </Flex>
+                <Combobox
+                    placeholder="Zacznij pisać nazwę składnika..."
+                    disabled={disabled}
+                    value={value}
+                    onChange={handleSelect}
+                    onInputChange={handleInputChange}
+                    loading={isLoading}
+                >
+                    {options.map((opt: any) => (
+                        <ComboboxOption key={opt.slug} value={opt.name}>
+                            {opt.name} ({opt.category})
+                        </ComboboxOption>
+                    ))}
+                </Combobox>
+                <Field.Hint />
+                <Field.Error />
+            </Field.Root>
 
             {/* Recipe Import Dialog */}
             {isRecipePage && (
@@ -268,7 +270,7 @@ const IngredientLookup = ({
                     </Dialog.Content>
                 </Dialog.Root>
             )}
-        </Field.Root>
+        </>
     );
 };
 
