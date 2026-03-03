@@ -236,11 +236,13 @@ export default {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
+      console.log(`[FIREBASE-DEBUG] ${action.toUpperCase()} entry in ${uid}. Result keys: ${Object.keys(result).join(', ')}`);
+
       const getDocId = (res: any) => res.documentId || res.document_id || res.id;
       const docId = getDocId(result);
 
       if (!docId) {
-        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found. Result keys: ${Object.keys(result).join(', ')}`);
+        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found.`);
         return;
       }
 
@@ -258,6 +260,7 @@ export default {
 
       try {
         const isPublished = result.status === 'published' || !!result.publishedAt || !!result.published_at;
+        console.log(`[FIREBASE-DEBUG] docId: ${docId}, isPublished: ${isPublished}, result.status: ${result.status}`);
 
         if (action === 'delete' || (!isPublished && action === 'update')) {
           // If action is delete OR item is no longer published, remove from Firestore
@@ -281,7 +284,7 @@ export default {
           delete dataToSync.updatedBy;
 
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
-          console.log(`[FIREBASE] Synced ${action} to ${collectionName}: ${docId} (isPublished: ${isPublished})`);
+          console.log(`[FIREBASE] SUCCESS Synced ${action} to ${collectionName}: ${docId}`);
         } else {
           console.log(`[FIREBASE] Skipping sync for ${collectionName}: ${docId} (draft status)`);
         }
