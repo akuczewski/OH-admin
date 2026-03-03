@@ -255,7 +255,6 @@ export default {
           return;
         }
 
-        // Detect if item is published
         const isPublished = !!(
           result.publishedAt ||
           result.published_at ||
@@ -263,10 +262,17 @@ export default {
           action === 'publish'
         );
 
-        console.log(`[FIREBASE-DEBUG] Status check for ${docId}: isPublished=${isPublished}, action=${action}`);
+        console.log(`[FIREBASE-DEBUG] Result keys: ${Object.keys(result).join(',')}`);
+        if ((result as any).attributes) {
+          console.log(`[FIREBASE-DEBUG] Nested attributes found: ${Object.keys((result as any).attributes).join(',')}`);
+        }
 
         if (isPublished) {
-          const dataToSync = { ...result };
+          let dataToSync = { ...result };
+          if ((result as any).attributes) {
+            dataToSync = { ...dataToSync, ...(result as any).attributes };
+            delete (dataToSync as any).attributes;
+          }
 
           // Flatten relations for the mobile app
           const handleRelations = (key: string, targetKey: string) => {
@@ -292,6 +298,8 @@ export default {
 
           dataToSync.updatedAt = new Date().toISOString();
           dataToSync.source = 'strapi';
+
+          console.log(`[FIREBASE-DEBUG] Syncing ${collectionName}/${docId} with data keys: ${Object.keys(dataToSync).join(',')}`);
 
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
           console.log(`[FIREBASE-DEBUG] SUCCESS: Full sync completed for ${collectionName}/${docId}`);
