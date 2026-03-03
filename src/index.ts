@@ -255,10 +255,10 @@ export default {
         let dataToSync: any = null;
 
         try {
-          // Document Service findOne with all relations
+          // Document Service findOne with explicit population for relations
           const fullDoc = await strapi.documents(uid as any).findOne({
             documentId: docId,
-            populate: '*',
+            populate: ['*', 'profiles', 'phases', 'assignedProfiles', 'assignedPhases'],
           });
 
           if (fullDoc) {
@@ -308,6 +308,8 @@ export default {
                 const item = p.attributes || p;
                 return item.slug || item.name || item.documentId || item.id || item;
               });
+            } else if (val && typeof val === 'object' && val.count !== undefined) {
+              console.warn(`[FIREBASE-DEBUG] Relation "${key}" is still a COUNT object after refetch on ${docId}.`);
             }
           };
 
