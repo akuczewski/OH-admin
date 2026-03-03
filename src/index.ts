@@ -255,31 +255,30 @@ export default {
         let dataToSync: any = null;
 
         try {
+          console.log(`[FIREBASE-DEBUG] REFETCHING ${uid}/${docId} with DocService...`);
           // Document Service findOne with explicit population for relations
           const fullDoc = await strapi.documents(uid as any).findOne({
             documentId: docId as string,
-            populate: {
-              profiles: true,
-              assignedProfiles: true,
-              image: true,
-              entries: {
-                populate: '*'
-              }
-            },
+            populate: ['profiles', 'image', 'entries'],
           });
 
           if (fullDoc) {
             dataToSync = { ...fullDoc };
+            console.log(`[FIREBASE-DEBUG] DocService result keys:`, Object.keys(dataToSync).join(','));
+            console.log(`[FIREBASE-DEBUG] Profiles raw:`, JSON.stringify(dataToSync.profiles));
 
             // Fallback for relations if still count objects (Strapi 5 quirk)
-            if (dataToSync.profiles?.count !== undefined || dataToSync.assignedProfiles?.count !== undefined) {
-              console.log(`[FIREBASE-DEBUG] Relations still unpopulated for ${docId}, trying entityService fallback...`);
+            if (dataToSync.profiles?.count !== undefined) {
+              console.log(`[FIREBASE-DEBUG] Relations still unpopulated (count=${dataToSync.profiles.count}). Trying EntityService fallback...`);
               try {
                 // @ts-ignore
                 const entity = await strapi.entityService.findOne(uid, (fullDoc as any).id, {
-                  populate: ['profiles', 'assignedProfiles', 'entries']
+                  populate: ['profiles', 'image', 'entries']
                 });
-                if (entity) dataToSync = { ...dataToSync, ...entity };
+                if (entity) {
+                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Profiles:`, JSON.stringify(entity.profiles));
+                  dataToSync = { ...dataToSync, ...entity };
+                }
               } catch (err) {
                 console.error(`[FIREBASE-DEBUG] Fallback fetch failed:`, err);
               }
