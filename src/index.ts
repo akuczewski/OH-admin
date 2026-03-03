@@ -352,12 +352,13 @@ export default {
             if (Array.isArray(val)) {
               dataToSync[targetKey] = val.map((p: any) => {
                 const item = p.attributes || p;
+                if (typeof item === 'string') return item;
                 return item.slug || item.name || item.documentId || item.id || item;
               });
-              // Clean up original key if it was a technical relation name
               if (key !== targetKey) delete dataToSync[key];
+              console.log(`[FIREBASE-DEBUG] Mapped ${key} -> ${targetKey}:`, JSON.stringify(dataToSync[targetKey]));
             } else if (val && typeof val === 'object' && val.count !== undefined) {
-              console.warn(`[FIREBASE-DEBUG] Relation "${key}" is still a COUNT object after refetch on ${docId}. DELETING to prevent app bugs.`);
+              console.warn(`[FIREBASE-DEBUG] Relation "${key}" is still a COUNT object on ${docId}. DELETING.`);
               delete dataToSync[key];
               if (!dataToSync[targetKey]) dataToSync[targetKey] = [];
             }
@@ -368,8 +369,12 @@ export default {
           handleRelations('phases', 'assignedPhases');
           handleRelations('assignedPhases', 'assignedPhases');
 
+          // Ensure backward compatibility and secondary keys
           if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
             dataToSync.assignedPhases = [dataToSync.assignedPhase];
+          }
+          if (dataToSync.assignedProfile && !dataToSync.assignedProfiles) {
+            dataToSync.assignedProfiles = [dataToSync.assignedProfile];
           }
 
           // 5. Cleanup
