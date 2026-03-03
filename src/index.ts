@@ -254,29 +254,40 @@ export default {
         // 2. Resolve Full Data (Strapi 5 Document Service)
         let dataToSync: any = null;
 
+        const POPULATE_MAP: Record<string, string[]> = {
+          'api::habit.habit': ['profiles', 'image'],
+          'api::skin-care.skin-care': ['image'],
+          'api::training.training': ['thumbnail'],
+          'api::recipe.recipe': ['image', 'profiles'],
+          'api::profile.profile': ['image']
+        };
+
+        const populateFields = POPULATE_MAP[uid] || ['image'];
+
         try {
-          console.log(`[FIREBASE-DEBUG] REFETCHING ${uid}/${docId} with DocService...`);
+          console.log(`[FIREBASE-DEBUG] REFETCHING ${uid}/${docId} (Populate: ${populateFields.join(',')})`);
+
           // Document Service findOne with explicit population for relations
           const fullDoc = await strapi.documents(uid as any).findOne({
             documentId: docId as string,
-            populate: ['profiles', 'image', 'entries'],
+            populate: populateFields,
           });
 
           if (fullDoc) {
             dataToSync = { ...fullDoc };
             console.log(`[FIREBASE-DEBUG] DocService result keys:`, Object.keys(dataToSync).join(','));
-            console.log(`[FIREBASE-DEBUG] Profiles raw:`, JSON.stringify(dataToSync.profiles));
 
             // Fallback for relations if still count objects (Strapi 5 quirk)
-            if (dataToSync.profiles?.count !== undefined) {
-              console.log(`[FIREBASE-DEBUG] Relations still unpopulated (count=${dataToSync.profiles.count}). Trying EntityService fallback...`);
+            const hasProfiles = 'profiles' in dataToSync;
+            if (hasProfiles && dataToSync.profiles?.count !== undefined) {
+              console.log(`[FIREBASE-DEBUG] Profiles still unpopulated (count=${dataToSync.profiles.count}). Trying EntityService fallback...`);
               try {
                 // @ts-ignore
                 const entity = await strapi.entityService.findOne(uid, (fullDoc as any).id, {
-                  populate: ['profiles', 'image', 'entries']
+                  populate: populateFields
                 });
                 if (entity) {
-                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Profiles:`, JSON.stringify((entity as any).profiles));
+                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Keys:`, Object.keys(entity).join(','));
                   dataToSync = { ...dataToSync, ...entity };
                 }
               } catch (err) {
