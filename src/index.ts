@@ -232,17 +232,17 @@ export default {
       'api::instruction.instruction': 'instructions',
     };
 
-    const syncToFirestore = async (uid: string, result: any, action: 'create' | 'update' | 'delete') => {
+    const syncToFirestore = async (uid: string, result: any, action: 'create' | 'update' | 'delete' | 'publish' | 'unpublish') => {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
-      console.log(`[FIREBASE-DEBUG] ${action.toUpperCase()} entry in ${uid}. Result keys: ${Object.keys(result).join(', ')}`);
+      console.log(`[FIREBASE-DEBUG] ${action.toUpperCase()} entry in ${uid}.`);
 
       const getDocId = (res: any) => res.documentId || res.document_id || res.id;
       const docId = getDocId(result);
 
       if (!docId) {
-        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found.`);
+        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found. Keys: ${Object.keys(result).join(', ')}`);
         return;
       }
 
@@ -255,19 +255,22 @@ export default {
         if (Array.isArray(flat.assignedPhases)) {
           flat.assignedPhases = flat.assignedPhases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
         }
+        if (Array.isArray(flat.profiles)) {
+          flat.assignedProfiles = flat.profiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+        }
         return flat;
       };
 
       try {
-        const isPublished = result.status === 'published' || !!result.publishedAt || !!result.published_at;
-        console.log(`[FIREBASE-DEBUG] docId: ${docId}, isPublished: ${isPublished}, result.status: ${result.status}`);
+        const isPublished = action === 'publish' || result.status === 'published' || !!result.publishedAt || !!result.published_at;
+        console.log(`[FIREBASE-DEBUG] docId: ${docId}, determined isPublished: ${isPublished}, action: ${action}`);
 
-        if (action === 'delete' || (!isPublished && action === 'update')) {
-          // If action is delete OR item is no longer published, remove from Firestore
+        if (action === 'delete' || action === 'unpublish' || (!isPublished && action === 'update')) {
+          // If action is delete/unpublish OR item is no longer published, remove from Firestore
           await db.collection(collectionName).doc(docId).delete();
-          console.log(`[FIREBASE] Deleted/Unpublished from ${collectionName}: ${docId}`);
+          console.log(`[FIREBASE] SUCCESS Deleted ${docId} from ${collectionName}`);
         } else if (isPublished) {
-          // For create/update, sync data ONLY if it is published
+          // For create/update/publish, sync data
           let dataToSync = {
             ...result,
             updatedAt: new Date().toISOString(),
@@ -282,11 +285,13 @@ export default {
           delete dataToSync.document_id;
           delete dataToSync.createdBy;
           delete dataToSync.updatedBy;
+          delete dataToSync.publishedAt;
+          delete dataToSync.published_at;
 
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
-          console.log(`[FIREBASE] SUCCESS Synced ${action} to ${collectionName}: ${docId}`);
+          console.log(`[FIREBASE] SUCCESS Synced ${docId} to ${collectionName}`);
         } else {
-          console.log(`[FIREBASE] Skipping sync for ${collectionName}: ${docId} (draft status)`);
+          console.log(`[FIREBASE] IGNORED ${docId} in ${collectionName} (Draft state)`);
         }
       } catch (error) {
         console.error(`[FIREBASE] Sync error for ${collectionName} (${docId}):`, error);
@@ -376,21 +381,16 @@ export default {
           let entityToSync = result;
           try {
             const docId = (result as any).documentId || (result as any).id;
-            // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
-            const populated = await strapi.documents(uid as any).findOne({
-              documentId: docId,
-              populate: '*',
-            });
+            const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
             if (populated) {
               entityToSync = populated;
-              // If we calculated macros on creation, force inject them for Firebase!
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
                 (entityToSync as any).macros = state.calculatedMacros;
                 (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
               }
             }
           } catch (e) {
-            console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
+            console.error(`[FIREBASE] Failed to populate ${uid} afterCreate:`, e);
           }
           await syncToFirestore(uid, entityToSync, 'create');
         },
@@ -422,22 +422,16 @@ export default {
           let entityToSync = result;
           try {
             const docId = (result as any).documentId || (result as any).id;
-            // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
-            const populated = await strapi.documents(uid as any).findOne({
-              documentId: docId,
-              populate: '*',
-            });
-            // Protect manually calculated macros on recipes, otherwise use populated
+            const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
             if (populated) {
               entityToSync = populated;
-              // If we just calculated fresh macros for this update, push them to Firebase overriding DB state
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
                 (entityToSync as any).macros = state.calculatedMacros;
                 (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
               }
             }
           } catch (e) {
-            console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
+            console.error(`[FIREBASE] Failed to populate ${uid} afterUpdate:`, e);
           }
 
           await syncToFirestore(uid, entityToSync, 'update');
@@ -446,11 +440,27 @@ export default {
           const { result } = event;
           await syncToFirestore(uid, result, 'delete');
         },
+        // Strapi 5 Publish/Unpublish hooks
+        // @ts-ignore
+        async afterPublish(event) {
+          console.log(`[FIREBASE-DEBUG] Detected afterPublish via DB lifecycle for ${uid}`);
+          const { result } = event;
+          const docId = (result as any).documentId || (result as any).id;
+          const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
+          await syncToFirestore(uid, populated || result, 'publish');
+        },
+        // @ts-ignore
+        async afterUnpublish(event) {
+          console.log(`[FIREBASE-DEBUG] Detected afterUnpublish via DB lifecycle for ${uid}`);
+          const { result } = event;
+          await syncToFirestore(uid, result, 'unpublish');
+        }
       });
     });
 
     console.log('[FIREBASE] Sync lifecycles registered for all content types.');
   },
 };
+
 
 
