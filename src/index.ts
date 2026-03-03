@@ -244,10 +244,16 @@ export default {
         return;
       }
 
-      // 2. Resolve Full Data (Strapi 5 Document Service)
-      let dataToSync: any = null;
+      try {
+        if (action === 'delete' || action === 'unpublish') {
+          await db.collection(collectionName).doc(docId).delete();
+          console.log(`[FIREBASE-DEBUG] DELETED: ${collectionName}/${docId}`);
+          return;
+        }
 
-      if (action !== 'delete' && action !== 'unpublish') {
+        // 2. Resolve Full Data (Strapi 5 Document Service)
+        let dataToSync: any = null;
+
         try {
           // Document Service findOne with all relations
           const fullDoc = await strapi.documents(uid as any).findOne({
@@ -257,7 +263,6 @@ export default {
 
           if (fullDoc) {
             dataToSync = { ...fullDoc };
-            console.log(`[FIREBASE-DEBUG] Full document refetched for ${docId}. Keys: ${Object.keys(dataToSync).join(',')}`);
           } else {
             console.warn(`[FIREBASE-DEBUG] Document NOT FOUND during refetch: ${uid}/${docId}`);
             dataToSync = { ...result }; // Fallback to initial result
@@ -266,125 +271,120 @@ export default {
           console.error(`[FIREBASE-DEBUG] Error refetching document ${docId}:`, e);
           dataToSync = { ...result };
         }
-      }
 
-      if (action === 'delete' || action === 'unpublish') {
-        await db.collection(collectionName).doc(docId).delete();
-        console.log(`[FIREBASE-DEBUG] DELETED: ${collectionName}/${docId}`);
-        return;
-      }
+        if (!dataToSync) return;
 
-      if (!dataToSync) return;
-
-      // Flatten Data Wrappers 
-      if (dataToSync.data) {
-        dataToSync = { ...dataToSync, ...dataToSync.data };
-        delete dataToSync.data;
-      }
-      if (dataToSync.attributes) {
-        dataToSync = { ...dataToSync, ...dataToSync.attributes };
-        delete dataToSync.attributes;
-      }
-
-      // 3. Status check
-      const isPublished = !!(
-        dataToSync.publishedAt ||
-        dataToSync.published_at ||
-        dataToSync.status === 'published' ||
-        action === 'publish'
-      );
-
-      if (isPublished) {
-        // 4. Flatten Relations
-        const handleRelations = (key: string, targetKey: string) => {
-          const val = dataToSync[key];
-          if (Array.isArray(val)) {
-            dataToSync[targetKey] = val.map((p: any) => {
-              const item = p.attributes || p;
-              return item.slug || item.name || item.documentId || item.id || item;
-            });
-          }
-        };
-
-        handleRelations('profiles', 'assignedProfiles');
-        handleRelations('assignedProfiles', 'assignedProfiles');
-        handleRelations('phases', 'assignedPhases');
-        handleRelations('assignedPhases', 'assignedPhases');
-
-        if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
-          dataToSync.assignedPhases = [dataToSync.assignedPhase];
+        // Flatten Data Wrappers 
+        if (dataToSync.data) {
+          dataToSync = { ...dataToSync, ...dataToSync.data };
+          delete dataToSync.data;
+        }
+        if (dataToSync.attributes) {
+          dataToSync = { ...dataToSync, ...dataToSync.attributes };
+          delete dataToSync.attributes;
         }
 
-        // 5. Cleanup
-        const junk = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status', 'locale', 'localizations'];
-        junk.forEach(f => delete dataToSync[f]);
-
-        dataToSync.updatedAt = new Date().toISOString();
-        dataToSync.source = 'strapi';
-
-        console.log(`[FIREBASE-DEBUG] SENDING to ${collectionName}/${docId}:`, Object.keys(dataToSync).join(', '));
-        await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
-      } else {
-        console.log(`[FIREBASE-DEBUG] IGNORED (Draft): ${docId}`);
-      }
-    } catch (error) {
-      console.error(`[FIREBASE-DEBUG] SYNC ERROR:`, error);
-    }
-  };
-
-  // --- 4. Strapi 5 Document Service Middleware ---
-  // @ts-ignore
-  strapi.documents.use(async (context, next) => {
-    const { uid, action, params } = context;
-    const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
-
-    // A. Pre-operation (Recipe Macros)
-    if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
-      try {
-        if (params.data?.ingredients) {
-          const calculated = await calculateRecipeMacros(params.data);
-          if (calculated) {
-            params.data.kcal = calculated.kcal;
-            params.data.macros = calculated.macros;
-          }
+        // Handle "entries" array IF present (common in some Strapi patterns)
+        if (Array.isArray(dataToSync.entries) && dataToSync.entries.length > 0) {
+          console.log(`[FIREBASE-DEBUG] Flattening entries[0] for ${docId}`);
+          dataToSync = { ...dataToSync, ...dataToSync.entries[0] };
+          delete dataToSync.entries;
         }
-      } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
-    }
 
-    // B. Execute
-    const result = await next();
+        // 3. Status check
+        const isPublished = !!(
+          dataToSync.publishedAt ||
+          dataToSync.published_at ||
+          dataToSync.status === 'published' ||
+          action === 'publish'
+        );
 
-    // C. Post-operation (Sync)
-    if (collectionName) {
-      (async () => {
+        if (isPublished) {
+          // 4. Flatten Relations
+          const handleRelations = (key: string, targetKey: string) => {
+            const val = dataToSync[key];
+            if (Array.isArray(val)) {
+              dataToSync[targetKey] = val.map((p: any) => {
+                const item = p.attributes || p;
+                return item.slug || item.name || item.documentId || item.id || item;
+              });
+            }
+          };
+
+          handleRelations('profiles', 'assignedProfiles');
+          handleRelations('assignedProfiles', 'assignedProfiles');
+          handleRelations('phases', 'assignedPhases');
+          handleRelations('assignedPhases', 'assignedPhases');
+
+          if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
+            dataToSync.assignedPhases = [dataToSync.assignedPhase];
+          }
+
+          // 5. Cleanup
+          const junk = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status', 'locale', 'localizations'];
+          junk.forEach(f => delete dataToSync[f]);
+
+          dataToSync.updatedAt = new Date().toISOString();
+          dataToSync.source = 'strapi';
+
+          console.log(`[FIREBASE-DEBUG] SENDING to ${collectionName}/${docId}:`, Object.keys(dataToSync).join(', '));
+          await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
+        } else {
+          console.log(`[FIREBASE-DEBUG] IGNORED (Draft): ${docId}`);
+        }
+      } catch (error) {
+        console.error(`[FIREBASE-DEBUG] SYNC ERROR:`, error);
+      }
+    };
+
+    // --- 4. Strapi 5 Document Service Middleware ---
+    // @ts-ignore
+    strapi.documents.use(async (context, next) => {
+      const { uid, action, params } = context;
+      const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
+
+      // A. Pre-operation (Recipe Macros)
+      if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
         try {
-          console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
-
-          if (action === 'delete' || action === 'unpublish') {
-            const docId = (params as any).documentId || (result as any)?.documentId || (result as any)?.id;
-            if (docId) await syncToFirestore(uid, { documentId: docId }, action);
-            return;
-          }
-
-          if (['create', 'update', 'publish'].includes(action)) {
-            const docId = (result as any)?.documentId || (params as any).documentId || (result as any)?.id;
-            if (docId) {
-              const populated = await strapi.documents(uid as any).findOne({
-                documentId: String(docId),
-                status: (action === 'publish' || (result as any)?.publishedAt || (result as any)?.status === 'published') ? 'published' : 'draft',
-                populate: '*'
-              }).catch(() => null);
-
-              await syncToFirestore(uid, populated || result, action);
+          if (params.data?.ingredients) {
+            const calculated = await calculateRecipeMacros(params.data);
+            if (calculated) {
+              params.data.kcal = calculated.kcal;
+              params.data.macros = calculated.macros;
             }
           }
-        } catch (e) { console.error('[FIREBASE-DEBUG] Middleware post-hook error:', e); }
-      })();
-    }
+        } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
+      }
 
-    return result;
-  });
+      // B. Execute
+      const result = await next();
 
-  console.log('[FIREBASE] Document Service Middleware registered.');
-},
+      // C. Post-operation (Sync)
+      if (collectionName) {
+        (async () => {
+          try {
+            console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
+
+            if (action === 'delete' || action === 'unpublish') {
+              const docId = (params as any).documentId || (result as any)?.documentId || (result as any)?.id;
+              if (docId) await syncToFirestore(uid, { documentId: docId }, action);
+              return;
+            }
+
+            if (['create', 'update', 'publish'].includes(action)) {
+              const docId = (result as any)?.documentId || (params as any).documentId || (result as any)?.id;
+              if (docId) {
+                // We sync the final result after it's been processed
+                await syncToFirestore(uid, result, action);
+              }
+            }
+          } catch (e) { console.error('[FIREBASE-DEBUG] Middleware post-hook error:', e); }
+        })();
+      }
+
+      return result;
+    });
+
+    console.log('[FIREBASE] Document Service Middleware registered.');
+  },
 };
