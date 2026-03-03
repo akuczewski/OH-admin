@@ -234,7 +234,15 @@ export default {
 
     const syncToFirestore = async (uid: string, result: any, action: 'create' | 'update' | 'delete') => {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
-      if (!collectionName) return;
+      if (!collectionName || !result) return;
+
+      const getDocId = (res: any) => res.documentId || res.document_id || res.id;
+      const docId = getDocId(result);
+
+      if (!docId) {
+        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found. Result keys: ${Object.keys(result).join(', ')}`);
+        return;
+      }
 
       // Extract slugs for relation arrays if they are populated as objects
       const flattenRelations = (data: any) => {
@@ -249,33 +257,36 @@ export default {
       };
 
       try {
-        if (action === 'delete') {
-          // Use the Strapi documentId for deletion in Firestore
-          await db.collection(collectionName).doc(result.documentId).delete();
-          console.log(`[FIREBASE] Deleted from ${collectionName}: ${result.documentId}`);
+        const isPublished = result.status === 'published' || !!result.publishedAt || !!result.published_at;
+
+        if (action === 'delete' || (!isPublished && action === 'update')) {
+          // If action is delete OR item is no longer published, remove from Firestore
+          await db.collection(collectionName).doc(docId).delete();
+          console.log(`[FIREBASE] Deleted/Unpublished from ${collectionName}: ${docId}`);
+        } else if (isPublished) {
+          // For create/update, sync data ONLY if it is published
+          let dataToSync = {
+            ...result,
+            updatedAt: new Date().toISOString(),
+            source: 'strapi',
+          };
+
+          dataToSync = flattenRelations(dataToSync);
+
+          // Clean up Strapi-specific fields
+          delete dataToSync.id;
+          delete dataToSync.documentId;
+          delete dataToSync.document_id;
+          delete dataToSync.createdBy;
+          delete dataToSync.updatedBy;
+
+          await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
+          console.log(`[FIREBASE] Synced ${action} to ${collectionName}: ${docId} (isPublished: ${isPublished})`);
         } else {
-          // For create/update, sync the data
-          // We only sync 'published' content to avoid showing drafts in the app
-          if (result.status === 'published' || result.publishedAt) {
-            let dataToSync = {
-              ...result,
-              updatedAt: new Date().toISOString(),
-              source: 'strapi',
-            };
-
-            dataToSync = flattenRelations(dataToSync);
-
-            // Delete unnecessary Strapi fields before syncing to Firestore
-            delete dataToSync.id;
-            delete dataToSync.createdBy;
-            delete dataToSync.updatedBy;
-
-            await db.collection(collectionName).doc(result.documentId).set(dataToSync, { merge: true });
-            console.log(`[FIREBASE] Synced ${action} to ${collectionName}: ${result.documentId}`);
-          }
+          console.log(`[FIREBASE] Skipping sync for ${collectionName}: ${docId} (draft status)`);
         }
       } catch (error) {
-        console.error(`[FIREBASE] Sync error for ${collectionName}:`, error);
+        console.error(`[FIREBASE] Sync error for ${collectionName} (${docId}):`, error);
       }
     };
 
@@ -361,9 +372,10 @@ export default {
           const { result, state } = event;
           let entityToSync = result;
           try {
+            const docId = (result as any).documentId || (result as any).id;
             // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
             const populated = await strapi.documents(uid as any).findOne({
-              documentId: result.documentId,
+              documentId: docId,
               populate: '*',
             });
             if (populated) {
@@ -406,9 +418,10 @@ export default {
 
           let entityToSync = result;
           try {
+            const docId = (result as any).documentId || (result as any).id;
             // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
             const populated = await strapi.documents(uid as any).findOne({
-              documentId: (result as any).documentId,
+              documentId: docId,
               populate: '*',
             });
             // Protect manually calculated macros on recipes, otherwise use populated
