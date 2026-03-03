@@ -237,51 +237,59 @@ export default {
       if (!collectionName || !result) return;
 
       // Extract documentId (UUID) or internal ID fallback
-      const docId = result.documentId || result.document_id || (typeof result.id === 'string' ? result.id : null);
+      let docId = result.documentId || result.document_id;
+
+      if (!docId && result.id) {
+        // Fallback: Use numeric ID if documentId is missing
+        docId = String(result.id);
+      }
+
       if (!docId) {
-        console.log(`[FIREBASE] Skipping sync for ${uid}: No UUID found. Keys: ${Object.keys(result).join(', ')}`);
+        console.warn(`[FIREBASE] FATAL skipping sync for ${uid}: No ID found. Actions: ${action}. Keys: ${Object.keys(result).join(', ')}`);
         return;
       }
 
+      console.log(`[FIREBASE] Starting sync for ${collectionName}/${docId}. Action: ${action}`);
+
       try {
-        if (action === 'delete') {
+        if (action === 'delete' || action === 'unpublish') {
           await db.collection(collectionName).doc(docId).delete();
           console.log(`[FIREBASE] Deleted ${docId} from ${collectionName}`);
           return;
         }
 
-        // Detect if item is published
-        const isPublished = !!(result.publishedAt || result.published_at || result.status === 'published' || action === 'publish');
+        // Detect if item is published - look for ANY truthy publish indicator
+        const isPublished = !!(
+          result.publishedAt ||
+          result.published_at ||
+          result.status === 'published' ||
+          action === 'publish'
+        );
 
         if (isPublished) {
           const dataToSync = { ...result };
 
           // Flatten relations for the mobile app
-          if (Array.isArray(dataToSync.profiles)) {
-            dataToSync.assignedProfiles = dataToSync.profiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-          } else if (Array.isArray(dataToSync.assignedProfiles)) {
-            dataToSync.assignedProfiles = dataToSync.assignedProfiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-          }
+          const handleRelations = (key: string, targetKey: string) => {
+            if (Array.isArray(dataToSync[key])) {
+              dataToSync[targetKey] = dataToSync[key].map((p: any) =>
+                typeof p === 'string' ? p : (p.slug || p.name || p.id || p)
+              );
+            }
+          };
 
-          if (Array.isArray(dataToSync.phases)) {
-            dataToSync.assignedPhases = dataToSync.phases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-          } else if (Array.isArray(dataToSync.assignedPhases)) {
-            dataToSync.assignedPhases = dataToSync.assignedPhases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-          }
+          handleRelations('profiles', 'assignedProfiles');
+          handleRelations('assignedProfiles', 'assignedProfiles');
+          handleRelations('phases', 'assignedPhases');
+          handleRelations('assignedPhases', 'assignedPhases');
 
-          // Singular field fallback
           if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
             dataToSync.assignedPhases = [dataToSync.assignedPhase];
           }
 
           // Cleanup Strapi fields
-          delete dataToSync.id;
-          delete dataToSync.documentId;
-          delete dataToSync.document_id;
-          delete dataToSync.createdBy;
-          delete dataToSync.updatedBy;
-          delete dataToSync.publishedAt;
-          delete dataToSync.published_at;
+          const fieldsToDelete = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status'];
+          fieldsToDelete.forEach(f => delete dataToSync[f]);
 
           dataToSync.updatedAt = new Date().toISOString();
           dataToSync.source = 'strapi';
@@ -289,10 +297,10 @@ export default {
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
           console.log(`[FIREBASE] SUCCESS Synced ${docId} to ${collectionName}`);
         } else {
-          console.log(`[FIREBASE] Info: ${docId} in ${collectionName} is draft, skipping sync.`);
+          console.log(`[FIREBASE] Info: ${docId} in ${collectionName} is DRAFT, skipping.`);
         }
       } catch (error) {
-        console.error(`[FIREBASE] Sync error for ${collectionName} (${docId}):`, error);
+        console.error(`[FIREBASE] ERROR for ${collectionName}/${docId}:`, error);
       }
     };
 
@@ -337,12 +345,16 @@ export default {
         async afterCreate(event) {
           const { result, state } = event;
           try {
-            const docId = result.documentId || result.document_id || result.id;
-            const populated = await strapi.documents(uid as any).findOne({ documentId: String(docId), populate: '*' });
+            const ident = result.documentId || result.id;
+            const populated = await strapi.documents(uid as any).findOne({
+              documentId: String(ident),
+              populate: '*'
+            }).catch(() => null);
+
             if (populated) {
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
                 (populated as any).macros = state.calculatedMacros;
-                (populated as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+                if (!(populated as any).kcal) (populated as any).kcal = (state.calculatedMacros as any).kcal;
               }
               await syncToFirestore(uid, populated, 'create');
             } else {
@@ -357,33 +369,27 @@ export default {
 
           if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
             try {
-              let macrosId = state.existingMacrosId;
-              if (!macrosId && (result as any).macros?.id) {
-                macrosId = (result as any).macros.id;
-              }
-
+              let macrosId = state.existingMacrosId || (result as any).macros?.id;
               if (macrosId) {
                 await strapi.db.query('shared.macros').update({
                   where: { id: macrosId },
                   data: state.calculatedMacros
                 });
-                console.log('[MACRO-CALC-V5] Forcefully updated shared.macros in DB');
               }
-            } catch (e) {
-              console.error('[MACRO-CALC-V5] Error forceful DB update for macros:', e);
-            }
-
-            // Inject correct macros into result for Firebase sync!
-            (result as any).macros = state.calculatedMacros;
+            } catch (e) { console.error('[FIREBASE] DB Macro update error:', e); }
           }
 
           try {
-            const docId = result.documentId || result.document_id || result.id;
-            const populated = await strapi.documents(uid as any).findOne({ documentId: String(docId), populate: '*' });
+            const ident = result.documentId || result.id;
+            const populated = await strapi.documents(uid as any).findOne({
+              documentId: String(ident),
+              populate: '*'
+            }).catch(() => null);
+
             if (populated) {
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
                 (populated as any).macros = state.calculatedMacros;
-                (populated as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+                if (!(populated as any).kcal) (populated as any).kcal = (state.calculatedMacros as any).kcal;
               }
               await syncToFirestore(uid, populated, 'update');
             } else {
@@ -394,8 +400,23 @@ export default {
           }
         },
         async afterDelete(event) {
+          await syncToFirestore(uid, event.result, 'delete');
+        },
+        // @ts-ignore
+        async afterPublish(event) {
+          console.log(`[FIREBASE] afterPublish detected for ${uid}`);
           const { result } = event;
-          await syncToFirestore(uid, result, 'delete');
+          const ident = result.documentId || result.id;
+          const populated = await strapi.documents(uid as any).findOne({
+            documentId: String(ident),
+            populate: '*'
+          }).catch(() => null);
+          await syncToFirestore(uid, populated || result, 'publish');
+        },
+        // @ts-ignore
+        async afterUnpublish(event) {
+          console.log(`[FIREBASE] afterUnpublish detected for ${uid}`);
+          await syncToFirestore(uid, event.result, 'unpublish');
         }
       });
     });
