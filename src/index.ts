@@ -125,6 +125,10 @@ export default {
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    console.log('##################################################');
+    console.log('###  OH-ADMIN FIREBASE SYNC BOOTSTRAP STARTING ###');
+    console.log('##################################################');
+
     // --- 1. Seed Profiles ---
     const profiles = [
       { name: 'Opanuj Cukier', slug: 'opanuj-cukier', description: 'Program skupiony na stabilizacji poziomu glukozy i insuliny.', mainColor: '#E9D5CA' },
@@ -151,8 +155,6 @@ export default {
           status: 'published',
         });
         console.log(`[SEED] Created profile: ${data.name}`);
-      } else {
-        console.log(`[SEED] Profile already exists: ${data.name}`);
       }
     }
 
@@ -175,18 +177,6 @@ export default {
             status: 'published',
           });
           console.log('[SEED] Expert Tutorial seeded successfully.');
-        } else {
-          // Update tutorial if it already exists to keep it in sync
-          // @ts-ignore
-          await strapi.documents('api::instruction.instruction').update({
-            documentId: existingInstruction.documentId,
-            data: {
-              // @ts-ignore
-              content,
-            },
-            status: 'published',
-          });
-          console.log('[SEED] Expert Tutorial updated.');
         }
       }
     } catch (error) {
@@ -236,25 +226,32 @@ export default {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
-      // Extract documentId (UUID) or internal ID fallback
+      console.log(`[FIREBASE-DEBUG] >>> TRACING SYNC: Action=${action}, UID=${uid}`);
+
+      // Robust UUID (documentId) extraction for Strapi 5
       let docId = result.documentId || result.document_id;
 
+      // If we only have a numeric ID (which is common in DB lifecycles), FETCH the document to get its UUID
       if (!docId && result.id) {
-        // Fallback: Use numeric ID if documentId is missing
-        docId = String(result.id);
+        try {
+          const dbRow = await strapi.db.query(uid).findOne({ where: { id: result.id } });
+          docId = dbRow?.documentId || dbRow?.document_id || String(result.id);
+          console.log(`[FIREBASE-DEBUG] Resolved numeric ID ${result.id} to UUID: ${docId}`);
+        } catch (e) {
+          docId = String(result.id);
+          console.warn(`[FIREBASE-DEBUG] Failed to resolve UUID for numeric ID ${result.id}, using numeric as fallback.`);
+        }
       }
 
       if (!docId) {
-        console.warn(`[FIREBASE] FATAL skipping sync for ${uid}: No ID found. Actions: ${action}. Keys: ${Object.keys(result).join(', ')}`);
+        console.warn(`[FIREBASE-DEBUG] FAIL: No ID could be found for ${uid}. Keys: ${Object.keys(result).join(',')}`);
         return;
       }
-
-      console.log(`[FIREBASE] Starting sync for ${collectionName}/${docId}. Action: ${action}`);
 
       try {
         if (action === 'delete' || action === 'unpublish') {
           await db.collection(collectionName).doc(docId).delete();
-          console.log(`[FIREBASE] Deleted ${docId} from ${collectionName}`);
+          console.log(`[FIREBASE-DEBUG] SUCCESS: Deleted ${collectionName}/${docId}`);
           return;
         }
 
@@ -266,6 +263,8 @@ export default {
           action === 'publish'
         );
 
+        console.log(`[FIREBASE-DEBUG] Status check for ${docId}: isPublished=${isPublished}, status=${result.status}`);
+
         if (isPublished) {
           const dataToSync = { ...result };
 
@@ -273,7 +272,7 @@ export default {
           const handleRelations = (key: string, targetKey: string) => {
             if (Array.isArray(dataToSync[key])) {
               dataToSync[targetKey] = dataToSync[key].map((p: any) =>
-                typeof p === 'string' ? p : (p.slug || p.name || p.id || p)
+                typeof p === 'string' ? p : (p.slug || p.name || p.documentId || p.id || p)
               );
             }
           };
@@ -287,20 +286,20 @@ export default {
             dataToSync.assignedPhases = [dataToSync.assignedPhase];
           }
 
-          // Cleanup Strapi fields
-          const fieldsToDelete = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status'];
-          fieldsToDelete.forEach(f => delete dataToSync[f]);
+          // Cleanup Strapi fields to avoid pollution
+          const junk = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status', 'locale', 'localizations'];
+          junk.forEach(f => delete dataToSync[f]);
 
           dataToSync.updatedAt = new Date().toISOString();
           dataToSync.source = 'strapi';
 
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
-          console.log(`[FIREBASE] SUCCESS Synced ${docId} to ${collectionName}`);
+          console.log(`[FIREBASE-DEBUG] SUCCESS: Full sync completed for ${collectionName}/${docId}`);
         } else {
-          console.log(`[FIREBASE] Info: ${docId} in ${collectionName} is DRAFT, skipping.`);
+          console.log(`[FIREBASE-DEBUG] IGNORED: ${docId} is DRAFT.`);
         }
       } catch (error) {
-        console.error(`[FIREBASE] ERROR for ${collectionName}/${docId}:`, error);
+        console.error(`[FIREBASE-DEBUG] CRITICAL ERROR for ${collectionName}/${docId}:`, error);
       }
     };
 
@@ -339,15 +338,16 @@ export default {
                   else params.data.macros = calculated.macros;
                 }
               }
-            } catch (err) { console.error('[FIREBASE] Macro calc error:', err); }
+            } catch (err) { }
           }
         },
         async afterCreate(event) {
           const { result, state } = event;
+          console.log(`[FIREBASE-HOOK] afterCreate triggered for ${uid}`);
           try {
-            const ident = result.documentId || result.id;
+            const docId = result.documentId || result.document_id || result.id;
             const populated = await strapi.documents(uid as any).findOne({
-              documentId: String(ident),
+              documentId: String(docId),
               populate: '*'
             }).catch(() => null);
 
@@ -366,6 +366,7 @@ export default {
         },
         async afterUpdate(event) {
           const { result, state } = event;
+          console.log(`[FIREBASE-HOOK] afterUpdate triggered for ${uid}`);
 
           if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
             try {
@@ -376,13 +377,13 @@ export default {
                   data: state.calculatedMacros
                 });
               }
-            } catch (e) { console.error('[FIREBASE] DB Macro update error:', e); }
+            } catch (e) { }
           }
 
           try {
-            const ident = result.documentId || result.id;
+            const docId = result.documentId || result.document_id || result.id;
             const populated = await strapi.documents(uid as any).findOne({
-              documentId: String(ident),
+              documentId: String(docId),
               populate: '*'
             }).catch(() => null);
 
@@ -404,23 +405,23 @@ export default {
         },
         // @ts-ignore
         async afterPublish(event) {
-          console.log(`[FIREBASE] afterPublish detected for ${uid}`);
+          console.log(`[FIREBASE-HOOK] afterPublish triggered for ${uid}`);
           const { result } = event;
-          const ident = result.documentId || result.id;
+          const docId = result.documentId || result.document_id || result.id;
           const populated = await strapi.documents(uid as any).findOne({
-            documentId: String(ident),
+            documentId: String(docId),
             populate: '*'
           }).catch(() => null);
           await syncToFirestore(uid, populated || result, 'publish');
         },
         // @ts-ignore
         async afterUnpublish(event) {
-          console.log(`[FIREBASE] afterUnpublish detected for ${uid}`);
+          console.log(`[FIREBASE-HOOK] afterUnpublish triggered for ${uid}`);
           await syncToFirestore(uid, event.result, 'unpublish');
         }
       });
     });
 
-    console.log('[FIREBASE] Sync lifecycles registered.');
+    console.log('[FIREBASE] Sync setup complete.');
   },
 };
