@@ -231,7 +231,7 @@ export default {
       // Robust UUID (documentId) extraction for Strapi 5
       let docId = result.documentId || result.document_id;
 
-      // If we only have a numeric ID (which is common in DB lifecycles), FETCH the document to get its UUID
+      // If we only have a numeric ID, FETCH the document to get its UUID
       if (!docId && result.id) {
         try {
           const dbRow = await strapi.db.query(uid).findOne({ where: { id: result.id } });
@@ -255,7 +255,7 @@ export default {
           return;
         }
 
-        // Detect if item is published - look for ANY truthy publish indicator
+        // Detect if item is published
         const isPublished = !!(
           result.publishedAt ||
           result.published_at ||
@@ -263,7 +263,7 @@ export default {
           action === 'publish'
         );
 
-        console.log(`[FIREBASE-DEBUG] Status check for ${docId}: isPublished=${isPublished}, status=${result.status}`);
+        console.log(`[FIREBASE-DEBUG] Status check for ${docId}: isPublished=${isPublished}, action=${action}`);
 
         if (isPublished) {
           const dataToSync = { ...result };
@@ -303,125 +303,59 @@ export default {
       }
     };
 
-    // Subscribe to lifecycles for all relevant content types
-    Object.keys(collectionsToSync).forEach((uid) => {
-      strapi.db.lifecycles.subscribe({
-        models: [uid],
-        async beforeCreate(event) {
-          const { params, state } = event;
-          if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
+    // --- 4. Strapi 5 Document Service Middleware ---
+    // @ts-ignore
+    strapi.documents.use(async (context, next) => {
+      const { uid, action, params } = context;
+      const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
+
+      // A. Pre-operation (Recipe Macros)
+      if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
+        try {
+          if (params.data?.ingredients) {
             const calculated = await calculateRecipeMacros(params.data);
             if (calculated) {
               params.data.kcal = calculated.kcal;
               params.data.macros = calculated.macros;
-              state.calculatedMacros = calculated.macros;
             }
           }
-        },
-        async beforeUpdate(event) {
-          const { params, state } = event;
-          if (uid === 'api::recipe.recipe') {
-            try {
-              const existing = await strapi.db.query('api::recipe.recipe').findOne({
-                where: params.where,
-                populate: { ingredients: true, macros: { select: ['id'] } }
-              });
-              if (!existing) return;
-              const payload = { ...params.data };
-              if (!payload.ingredients && existing.ingredients) payload.ingredients = existing.ingredients;
-              if (payload.ingredients && Array.isArray(payload.ingredients)) {
-                const calculated = await calculateRecipeMacros(payload);
-                if (calculated) {
-                  params.data.kcal = calculated.kcal;
-                  state.calculatedMacros = calculated.macros;
-                  if (existing.macros?.id) state.existingMacrosId = existing.macros.id;
-                  else params.data.macros = calculated.macros;
-                }
-              }
-            } catch (err) { }
-          }
-        },
-        async afterCreate(event) {
-          const { result, state } = event;
-          console.log(`[FIREBASE-HOOK] afterCreate triggered for ${uid}`);
+        } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
+      }
+
+      // B. Execute
+      const result = await next();
+
+      // C. Post-operation (Sync)
+      if (collectionName) {
+        (async () => {
           try {
-            const docId = result.documentId || result.document_id || result.id;
-            const populated = await strapi.documents(uid as any).findOne({
-              documentId: String(docId),
-              populate: '*'
-            }).catch(() => null);
+            console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
 
-            if (populated) {
-              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-                (populated as any).macros = state.calculatedMacros;
-                if (!(populated as any).kcal) (populated as any).kcal = (state.calculatedMacros as any).kcal;
-              }
-              await syncToFirestore(uid, populated, 'create');
-            } else {
-              await syncToFirestore(uid, result, 'create');
+            if (action === 'delete' || action === 'unpublish') {
+              const docId = params.documentId || result?.documentId || result?.id;
+              if (docId) await syncToFirestore(uid, { documentId: docId }, action);
+              return;
             }
-          } catch (e) {
-            await syncToFirestore(uid, result, 'create');
-          }
-        },
-        async afterUpdate(event) {
-          const { result, state } = event;
-          console.log(`[FIREBASE-HOOK] afterUpdate triggered for ${uid}`);
 
-          if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-            try {
-              let macrosId = state.existingMacrosId || (result as any).macros?.id;
-              if (macrosId) {
-                await strapi.db.query('shared.macros').update({
-                  where: { id: macrosId },
-                  data: state.calculatedMacros
-                });
+            if (['create', 'update', 'publish'].includes(action)) {
+              const docId = result?.documentId || params.documentId || result?.id;
+              if (docId) {
+                const populated = await strapi.documents(uid as any).findOne({
+                  documentId: String(docId),
+                  status: (action === 'publish' || result?.publishedAt || result?.status === 'published') ? 'published' : 'draft',
+                  populate: '*'
+                }).catch(() => null);
+
+                await syncToFirestore(uid, populated || result, action);
               }
-            } catch (e) { }
-          }
-
-          try {
-            const docId = result.documentId || result.document_id || result.id;
-            const populated = await strapi.documents(uid as any).findOne({
-              documentId: String(docId),
-              populate: '*'
-            }).catch(() => null);
-
-            if (populated) {
-              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-                (populated as any).macros = state.calculatedMacros;
-                if (!(populated as any).kcal) (populated as any).kcal = (state.calculatedMacros as any).kcal;
-              }
-              await syncToFirestore(uid, populated, 'update');
-            } else {
-              await syncToFirestore(uid, result, 'update');
             }
-          } catch (e) {
-            await syncToFirestore(uid, result, 'update');
-          }
-        },
-        async afterDelete(event) {
-          await syncToFirestore(uid, event.result, 'delete');
-        },
-        // @ts-ignore
-        async afterPublish(event) {
-          console.log(`[FIREBASE-HOOK] afterPublish triggered for ${uid}`);
-          const { result } = event;
-          const docId = result.documentId || result.document_id || result.id;
-          const populated = await strapi.documents(uid as any).findOne({
-            documentId: String(docId),
-            populate: '*'
-          }).catch(() => null);
-          await syncToFirestore(uid, populated || result, 'publish');
-        },
-        // @ts-ignore
-        async afterUnpublish(event) {
-          console.log(`[FIREBASE-HOOK] afterUnpublish triggered for ${uid}`);
-          await syncToFirestore(uid, event.result, 'unpublish');
-        }
-      });
+          } catch (e) { console.error('[FIREBASE-DEBUG] Middleware post-hook error:', e); }
+        })();
+      }
+
+      return result;
     });
 
-    console.log('[FIREBASE] Sync setup complete.');
+    console.log('[FIREBASE] Document Service Middleware registered.');
   },
 };
