@@ -232,54 +232,49 @@ export default {
       'api::instruction.instruction': 'instructions',
     };
 
-    const syncToFirestore = async (uid: string, result: any, action: 'create' | 'update' | 'delete' | 'publish' | 'unpublish') => {
+    const syncToFirestore = async (uid: string, result: any, action: string) => {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
-      console.log(`[FIREBASE-DEBUG] ${action.toUpperCase()} entry in ${uid}.`);
-
-      const getDocId = (res: any) => res.documentId || res.document_id || res.id;
-      const docId = getDocId(result);
-
+      // Extract documentId (UUID) or internal ID fallback
+      const docId = result.documentId || result.document_id || (typeof result.id === 'string' ? result.id : null);
       if (!docId) {
-        console.warn(`[FIREBASE] Cannot sync ${uid}: No document ID found. Keys: ${Object.keys(result).join(', ')}`);
+        console.log(`[FIREBASE] Skipping sync for ${uid}: No UUID found. Keys: ${Object.keys(result).join(', ')}`);
         return;
       }
 
-      // Extract slugs for relation arrays if they are populated as objects
-      const flattenRelations = (data: any) => {
-        const flat = { ...data };
-        if (Array.isArray(flat.assignedProfiles)) {
-          flat.assignedProfiles = flat.assignedProfiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-        }
-        if (Array.isArray(flat.assignedPhases)) {
-          flat.assignedPhases = flat.assignedPhases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-        }
-        if (Array.isArray(flat.profiles)) {
-          flat.assignedProfiles = flat.profiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
-        }
-        return flat;
-      };
-
       try {
-        const isPublished = action === 'publish' || result.status === 'published' || !!result.publishedAt || !!result.published_at;
-        console.log(`[FIREBASE-DEBUG] docId: ${docId}, determined isPublished: ${isPublished}, action: ${action}`);
-
-        if (action === 'delete' || action === 'unpublish' || (!isPublished && action === 'update')) {
-          // If action is delete/unpublish OR item is no longer published, remove from Firestore
+        if (action === 'delete') {
           await db.collection(collectionName).doc(docId).delete();
-          console.log(`[FIREBASE] SUCCESS Deleted ${docId} from ${collectionName}`);
-        } else if (isPublished) {
-          // For create/update/publish, sync data
-          let dataToSync = {
-            ...result,
-            updatedAt: new Date().toISOString(),
-            source: 'strapi',
-          };
+          console.log(`[FIREBASE] Deleted ${docId} from ${collectionName}`);
+          return;
+        }
 
-          dataToSync = flattenRelations(dataToSync);
+        // Detect if item is published
+        const isPublished = !!(result.publishedAt || result.published_at || result.status === 'published' || action === 'publish');
 
-          // Clean up Strapi-specific fields
+        if (isPublished) {
+          const dataToSync = { ...result };
+
+          // Flatten relations for the mobile app
+          if (Array.isArray(dataToSync.profiles)) {
+            dataToSync.assignedProfiles = dataToSync.profiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+          } else if (Array.isArray(dataToSync.assignedProfiles)) {
+            dataToSync.assignedProfiles = dataToSync.assignedProfiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+          }
+
+          if (Array.isArray(dataToSync.phases)) {
+            dataToSync.assignedPhases = dataToSync.phases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+          } else if (Array.isArray(dataToSync.assignedPhases)) {
+            dataToSync.assignedPhases = dataToSync.assignedPhases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+          }
+
+          // Singular field fallback
+          if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
+            dataToSync.assignedPhases = [dataToSync.assignedPhase];
+          }
+
+          // Cleanup Strapi fields
           delete dataToSync.id;
           delete dataToSync.documentId;
           delete dataToSync.document_id;
@@ -288,10 +283,13 @@ export default {
           delete dataToSync.publishedAt;
           delete dataToSync.published_at;
 
+          dataToSync.updatedAt = new Date().toISOString();
+          dataToSync.source = 'strapi';
+
           await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
           console.log(`[FIREBASE] SUCCESS Synced ${docId} to ${collectionName}`);
         } else {
-          console.log(`[FIREBASE] IGNORED ${docId} in ${collectionName} (Draft state)`);
+          console.log(`[FIREBASE] Info: ${docId} in ${collectionName} is draft, skipping sync.`);
         }
       } catch (error) {
         console.error(`[FIREBASE] Sync error for ${collectionName} (${docId}):`, error);
@@ -305,94 +303,54 @@ export default {
         async beforeCreate(event) {
           const { params, state } = event;
           if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
-            console.log('[MACRO-CALC-V4] beforeCreate: Calculating macros atomicaly');
             const calculated = await calculateRecipeMacros(params.data);
             if (calculated) {
               params.data.kcal = calculated.kcal;
               params.data.macros = calculated.macros;
-              state.calculatedMacros = calculated.macros; // Save to state for afterCreate hook!
-              console.log('[MACRO-CALC-V4] beforeCreate: Set macros:', calculated);
+              state.calculatedMacros = calculated.macros;
             }
           }
         },
         async beforeUpdate(event) {
           const { params, state } = event;
           if (uid === 'api::recipe.recipe') {
-            console.log('[MACRO-CALC-V5] beforeUpdate: High-stability recalculation starting');
-
             try {
-              // 1. Fetch current data via simple id-based query to avoid complex joins/hangs
               const existing = await strapi.db.query('api::recipe.recipe').findOne({
                 where: params.where,
-                populate: {
-                  ingredients: true,
-                  macros: { select: ['id'] }
-                }
+                populate: { ingredients: true, macros: { select: ['id'] } }
               });
-
               if (!existing) return;
-
               const payload = { ...params.data };
-
-              // Only use existing ingredients if the update payload doesn't contain them
-              if (!payload.ingredients && existing.ingredients) {
-                payload.ingredients = existing.ingredients;
-                console.log(`[MACRO-CALC-V5] Re-using ${existing.ingredients.length} existing ingredients`);
-              } else if (payload.ingredients && Array.isArray(payload.ingredients) && existing.ingredients) {
-                // Merge partial updates with existing ingredients to ensure we have all fields for calculation
-                payload.ingredients = payload.ingredients.map((incomingIng: any) => {
-                  if (incomingIng.id) {
-                    const existingIng = existing.ingredients.find((ei: any) => ei.id === incomingIng.id);
-                    if (existingIng) {
-                      return { ...existingIng, ...incomingIng };
-                    }
-                  }
-                  return incomingIng;
-                });
-                console.log(`[MACRO-CALC-V5] Merged ${payload.ingredients.length} ingredients from payload with existing data`);
-              }
-
+              if (!payload.ingredients && existing.ingredients) payload.ingredients = existing.ingredients;
               if (payload.ingredients && Array.isArray(payload.ingredients)) {
                 const calculated = await calculateRecipeMacros(payload);
                 if (calculated) {
-                  // Set values directly on params.data
                   params.data.kcal = calculated.kcal;
                   state.calculatedMacros = calculated.macros;
-
-                  if (existing.macros?.id) {
-                    state.existingMacrosId = existing.macros.id;
-                    // Delete macros from payload to prevent EntityManager from overwriting with frontend 0s
-                    delete params.data.macros;
-                    console.log(`[MACRO-CALC-V5] Scheduled forceful update for macros ID: ${existing.macros.id}`);
-                  } else {
-                    params.data.macros = calculated.macros;
-                    console.log('[MACRO-CALC-V5] Creating new macros component attached to params');
-                  }
+                  if (existing.macros?.id) state.existingMacrosId = existing.macros.id;
+                  else params.data.macros = calculated.macros;
                 }
               }
-            } catch (err) {
-              console.error('[MACRO-CALC-V5] CRITICAL Hook failure:', err);
-              // We do NOT throw here because we don't want to block the whole CMS if calculation fails
-            }
+            } catch (err) { console.error('[FIREBASE] Macro calc error:', err); }
           }
         },
         async afterCreate(event) {
           const { result, state } = event;
-          let entityToSync = result;
           try {
-            const docId = (result as any).documentId || (result as any).id;
-            const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
+            const docId = result.documentId || result.document_id || result.id;
+            const populated = await strapi.documents(uid as any).findOne({ documentId: String(docId), populate: '*' });
             if (populated) {
-              entityToSync = populated;
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-                (entityToSync as any).macros = state.calculatedMacros;
-                (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+                (populated as any).macros = state.calculatedMacros;
+                (populated as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
               }
+              await syncToFirestore(uid, populated, 'create');
+            } else {
+              await syncToFirestore(uid, result, 'create');
             }
           } catch (e) {
-            console.error(`[FIREBASE] Failed to populate ${uid} afterCreate:`, e);
+            await syncToFirestore(uid, result, 'create');
           }
-          await syncToFirestore(uid, entityToSync, 'create');
         },
         async afterUpdate(event) {
           const { result, state } = event;
@@ -419,48 +377,29 @@ export default {
             (result as any).macros = state.calculatedMacros;
           }
 
-          let entityToSync = result;
           try {
-            const docId = (result as any).documentId || (result as any).id;
-            const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
+            const docId = result.documentId || result.document_id || result.id;
+            const populated = await strapi.documents(uid as any).findOne({ documentId: String(docId), populate: '*' });
             if (populated) {
-              entityToSync = populated;
               if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-                (entityToSync as any).macros = state.calculatedMacros;
-                (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+                (populated as any).macros = state.calculatedMacros;
+                (populated as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
               }
+              await syncToFirestore(uid, populated, 'update');
+            } else {
+              await syncToFirestore(uid, result, 'update');
             }
           } catch (e) {
-            console.error(`[FIREBASE] Failed to populate ${uid} afterUpdate:`, e);
+            await syncToFirestore(uid, result, 'update');
           }
-
-          await syncToFirestore(uid, entityToSync, 'update');
         },
         async afterDelete(event) {
           const { result } = event;
           await syncToFirestore(uid, result, 'delete');
-        },
-        // Strapi 5 Publish/Unpublish hooks
-        // @ts-ignore
-        async afterPublish(event) {
-          console.log(`[FIREBASE-DEBUG] Detected afterPublish via DB lifecycle for ${uid}`);
-          const { result } = event;
-          const docId = (result as any).documentId || (result as any).id;
-          const populated = await strapi.documents(uid as any).findOne({ documentId: docId, populate: '*' });
-          await syncToFirestore(uid, populated || result, 'publish');
-        },
-        // @ts-ignore
-        async afterUnpublish(event) {
-          console.log(`[FIREBASE-DEBUG] Detected afterUnpublish via DB lifecycle for ${uid}`);
-          const { result } = event;
-          await syncToFirestore(uid, result, 'unpublish');
         }
       });
     });
 
-    console.log('[FIREBASE] Sync lifecycles registered for all content types.');
+    console.log('[FIREBASE] Sync lifecycles registered.');
   },
 };
-
-
-
