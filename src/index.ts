@@ -284,13 +284,14 @@ export default {
       strapi.db.lifecycles.subscribe({
         models: [uid],
         async beforeCreate(event) {
-          const { params } = event;
+          const { params, state } = event;
           if (uid === 'api::recipe.recipe' && params.data?.ingredients) {
             console.log('[MACRO-CALC-V4] beforeCreate: Calculating macros atomicaly');
             const calculated = await calculateRecipeMacros(params.data);
             if (calculated) {
               params.data.kcal = calculated.kcal;
               params.data.macros = calculated.macros;
+              state.calculatedMacros = calculated.macros; // Save to state for afterCreate hook!
               console.log('[MACRO-CALC-V4] beforeCreate: Set macros:', calculated);
             }
           }
@@ -357,7 +358,7 @@ export default {
           }
         },
         async afterCreate(event) {
-          const { result } = event;
+          const { result, state } = event;
           let entityToSync = result;
           try {
             // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
@@ -365,7 +366,14 @@ export default {
               documentId: result.documentId,
               populate: '*',
             });
-            if (populated) entityToSync = populated;
+            if (populated) {
+              entityToSync = populated;
+              // If we calculated macros on creation, force inject them for Firebase!
+              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
+                (entityToSync as any).macros = state.calculatedMacros;
+                (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+              }
+            }
           } catch (e) {
             console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
           }
@@ -377,8 +385,8 @@ export default {
           if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
             try {
               let macrosId = state.existingMacrosId;
-              if (!macrosId && result.macros?.id) {
-                macrosId = result.macros.id;
+              if (!macrosId && (result as any).macros?.id) {
+                macrosId = (result as any).macros.id;
               }
 
               if (macrosId) {
@@ -393,22 +401,24 @@ export default {
             }
 
             // Inject correct macros into result for Firebase sync!
-            result.macros = state.calculatedMacros;
+            (result as any).macros = state.calculatedMacros;
           }
 
           let entityToSync = result;
           try {
             // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
             const populated = await strapi.documents(uid as any).findOne({
-              documentId: result.documentId,
+              documentId: (result as any).documentId,
               populate: '*',
             });
             // Protect manually calculated macros on recipes, otherwise use populated
             if (populated) {
-              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
-                populated.macros = state.calculatedMacros;
-              }
               entityToSync = populated;
+              // If we just calculated fresh macros for this update, push them to Firebase overriding DB state
+              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
+                (entityToSync as any).macros = state.calculatedMacros;
+                (entityToSync as any).kcal = (state.calculatedMacros as any).kcal || (result as any).kcal;
+              }
             }
           } catch (e) {
             console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
