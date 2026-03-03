@@ -276,7 +276,7 @@ export default {
                   populate: ['profiles', 'image', 'entries']
                 });
                 if (entity) {
-                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Profiles:`, JSON.stringify(entity.profiles));
+                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Profiles:`, JSON.stringify((entity as any).profiles));
                   dataToSync = { ...dataToSync, ...entity };
                 }
               } catch (err) {
