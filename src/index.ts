@@ -236,6 +236,18 @@ export default {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName) return;
 
+      // Extract slugs for relation arrays if they are populated as objects
+      const flattenRelations = (data: any) => {
+        const flat = { ...data };
+        if (Array.isArray(flat.assignedProfiles)) {
+          flat.assignedProfiles = flat.assignedProfiles.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+        }
+        if (Array.isArray(flat.assignedPhases)) {
+          flat.assignedPhases = flat.assignedPhases.map((p: any) => typeof p === 'string' ? p : (p.slug || p.name || p));
+        }
+        return flat;
+      };
+
       try {
         if (action === 'delete') {
           // Use the Strapi documentId for deletion in Firestore
@@ -245,11 +257,13 @@ export default {
           // For create/update, sync the data
           // We only sync 'published' content to avoid showing drafts in the app
           if (result.status === 'published' || result.publishedAt) {
-            const dataToSync = {
+            let dataToSync = {
               ...result,
               updatedAt: new Date().toISOString(),
               source: 'strapi',
             };
+
+            dataToSync = flattenRelations(dataToSync);
 
             // Delete unnecessary Strapi fields before syncing to Firestore
             delete dataToSync.id;
@@ -344,7 +358,18 @@ export default {
         },
         async afterCreate(event) {
           const { result } = event;
-          await syncToFirestore(uid, result, 'create');
+          let entityToSync = result;
+          try {
+            // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
+            const populated = await strapi.documents(uid as any).findOne({
+              documentId: result.documentId,
+              populate: '*',
+            });
+            if (populated) entityToSync = populated;
+          } catch (e) {
+            console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
+          }
+          await syncToFirestore(uid, entityToSync, 'create');
         },
         async afterUpdate(event) {
           const { result, state } = event;
@@ -367,11 +392,29 @@ export default {
               console.error('[MACRO-CALC-V5] Error forceful DB update for macros:', e);
             }
 
-            // Inject correct macros into result for Firestore sync!
+            // Inject correct macros into result for Firebase sync!
             result.macros = state.calculatedMacros;
           }
 
-          await syncToFirestore(uid, result, 'update');
+          let entityToSync = result;
+          try {
+            // Fetch fully populated entity to ensure relations (like assignedProfiles) are arrays, not { count: X }
+            const populated = await strapi.documents(uid as any).findOne({
+              documentId: result.documentId,
+              populate: '*',
+            });
+            // Protect manually calculated macros on recipes, otherwise use populated
+            if (populated) {
+              if (uid === 'api::recipe.recipe' && state.calculatedMacros) {
+                populated.macros = state.calculatedMacros;
+              }
+              entityToSync = populated;
+            }
+          } catch (e) {
+            console.error(`[FIREBASE] Failed to populate ${uid} for full sync:`, e);
+          }
+
+          await syncToFirestore(uid, entityToSync, 'update');
         },
         async afterDelete(event) {
           const { result } = event;
