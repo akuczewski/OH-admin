@@ -257,12 +257,33 @@ export default {
         try {
           // Document Service findOne with explicit population for relations
           const fullDoc = await strapi.documents(uid as any).findOne({
-            documentId: docId,
-            populate: ['*', 'profiles', 'phases', 'assignedProfiles', 'assignedPhases'],
+            documentId: docId as string,
+            populate: {
+              profiles: true,
+              assignedProfiles: true,
+              image: true,
+              entries: {
+                populate: '*'
+              }
+            },
           });
 
           if (fullDoc) {
             dataToSync = { ...fullDoc };
+
+            // Fallback for relations if still count objects (Strapi 5 quirk)
+            if (dataToSync.profiles?.count !== undefined || dataToSync.assignedProfiles?.count !== undefined) {
+              console.log(`[FIREBASE-DEBUG] Relations still unpopulated for ${docId}, trying entityService fallback...`);
+              try {
+                // @ts-ignore
+                const entity = await strapi.entityService.findOne(uid, (fullDoc as any).id, {
+                  populate: ['profiles', 'assignedProfiles', 'entries']
+                });
+                if (entity) dataToSync = { ...dataToSync, ...entity };
+              } catch (err) {
+                console.error(`[FIREBASE-DEBUG] Fallback fetch failed:`, err);
+              }
+            }
           } else {
             console.warn(`[FIREBASE-DEBUG] Document NOT FOUND during refetch: ${uid}/${docId}`);
             dataToSync = { ...result }; // Fallback to initial result
