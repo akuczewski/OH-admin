@@ -223,8 +223,8 @@ export default {
     };
 
     const syncToFirestore = async (uid: string, result: any, action: string) => {
-      // Add randomized jitter (0-2000ms) to stagger bulk requests
-      const jitter = Math.floor(Math.random() * 2000);
+      // Add randomized jitter (0-5000ms) to stagger bulk requests
+      const jitter = Math.floor(Math.random() * 5000);
       await new Promise(resolve => setTimeout(resolve, jitter));
 
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
@@ -256,7 +256,6 @@ export default {
         }
 
         // 2. Resolve Full Data (Strapi 5 Document Service)
-        let dataToSync: any = null;
 
         const POPULATE_MAP: Record<string, string[]> = {
           'api::habit.habit': ['profiles', 'image'],
@@ -268,43 +267,55 @@ export default {
 
         const populateFields = POPULATE_MAP[uid] || ['image'];
 
-        try {
-          console.log(`[FIREBASE-DEBUG] REFETCHING ${uid}/${docId} (Populate: ${populateFields.join(',')})`);
+        let dataToSync: any = null;
+        let attempts = 0;
+        const maxAttempts = 3;
 
-          // Document Service findOne with explicit population for relations
-          const fullDoc = await strapi.documents(uid as any).findOne({
-            documentId: docId as string,
-            populate: populateFields,
-          });
+        while (attempts < maxAttempts && !dataToSync) {
+          attempts++;
+          try {
+            if (attempts > 1) {
+              const backoff = (attempts - 1) * 1000 + Math.floor(Math.random() * 500);
+              console.log(`[FIREBASE-DEBUG] Retry attempt ${attempts}/${maxAttempts} for ${docId} after ${backoff}ms...`);
+              await new Promise(r => setTimeout(r, backoff));
+            }
 
-          if (fullDoc) {
-            dataToSync = { ...fullDoc };
-            console.log(`[FIREBASE-DEBUG] DocService result keys:`, Object.keys(dataToSync).join(','));
+            console.log(`[FIREBASE-DEBUG] REFETCHING ${uid}/${docId} (Populate: ${populateFields.join(',')})`);
+            const fullDoc = await strapi.documents(uid as any).findOne({
+              documentId: docId as string,
+              populate: populateFields,
+            });
 
-            // Fallback for relations if still count objects (Strapi 5 quirk)
-            const hasProfiles = 'profiles' in dataToSync;
-            if (hasProfiles && dataToSync.profiles?.count !== undefined) {
-              console.log(`[FIREBASE-DEBUG] Profiles still unpopulated (count=${dataToSync.profiles.count}). Trying EntityService fallback...`);
-              try {
+            if (fullDoc) {
+              dataToSync = { ...fullDoc };
+              console.log(`[FIREBASE-DEBUG] DocService result keys:`, Object.keys(dataToSync).join(','));
+
+              // Fallback for relations if still count objects (Strapi 5 quirk)
+              const hasProfiles = 'profiles' in dataToSync;
+              const isCount = hasProfiles && dataToSync.profiles?.count !== undefined;
+
+              if (isCount) {
+                console.log(`[FIREBASE-DEBUG] Profiles still unpopulated (count=${dataToSync.profiles.count}). Trying EntityService fallback...`);
                 // @ts-ignore
                 const entity = await strapi.entityService.findOne(uid, (fullDoc as any).id, {
                   populate: populateFields
                 });
                 if (entity) {
-                  console.log(`[FIREBASE-DEBUG] EntityService fallback result! Keys:`, Object.keys(entity).join(','));
+                  console.log(`[FIREBASE-DEBUG] EntityService fallback result!`);
                   dataToSync = { ...dataToSync, ...entity };
                 }
-              } catch (err) {
-                console.error(`[FIREBASE-DEBUG] Fallback fetch failed:`, err);
               }
+            } else {
+              console.warn(`[FIREBASE-DEBUG] Document NOT FOUND: ${uid}/${docId}`);
+              if (attempts === maxAttempts) dataToSync = { ...result };
             }
-          } else {
-            console.warn(`[FIREBASE-DEBUG] Document NOT FOUND during refetch: ${uid}/${docId}`);
-            dataToSync = { ...result }; // Fallback to initial result
+          } catch (e: any) {
+            console.error(`[FIREBASE-DEBUG] Attempt ${attempts} failed for ${docId}:`, e.message);
+            if (attempts === maxAttempts) {
+              console.warn(`[FIREBASE-DEBUG] Max retries reached for ${docId}. Fallback to initial result.`);
+              dataToSync = { ...result };
+            }
           }
-        } catch (e) {
-          console.error(`[FIREBASE-DEBUG] Error refetching document ${docId}:`, e);
-          dataToSync = { ...result };
         }
 
         if (!dataToSync) return;
