@@ -332,17 +332,17 @@ export default {
             console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
 
             if (action === 'delete' || action === 'unpublish') {
-              const docId = params.documentId || result?.documentId || result?.id;
+              const docId = (params as any).documentId || (result as any)?.documentId || (result as any)?.id;
               if (docId) await syncToFirestore(uid, { documentId: docId }, action);
               return;
             }
 
             if (['create', 'update', 'publish'].includes(action)) {
-              const docId = result?.documentId || params.documentId || result?.id;
+              const docId = (result as any)?.documentId || (params as any).documentId || (result as any)?.id;
               if (docId) {
                 const populated = await strapi.documents(uid as any).findOne({
                   documentId: String(docId),
-                  status: (action === 'publish' || result?.publishedAt || result?.status === 'published') ? 'published' : 'draft',
+                  status: (action === 'publish' || (result as any)?.publishedAt || (result as any)?.status === 'published') ? 'published' : 'draft',
                   populate: '*'
                 }).catch(() => null);
 
