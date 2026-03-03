@@ -223,6 +223,10 @@ export default {
     };
 
     const syncToFirestore = async (uid: string, result: any, action: string) => {
+      // Add randomized jitter (0-2000ms) to stagger bulk requests
+      const jitter = Math.floor(Math.random() * 2000);
+      await new Promise(resolve => setTimeout(resolve, jitter));
+
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
@@ -339,8 +343,12 @@ export default {
                 const item = p.attributes || p;
                 return item.slug || item.name || item.documentId || item.id || item;
               });
+              // Clean up original key if it was a technical relation name
+              if (key !== targetKey) delete dataToSync[key];
             } else if (val && typeof val === 'object' && val.count !== undefined) {
-              console.warn(`[FIREBASE-DEBUG] Relation "${key}" is still a COUNT object after refetch on ${docId}.`);
+              console.warn(`[FIREBASE-DEBUG] Relation "${key}" is still a COUNT object after refetch on ${docId}. DELETING to prevent app bugs.`);
+              delete dataToSync[key];
+              if (!dataToSync[targetKey]) dataToSync[targetKey] = [];
             }
           };
 
