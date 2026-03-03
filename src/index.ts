@@ -226,144 +226,165 @@ export default {
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
       if (!collectionName || !result) return;
 
-      console.log(`[FIREBASE-DEBUG] >>> TRACING SYNC: Action=${action}, UID=${uid}`);
+      console.log(`[FIREBASE-DEBUG] >>> SYNCING: Action=${action}, UID=${uid}, Collection=${collectionName}`);
 
-      // Robust UUID (documentId) extraction for Strapi 5
-      let docId = result.documentId || result.document_id;
-
-      // If we only have a numeric ID, FETCH the document to get its UUID
+      // 1. Resolve ID
+      let docId = result.documentId || result.document_id || (result.data?.document_id) || (result.data?.documentId);
       if (!docId && result.id) {
         try {
           const dbRow = await strapi.db.query(uid).findOne({ where: { id: result.id } });
           docId = dbRow?.documentId || dbRow?.document_id || String(result.id);
-          console.log(`[FIREBASE-DEBUG] Resolved numeric ID ${result.id} to UUID: ${docId}`);
         } catch (e) {
           docId = String(result.id);
-          console.warn(`[FIREBASE-DEBUG] Failed to resolve UUID for numeric ID ${result.id}, using numeric as fallback.`);
         }
       }
 
       if (!docId) {
-        console.warn(`[FIREBASE-DEBUG] FAIL: No ID could be found for ${uid}. Keys: ${Object.keys(result).join(',')}`);
+        console.warn(`[FIREBASE-DEBUG] ERROR: No ID for ${uid}`);
         return;
       }
 
-      try {
-        if (action === 'delete' || action === 'unpublish') {
-          await db.collection(collectionName).doc(docId).delete();
-          console.log(`[FIREBASE-DEBUG] SUCCESS: Deleted ${collectionName}/${docId}`);
-          return;
-        }
+      // 2. Resolve Full Data (Strapi 5 Document Service)
+      let dataToSync: any = null;
 
-        const isPublished = !!(
-          result.publishedAt ||
-          result.published_at ||
-          result.status === 'published' ||
-          action === 'publish'
-        );
-
-        console.log(`[FIREBASE-DEBUG] Result keys: ${Object.keys(result).join(',')}`);
-        if ((result as any).attributes) {
-          console.log(`[FIREBASE-DEBUG] Nested attributes found: ${Object.keys((result as any).attributes).join(',')}`);
-        }
-
-        if (isPublished) {
-          let dataToSync = { ...result };
-          if ((result as any).attributes) {
-            dataToSync = { ...dataToSync, ...(result as any).attributes };
-            delete (dataToSync as any).attributes;
-          }
-
-          // Flatten relations for the mobile app
-          const handleRelations = (key: string, targetKey: string) => {
-            if (Array.isArray(dataToSync[key])) {
-              dataToSync[targetKey] = dataToSync[key].map((p: any) =>
-                typeof p === 'string' ? p : (p.slug || p.name || p.documentId || p.id || p)
-              );
-            }
-          };
-
-          handleRelations('profiles', 'assignedProfiles');
-          handleRelations('assignedProfiles', 'assignedProfiles');
-          handleRelations('phases', 'assignedPhases');
-          handleRelations('assignedPhases', 'assignedPhases');
-
-          if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
-            dataToSync.assignedPhases = [dataToSync.assignedPhase];
-          }
-
-          // Cleanup Strapi fields to avoid pollution
-          const junk = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status', 'locale', 'localizations'];
-          junk.forEach(f => delete dataToSync[f]);
-
-          dataToSync.updatedAt = new Date().toISOString();
-          dataToSync.source = 'strapi';
-
-          console.log(`[FIREBASE-DEBUG] Syncing ${collectionName}/${docId} with data keys: ${Object.keys(dataToSync).join(',')}`);
-
-          await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
-          console.log(`[FIREBASE-DEBUG] SUCCESS: Full sync completed for ${collectionName}/${docId}`);
-        } else {
-          console.log(`[FIREBASE-DEBUG] IGNORED: ${docId} is DRAFT.`);
-        }
-      } catch (error) {
-        console.error(`[FIREBASE-DEBUG] CRITICAL ERROR for ${collectionName}/${docId}:`, error);
-      }
-    };
-
-    // --- 4. Strapi 5 Document Service Middleware ---
-    // @ts-ignore
-    strapi.documents.use(async (context, next) => {
-      const { uid, action, params } = context;
-      const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
-
-      // A. Pre-operation (Recipe Macros)
-      if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
+      if (action !== 'delete' && action !== 'unpublish') {
         try {
-          if (params.data?.ingredients) {
-            const calculated = await calculateRecipeMacros(params.data);
-            if (calculated) {
-              params.data.kcal = calculated.kcal;
-              params.data.macros = calculated.macros;
+          // Document Service findOne with all relations
+          const fullDoc = await strapi.documents(uid as any).findOne({
+            documentId: docId,
+            populate: '*',
+          });
+
+          if (fullDoc) {
+            dataToSync = { ...fullDoc };
+            console.log(`[FIREBASE-DEBUG] Full document refetched for ${docId}. Keys: ${Object.keys(dataToSync).join(',')}`);
+          } else {
+            console.warn(`[FIREBASE-DEBUG] Document NOT FOUND during refetch: ${uid}/${docId}`);
+            dataToSync = { ...result }; // Fallback to initial result
+          }
+        } catch (e) {
+          console.error(`[FIREBASE-DEBUG] Error refetching document ${docId}:`, e);
+          dataToSync = { ...result };
+        }
+      }
+
+      if (action === 'delete' || action === 'unpublish') {
+        await db.collection(collectionName).doc(docId).delete();
+        console.log(`[FIREBASE-DEBUG] DELETED: ${collectionName}/${docId}`);
+        return;
+      }
+
+      if (!dataToSync) return;
+
+      // Flatten Data Wrappers 
+      if (dataToSync.data) {
+        dataToSync = { ...dataToSync, ...dataToSync.data };
+        delete dataToSync.data;
+      }
+      if (dataToSync.attributes) {
+        dataToSync = { ...dataToSync, ...dataToSync.attributes };
+        delete dataToSync.attributes;
+      }
+
+      // 3. Status check
+      const isPublished = !!(
+        dataToSync.publishedAt ||
+        dataToSync.published_at ||
+        dataToSync.status === 'published' ||
+        action === 'publish'
+      );
+
+      if (isPublished) {
+        // 4. Flatten Relations
+        const handleRelations = (key: string, targetKey: string) => {
+          const val = dataToSync[key];
+          if (Array.isArray(val)) {
+            dataToSync[targetKey] = val.map((p: any) => {
+              const item = p.attributes || p;
+              return item.slug || item.name || item.documentId || item.id || item;
+            });
+          }
+        };
+
+        handleRelations('profiles', 'assignedProfiles');
+        handleRelations('assignedProfiles', 'assignedProfiles');
+        handleRelations('phases', 'assignedPhases');
+        handleRelations('assignedPhases', 'assignedPhases');
+
+        if (dataToSync.assignedPhase && !dataToSync.assignedPhases) {
+          dataToSync.assignedPhases = [dataToSync.assignedPhase];
+        }
+
+        // 5. Cleanup
+        const junk = ['id', 'documentId', 'document_id', 'createdBy', 'updatedBy', 'publishedAt', 'published_at', 'status', 'locale', 'localizations'];
+        junk.forEach(f => delete dataToSync[f]);
+
+        dataToSync.updatedAt = new Date().toISOString();
+        dataToSync.source = 'strapi';
+
+        console.log(`[FIREBASE-DEBUG] SENDING to ${collectionName}/${docId}:`, Object.keys(dataToSync).join(', '));
+        await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
+      } else {
+        console.log(`[FIREBASE-DEBUG] IGNORED (Draft): ${docId}`);
+      }
+    } catch (error) {
+      console.error(`[FIREBASE-DEBUG] SYNC ERROR:`, error);
+    }
+  };
+
+  // --- 4. Strapi 5 Document Service Middleware ---
+  // @ts-ignore
+  strapi.documents.use(async (context, next) => {
+    const { uid, action, params } = context;
+    const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
+
+    // A. Pre-operation (Recipe Macros)
+    if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
+      try {
+        if (params.data?.ingredients) {
+          const calculated = await calculateRecipeMacros(params.data);
+          if (calculated) {
+            params.data.kcal = calculated.kcal;
+            params.data.macros = calculated.macros;
+          }
+        }
+      } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
+    }
+
+    // B. Execute
+    const result = await next();
+
+    // C. Post-operation (Sync)
+    if (collectionName) {
+      (async () => {
+        try {
+          console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
+
+          if (action === 'delete' || action === 'unpublish') {
+            const docId = (params as any).documentId || (result as any)?.documentId || (result as any)?.id;
+            if (docId) await syncToFirestore(uid, { documentId: docId }, action);
+            return;
+          }
+
+          if (['create', 'update', 'publish'].includes(action)) {
+            const docId = (result as any)?.documentId || (params as any).documentId || (result as any)?.id;
+            if (docId) {
+              const populated = await strapi.documents(uid as any).findOne({
+                documentId: String(docId),
+                status: (action === 'publish' || (result as any)?.publishedAt || (result as any)?.status === 'published') ? 'published' : 'draft',
+                populate: '*'
+              }).catch(() => null);
+
+              await syncToFirestore(uid, populated || result, action);
             }
           }
-        } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
-      }
+        } catch (e) { console.error('[FIREBASE-DEBUG] Middleware post-hook error:', e); }
+      })();
+    }
 
-      // B. Execute
-      const result = await next();
+    return result;
+  });
 
-      // C. Post-operation (Sync)
-      if (collectionName) {
-        (async () => {
-          try {
-            console.log(`[FIREBASE-DEBUG] Intercepted Document Action: ${action} for ${uid}`);
-
-            if (action === 'delete' || action === 'unpublish') {
-              const docId = (params as any).documentId || (result as any)?.documentId || (result as any)?.id;
-              if (docId) await syncToFirestore(uid, { documentId: docId }, action);
-              return;
-            }
-
-            if (['create', 'update', 'publish'].includes(action)) {
-              const docId = (result as any)?.documentId || (params as any).documentId || (result as any)?.id;
-              if (docId) {
-                const populated = await strapi.documents(uid as any).findOne({
-                  documentId: String(docId),
-                  status: (action === 'publish' || (result as any)?.publishedAt || (result as any)?.status === 'published') ? 'published' : 'draft',
-                  populate: '*'
-                }).catch(() => null);
-
-                await syncToFirestore(uid, populated || result, action);
-              }
-            }
-          } catch (e) { console.error('[FIREBASE-DEBUG] Middleware post-hook error:', e); }
-        })();
-      }
-
-      return result;
-    });
-
-    console.log('[FIREBASE] Document Service Middleware registered.');
-  },
+  console.log('[FIREBASE] Document Service Middleware registered.');
+},
 };
