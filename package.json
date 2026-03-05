@@ -21,6 +21,7 @@
     "@strapi/strapi": "5.36.0",
     "@tunghtml/strapi-plugin-export-import-clsx": "^1.2.0",
     "better-sqlite3": "12.4.1",
+    "firebase": "^12.10.0",
     "firebase-admin": "^13.6.1",
     "html-to-text": "^9.0.5",
     "ingredient-lookup": "file:src/plugins/ingredient-lookup",
@@ -28,6 +29,7 @@
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^6.0.0",
+    "sqlite3": "^5.1.7",
     "styled-components": "^6.0.0"
   },
   "devDependencies": {

@@ -1,11 +1,21 @@
-
 import { Search } from '@strapi/icons';
 // @ts-ignore
 import { Input as IngredientSearch } from './components/IngredientSearch';
+// @ts-ignore
+import Logo from './extensions/logo.png';
 
 export default {
     config: {
         locales: ['pl'],
+        auth: {
+            logo: Logo,
+        },
+        menu: {
+            logo: Logo,
+        },
+        head: {
+            favicon: Logo,
+        },
     },
     register(app: any) {
         console.log('--- [INGREDIENT-PLUGIN V5.1 - STABILITY] REGISTERING ---');

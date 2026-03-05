@@ -491,7 +491,9 @@ export interface ApiHabitHabit extends Struct.CollectionTypeSchema {
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::habit.habit'> &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    phases: Schema.Attribute.Enumeration<['follicular', 'luteal']>;
+    phases: Schema.Attribute.Enumeration<
+      ['menstruation', 'follicular', 'luteal']
+    >;
     priority: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     profiles: Schema.Attribute.Relation<'manyToMany', 'api::profile.profile'>;
     publishedAt: Schema.Attribute.DateTime;
@@ -551,7 +553,9 @@ export interface ApiMotivationQuoteMotivationQuote
     draftAndPublish: true;
   };
   attributes: {
-    assignedPhase: Schema.Attribute.Enumeration<['follicular', 'luteal']>;
+    assignedPhase: Schema.Attribute.Enumeration<
+      ['menstruation', 'follicular', 'luteal']
+    >;
     author: Schema.Attribute.String;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
@@ -677,7 +681,9 @@ export interface ApiSkinCareSkinCare extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     name: Schema.Attribute.String & Schema.Attribute.Required;
-    phases: Schema.Attribute.Enumeration<['follicular', 'luteal']> &
+    phases: Schema.Attribute.Enumeration<
+      ['menstruation', 'follicular', 'luteal']
+    > &
       Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     updatedAt: Schema.Attribute.DateTime;
@@ -746,7 +752,9 @@ export interface ApiTrainingTraining extends Struct.CollectionTypeSchema {
       'api::training.training'
     > &
       Schema.Attribute.Private;
-    phases: Schema.Attribute.Enumeration<['follicular', 'luteal']> &
+    phases: Schema.Attribute.Enumeration<
+      ['menstruation', 'follicular', 'luteal']
+    > &
       Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     thumbnail: Schema.Attribute.Media<'images'>;
