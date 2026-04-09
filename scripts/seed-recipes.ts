@@ -43,6 +43,36 @@ async function runSeeder(strapi: Core.Strapi) {
         console.log(`[SEEDER] Deleted ${snapshot.size} Firebase recipes.`);
     }
 
+    // Phase 0: Cleanup of garbage ingredients (those with , : ; or brackets)
+    console.log('[SEEDER] Phase 0: Cleanup of garbage ingredients...');
+    const badIngredients = await strapi.documents('api::ingredient.ingredient' as any).findMany({
+        filters: {
+            $or: [
+                { name: { $contains: ',' } },
+                { name: { $contains: ':' } },
+                { name: { $contains: ';' } },
+                { name: { $contains: '(' } },
+                { name: { $contains: ')' } }
+            ]
+        },
+        limit: -1
+    });
+
+    if (badIngredients.length > 0) {
+        console.log(`[SEEDER] Found ${badIngredients.length} garbage ingredients. Deleting...`);
+        for (const bad of badIngredients) {
+            try {
+                await strapi.documents('api::ingredient.ingredient' as any).delete({
+                    documentId: (bad as any).documentId
+                });
+                await db.collection('ingredients').doc((bad as any).slug || (bad as any).documentId).delete();
+            } catch (err: any) {
+                console.warn(`[SEEDER] Failed to delete garbage ingredient ${(bad as any).name}:`, err.message);
+            }
+        }
+        console.log('[SEEDER] Cleanup completed.');
+    }
+
     // 3. Import
     console.log('[SEEDER] Starting import phase...');
     const recipesJson = JSON.parse(fs.readFileSync(recipesDataPath, 'utf8'));
@@ -51,7 +81,10 @@ async function runSeeder(strapi: Core.Strapi) {
     console.log('[SEEDER] Phase 1: Pre-creating ingredients...');
     const allIngs = await strapi.documents('api::ingredient.ingredient' as any).findMany({ limit: -1 });
     const ingMap = new Map();
-    allIngs.forEach((i: any) => ingMap.set(i.name.toLowerCase(), i));
+    allIngs.forEach((i: any) => {
+        ingMap.set(i.name.toLowerCase(), i);
+        if (i.slug) ingMap.set(i.slug.toLowerCase(), i);
+    });
 
     const uniqueIngredients = new Set<string>();
     const ingUnitMap = new Map<string, string>(); // name -> unit for unitType detection
@@ -65,7 +98,9 @@ async function runSeeder(strapi: Core.Strapi) {
 
     for (const ingName of uniqueIngredients) {
         const normalizedName = ingName.toLowerCase();
-        if (!ingMap.has(normalizedName)) {
+        const slug = normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255);
+        
+        if (!ingMap.has(normalizedName) && !ingMap.has(slug)) {
             console.log(`[SEEDER] Creating missing ingredient: ${ingName}`);
             try {
                 const targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
@@ -96,7 +131,9 @@ async function runSeeder(strapi: Core.Strapi) {
         
         await Promise.all(chunk.map(async (recipeData: any) => {
             const processedIngredients = recipeData.ingredients.map((ing: any) => {
-                const targetIng = ingMap.get(ing.name.toLowerCase());
+                const normalizedName = ing.name.toLowerCase();
+                const slug = normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255);
+                const targetIng = ingMap.get(normalizedName) || ingMap.get(slug);
                 return {
                     ...ing,
                     __component: 'shared.ingredient',

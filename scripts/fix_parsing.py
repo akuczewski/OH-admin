@@ -78,6 +78,16 @@ UNIT_MAP = {
     'sztuka': 'szt',
     'sztuki': 'szt',
     'porcja': 'szt',
+    'kromka': 'szt',
+    'kromki': 'szt',
+    'kromek': 'szt',
+    'ząbek': 'szt',
+    'ząbki': 'szt',
+    'ząbków': 'szt',
+    'plaster': 'plaster',
+    'plasterek': 'plaster',
+    'plastry': 'plaster',
+    'plasterków': 'plaster',
     'lyzka': 'lyzka',
     'łyżka': 'lyzka',
     'łyżek': 'lyzka',
@@ -90,8 +100,6 @@ UNIT_MAP = {
     'szklanki': 'szklanka',
     'szczypta': 'szczypta',
     'szczypty': 'szczypta',
-    'plaster': 'plaster',
-    'plastry': 'plaster',
     'garść': 'garstka',
     'garście': 'garstka',
     'garstka': 'garstka',
@@ -111,6 +119,16 @@ def clean_ingredient(raw_line):
     amount = 1.0
     unit = 'g'
 
+    # Special case: "Name: szczypta" or "Name: garstka" (unit only)
+    for u_raw, u_mapped in UNIT_MAP.items():
+        if raw_line.lower().endswith(' - ' + u_raw) or raw_line.lower().endswith(' ' + u_raw):
+             # Ensure it's not preceded by a number (already handled by regex below)
+             if not re.search(r'\d\s*' + re.escape(u_raw) + r'$', raw_line.lower()):
+                 name = re.sub(r'\s*-?\s*' + re.escape(u_raw) + r'$', '', raw_line, flags=re.I).strip()
+                 amount = 1.0
+                 unit = u_mapped
+                 break
+
     # 1. Handle "Name (measure) - 100g" or "Name: 100g"
     if ' - ' in raw_line:
         parts = raw_line.split(' - ')
@@ -123,10 +141,16 @@ def clean_ingredient(raw_line):
             amt_str = match.group(1)
             # Handle fractions like 1/2
             if '/' in amt_str:
-                num, den = amt_str.split('/')
-                amount = float(num) / float(den)
+                try:
+                    num, den = amt_str.split('/')
+                    amount = float(num) / float(den)
+                except:
+                    amount = 1.0
             else:
-                amount = float(amt_str)
+                try:
+                    amount = float(amt_str)
+                except:
+                    amount = 1.0
             
             unit_raw = match.group(2).lower()
             unit = UNIT_MAP.get(unit_raw, 'g')
@@ -172,7 +196,7 @@ def split_ingredients(raw_text):
         
         # Check if this line is a comma-separated list of ingredients
         # Pattern: "Name: 1, Name: 2" OR "Name (1), Name (2)"
-        if (',' in l and (':' in l or '(' in l)) and not re.search(r'\d\s*g', l):
+        if (',' in l and (':' in l or '(' in l)):
             # Potential comma list
             parts = [p.strip() for p in l.split(',')]
             processed_lines.extend(parts)

@@ -298,6 +298,24 @@
         "originalName": "Bajgiel pełnoziarnisty",
         "amount": 1.0,
         "unit": "szt"
+      },
+      {
+        "name": "Awokado",
+        "originalName": "awokado",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Łosoś wędzony",
+        "originalName": "łosoś wędzony",
+        "amount": 50.0,
+        "unit": "g"
+      },
+      {
+        "name": "Serek philadelphia",
+        "originalName": "serek philadelphia",
+        "amount": 2.0,
+        "unit": "lyzeczka"
       }
     ]
   },
@@ -319,6 +337,66 @@
         "originalName": "jajko",
         "amount": 2.0,
         "unit": "szt"
+      },
+      {
+        "name": "Ser kozi",
+        "originalName": "ser kozi",
+        "amount": 2.0,
+        "unit": "plaster"
+      },
+      {
+        "name": "Rukola",
+        "originalName": "rukola",
+        "amount": 2.0,
+        "unit": "garstka"
+      },
+      {
+        "name": "Ogórek",
+        "originalName": "ogórek",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Papryka czerwona",
+        "originalName": "papryka czerwona",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Awokado",
+        "originalName": "awokado",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Twarożek grani",
+        "originalName": "twarożek grani",
+        "amount": 0.5,
+        "unit": "g"
+      },
+      {
+        "name": "Szczypiorek",
+        "originalName": "szczypiorek",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Czosnek w proszku",
+        "originalName": "czosnek w proszku",
+        "amount": 3.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 2.0,
+        "unit": "szczypta"
       }
     ]
   },
@@ -341,6 +419,48 @@
         "originalName": "kaszy gryczana",
         "amount": 50.0,
         "unit": "g"
+      },
+      {
+        "name": "Hummus",
+        "originalName": "hummus",
+        "amount": 50.0,
+        "unit": "g"
+      },
+      {
+        "name": "Jajko",
+        "originalName": "jajka",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Ogórek",
+        "originalName": "ogórek",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Pomidor",
+        "originalName": "pomidor",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -570,52 +690,52 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Mąka ows iana 60 g,",
-        "originalName": "Mąka ows iana 60 g,",
-        "amount": 5.0,
-        "unit": "lyzka"
-      },
-      {
-        "name": "Jajko 60 g,",
-        "originalName": "Jajko 60 g,",
+        "name": "Mąka ows iana 60 g",
+        "originalName": "Mąka ows iana 60 g",
         "amount": 1.0,
-        "unit": "szt"
-      },
-      {
-        "name": "Jogur t naturalny 80 g,",
-        "originalName": "Jogur t naturalny 80 g,",
-        "amount": 4.0,
-        "unit": "lyzka"
-      },
-      {
-        "name": "Proszek do pieczenia 2 g,",
-        "originalName": "Proszek do pieczenia 2 g,",
-        "amount": 0.5,
-        "unit": "lyzeczka"
-      },
-      {
-        "name": "Banan 60 g,",
-        "originalName": "Banan 60 g,",
-        "amount": 0.5,
         "unit": "g"
       },
       {
-        "name": "Sok z Cytryna 12 g,",
-        "originalName": "Sok z cytryny 12 g,",
-        "amount": 2.0,
-        "unit": "lyzka"
+        "name": "Jajko 60 g",
+        "originalName": "Jajko 60 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Oliwa z oliwek 10 g,",
-        "originalName": "Oliwa z oliwek 10 g,",
+        "name": "Jogur t naturalny 80 g",
+        "originalName": "Jogur t naturalny 80 g",
         "amount": 1.0,
-        "unit": "lyzka"
+        "unit": "g"
       },
       {
-        "name": "Borówka 50 g,",
-        "originalName": "Borówka 50 g,",
+        "name": "Proszek do pieczenia 2 g",
+        "originalName": "Proszek do pieczenia 2 g",
         "amount": 1.0,
-        "unit": "garstka"
+        "unit": "g"
+      },
+      {
+        "name": "Banan 60 g",
+        "originalName": "Banan 60 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Sok z Cytryna 12 g",
+        "originalName": "Sok z cytryny 12 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Oliwa z oliwek 10 g",
+        "originalName": "Oliwa z oliwek 10 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Borówka 50 g",
+        "originalName": "Borówka 50 g",
+        "amount": 1.0,
+        "unit": "g"
       }
     ]
   },
@@ -1379,7 +1499,61 @@
         "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Szynka z indyka",
+        "originalName": "szynka z indyka",
+        "amount": 2.0,
+        "unit": "plaster"
+      },
+      {
+        "name": "Mozzarella",
+        "originalName": "mozzarella",
+        "amount": 40.0,
         "unit": "g"
+      },
+      {
+        "name": "Pomidor czerwony",
+        "originalName": "pomidor czerwony",
+        "amount": 3.0,
+        "unit": "plaster"
+      },
+      {
+        "name": "Szpinak",
+        "originalName": "szpinak",
+        "amount": 1.0,
+        "unit": "garstka"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Kurkuma",
+        "originalName": "kurkuma",
+        "amount": 1.0,
+        "unit": "szczypta"
       }
     ]
   },
@@ -1749,6 +1923,72 @@
         "originalName": "jajka",
         "amount": 2.0,
         "unit": "szt"
+      },
+      {
+        "name": "Ogórek",
+        "originalName": "ogórek",
+        "amount": 0.3333333333333333,
+        "unit": "szt"
+      },
+      {
+        "name": "Jogurt grecki",
+        "originalName": "jogurt grecki",
+        "amount": 100.0,
+        "unit": "g"
+      },
+      {
+        "name": "Łosoś wędzony",
+        "originalName": "łosoś wędzony",
+        "amount": 50.0,
+        "unit": "g"
+      },
+      {
+        "name": "Czosnek w proszku",
+        "originalName": "czosnek w proszku",
+        "amount": 0.3333333333333333,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sok z Cytryna",
+        "originalName": "sok z cytryny",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Sezam",
+        "originalName": "sezam",
+        "amount": 2.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Koper",
+        "originalName": "koper",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Bagietka pełnoziarnista",
+        "originalName": "bagietka pełnoziarnista",
+        "amount": 0.5,
+        "unit": "szt"
       }
     ]
   },
@@ -2056,7 +2296,43 @@
         "name": "Chleb żytni razowy",
         "originalName": "Chleb żytni razowy",
         "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Hummus klasyczny",
+        "originalName": "hummus klasyczny",
+        "amount": 40.0,
         "unit": "g"
+      },
+      {
+        "name": "Łosoś wędzony na gorąco",
+        "originalName": "łosoś wędzony na gorąco",
+        "amount": 50.0,
+        "unit": "g"
+      },
+      {
+        "name": "Sałata lodowa",
+        "originalName": "sałata lodowa",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "Sok z Cytryna",
+        "originalName": "sok z cytryny",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Ogórek",
+        "originalName": "ogórek",
+        "amount": 0.3333333333333333,
+        "unit": "szt"
+      },
+      {
+        "name": "Rzodkiewki",
+        "originalName": "rzodkiewki",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -2107,13 +2383,13 @@
         "name": "Sól",
         "originalName": "sól",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szczypta"
       },
       {
         "name": "Pieprz",
         "originalName": "pieprz",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szczypta"
       },
       {
         "name": "Kurkuma",
@@ -2125,7 +2401,7 @@
         "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
-        "unit": "g"
+        "unit": "szt"
       },
       {
         "name": "Papryka czerwona",
@@ -2152,7 +2428,7 @@
         "name": "Chleb żytni",
         "originalName": "chleb żytni",
         "amount": 2.0,
-        "unit": "g"
+        "unit": "szt"
       },
       {
         "name": "Jajko",
@@ -2205,7 +2481,49 @@
         "name": "Chleb żytni razowy",
         "originalName": "Chleb żytni razowy",
         "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Łosoś wędzony na gorąco",
+        "originalName": "łosoś wędzony na gorąco",
+        "amount": 50.0,
         "unit": "g"
+      },
+      {
+        "name": "Jogurt naturalny",
+        "originalName": "jogurt naturalny",
+        "amount": 2.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Ogórki kiszone",
+        "originalName": "ogórki kiszone",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 2.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Kurkuma",
+        "originalName": "kurkuma",
+        "amount": 2.0,
+        "unit": "szczypta"
       }
     ]
   },
@@ -2504,10 +2822,10 @@
         "unit": "g"
       },
       {
-        "name": "Pieprz czarny – szczypta",
-        "originalName": "Pieprz czarny – szczypta",
+        "name": "Pieprz czarny –",
+        "originalName": "Pieprz czarny –",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szczypta"
       },
       {
         "name": "Sól – do smaku",
@@ -2676,6 +2994,60 @@
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Czosnek",
+        "originalName": "czosnek",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Pomidory krojone w puszce",
+        "originalName": "pomidory krojone w puszce",
+        "amount": 0.5,
+        "unit": "g"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Natka pietruszki",
+        "originalName": "natka pietruszki",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Kminek",
+        "originalName": "kminek",
+        "amount": 0.3333333333333333,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Ser feta",
+        "originalName": "ser feta",
+        "amount": 10.0,
+        "unit": "g"
+      },
+      {
+        "name": "Pestki dyni",
+        "originalName": "pestki dyni",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -4193,26 +4565,32 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Cukinia 300 g,",
-        "originalName": "Cukinia 300 g,",
-        "amount": 0.5,
-        "unit": "g"
-      },
-      {
-        "name": "Czosnek surowy 5 g,",
-        "originalName": "Czosnek surowy 5 g,",
+        "name": "Cukinia 300 g",
+        "originalName": "Cukinia 300 g",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "Jajko 180 g,",
-        "originalName": "Jajko 180 g,",
-        "amount": 3.0,
-        "unit": "szt"
+        "name": "Czosnek surowy 5 g",
+        "originalName": "Czosnek surowy 5 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Mleko spożywcze 1,5% tłuszczu 20 g, (0",
-        "originalName": "Mleko spożywcze 1,5% tłuszczu 20 g, (0",
+        "name": "Jajko 180 g",
+        "originalName": "Jajko 180 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Mleko spożywcze 1 5% tłuszczu 20 g",
+        "originalName": "Mleko spożywcze 1 5% tłuszczu 20 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "(0",
+        "originalName": "(0",
         "amount": 1.0,
         "unit": "g"
       },
@@ -4223,44 +4601,50 @@
         "unit": "g"
       },
       {
-        "name": "Ser mozzarella 30 g,",
-        "originalName": "Ser mozzarella (tar ty) 30 g,",
+        "name": "Ser mozzarella 30 g",
+        "originalName": "Ser mozzarella (tar ty) 30 g",
         "amount": 1.0,
-        "unit": "lyzka"
+        "unit": "g"
       },
       {
-        "name": "Kurkuma mielona 1 g,",
-        "originalName": "Kurkuma mielona 1 g,",
-        "amount": 0.5,
-        "unit": "lyzeczka"
-      },
-      {
-        "name": "Szczypiorek 5 g,",
-        "originalName": "Szczypiorek 5 g,",
+        "name": "Kurkuma mielona 1 g",
+        "originalName": "Kurkuma mielona 1 g",
         "amount": 1.0,
-        "unit": "lyzka"
+        "unit": "g"
       },
       {
-        "name": "Oregano suszone 1 g,",
-        "originalName": "Oregano suszone 1 g,",
-        "amount": 0.5,
-        "unit": "lyzeczka"
+        "name": "Szczypiorek 5 g",
+        "originalName": "Szczypiorek 5 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Sól 0.6 g,",
-        "originalName": "Sól 0.6 g,",
-        "amount": 3.0,
-        "unit": "szczypta"
+        "name": "Oregano suszone 1 g",
+        "originalName": "Oregano suszone 1 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Pieprz czarny 0.4 g,",
-        "originalName": "Pieprz czarny 0.4 g,",
-        "amount": 2.0,
-        "unit": "szczypta"
+        "name": "Sól 0.6 g",
+        "originalName": "Sól 0.6 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Oliwa z oliwek 10 g, (1 łyżka",
-        "originalName": "Oliwa z oliwek 10 g, (1 łyżka",
+        "name": "Pieprz czarny 0.4 g",
+        "originalName": "Pieprz czarny 0.4 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Oliwa z oliwek 10 g",
+        "originalName": "Oliwa z oliwek 10 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "(1 łyżka",
+        "originalName": "(1 łyżka",
         "amount": 1.0,
         "unit": "g"
       }
@@ -4399,6 +4783,54 @@
         "originalName": "jajka",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Łosoś wędzony na gorąco",
+        "originalName": "łosoś wędzony na gorąco",
+        "amount": 70.0,
+        "unit": "g"
+      },
+      {
+        "name": "Szpinak",
+        "originalName": "szpinak",
+        "amount": 2.0,
+        "unit": "garstka"
+      },
+      {
+        "name": "Pomidorki",
+        "originalName": "pomidorki",
+        "amount": 5.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Oliwa",
+        "originalName": "oliwa",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Pestki dyni",
+        "originalName": "pestki dyni",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Zioła prowansalskie",
+        "originalName": "zioła prowansalskie",
+        "amount": 1.0,
+        "unit": "szczypta"
       }
     ]
   },
@@ -4571,6 +5003,42 @@
         "originalName": "płatki owsiane górskie",
         "amount": 50.0,
         "unit": "g"
+      },
+      {
+        "name": "Nasiona chia",
+        "originalName": "nasiona chia",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Napój migdałowy",
+        "originalName": "napój migdałowy",
+        "amount": 40.0,
+        "unit": "ml"
+      },
+      {
+        "name": "Jogurt grecki",
+        "originalName": "jogurt grecki",
+        "amount": 2.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Truskawki",
+        "originalName": "truskawki",
+        "amount": 100.0,
+        "unit": "g"
+      },
+      {
+        "name": "Syrop klonowy",
+        "originalName": "syrop klonowy",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Masło orzechowe",
+        "originalName": "masło orzechowe",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -4644,6 +5112,54 @@
         "name": "Płatki owsiane górskie",
         "originalName": "płatki owsiane górskie",
         "amount": 50.0,
+        "unit": "g"
+      },
+      {
+        "name": "Budyń waniliowy",
+        "originalName": "budyń waniliowy",
+        "amount": 10.0,
+        "unit": "g"
+      },
+      {
+        "name": "Woda",
+        "originalName": "woda",
+        "amount": 200.0,
+        "unit": "ml"
+      },
+      {
+        "name": "Napój migdałowy",
+        "originalName": "napój migdałowy",
+        "amount": 20.0,
+        "unit": "ml"
+      },
+      {
+        "name": "Jajko",
+        "originalName": "jajko",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Matcha",
+        "originalName": "matcha",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "Syrop klonowy",
+        "originalName": "syrop klonowy",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Truskawki",
+        "originalName": "truskawki",
+        "amount": 100.0,
+        "unit": "g"
+      },
+      {
+        "name": "Gorzka czekolada",
+        "originalName": "gorzka czekolada",
+        "amount": 2.0,
         "unit": "g"
       }
     ]
@@ -4831,14 +5347,20 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Płatki ows iane górskie 50 g,",
-        "originalName": "Płatki ows iane górskie 50 g,",
-        "amount": 5.0,
-        "unit": "lyzka"
+        "name": "Płatki ows iane górskie 50 g",
+        "originalName": "Płatki ows iane górskie 50 g",
+        "amount": 1.0,
+        "unit": "g"
       },
       {
-        "name": "Mleko spożywcze 1,5% tłuszczu 150 g, (0.5",
-        "originalName": "Mleko spożywcze 1,5% tłuszczu 150 g, (0.5",
+        "name": "Mleko spożywcze 1 5% tłuszczu 150 g",
+        "originalName": "Mleko spożywcze 1 5% tłuszczu 150 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "(0.5",
+        "originalName": "(0.5",
         "amount": 1.0,
         "unit": "g"
       },
@@ -4849,46 +5371,46 @@
         "unit": "g"
       },
       {
-        "name": "Jogur t naturalny 60 g,",
-        "originalName": "Jogur t naturalny 60 g,",
-        "amount": 3.0,
-        "unit": "lyzka"
-      },
-      {
-        "name": "Nas iona chia 15 g,",
-        "originalName": "Nas iona chia 15 g,",
-        "amount": 3.0,
-        "unit": "lyzeczka"
-      },
-      {
-        "name": "Malina mrożona 140 g,",
-        "originalName": "Malina mrożona 140 g,",
-        "amount": 2.0,
-        "unit": "garstka"
-      },
-      {
-        "name": "Mas ło orzechowe 10 g,",
-        "originalName": "Mas ło orzechowe 10 g,",
+        "name": "Jogur t naturalny 60 g",
+        "originalName": "Jogur t naturalny 60 g",
         "amount": 1.0,
-        "unit": "lyzeczka"
+        "unit": "g"
       },
       {
-        "name": "Cynamon mielony 0.6 g,",
-        "originalName": "Cynamon mielony 0.6 g,",
-        "amount": 3.0,
-        "unit": "szczypta"
-      },
-      {
-        "name": "Sól 0.4 g,",
-        "originalName": "Sól 0.4 g,",
-        "amount": 2.0,
-        "unit": "szczypta"
-      },
-      {
-        "name": "Erytrytol 5 g,",
-        "originalName": "Erytrytol 5 g,",
+        "name": "Nas iona chia 15 g",
+        "originalName": "Nas iona chia 15 g",
         "amount": 1.0,
-        "unit": "lyzeczka"
+        "unit": "g"
+      },
+      {
+        "name": "Malina mrożona 140 g",
+        "originalName": "Malina mrożona 140 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Mas ło orzechowe 10 g",
+        "originalName": "Mas ło orzechowe 10 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Cynamon mielony 0.6 g",
+        "originalName": "Cynamon mielony 0.6 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Sól 0.4 g",
+        "originalName": "Sól 0.4 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Erytrytol 5 g",
+        "originalName": "Erytrytol 5 g",
+        "amount": 1.0,
+        "unit": "g"
       }
     ]
   },
@@ -5656,58 +6178,58 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Twaróg pół tłus ty 100 g,",
-        "originalName": "Twaróg pół tłus ty 100 g,",
-        "amount": 0.5,
+        "name": "Twaróg pół tłus ty 100 g",
+        "originalName": "Twaróg pół tłus ty 100 g",
+        "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "Jajko 60 g,",
-        "originalName": "Jajko 60 g,",
+        "name": "Jajko 60 g",
+        "originalName": "Jajko 60 g",
         "amount": 1.0,
-        "unit": "szt"
+        "unit": "g"
       },
       {
-        "name": "Mąka ows iana 48 g,",
-        "originalName": "Mąka ows iana 48 g,",
-        "amount": 4.0,
-        "unit": "lyzka"
-      },
-      {
-        "name": "Erytrytol 5 g,",
-        "originalName": "Erytrytol 5 g,",
+        "name": "Mąka ows iana 48 g",
+        "originalName": "Mąka ows iana 48 g",
         "amount": 1.0,
-        "unit": "lyzeczka"
+        "unit": "g"
       },
       {
-        "name": "Proszek do pieczenia 2 g,",
-        "originalName": "Proszek do pieczenia 2 g,",
-        "amount": 0.5,
-        "unit": "lyzeczka"
-      },
-      {
-        "name": "Cynamon mielony 1 g,",
-        "originalName": "Cynamon mielony 1 g,",
-        "amount": 0.5,
-        "unit": "lyzeczka"
-      },
-      {
-        "name": "Kiwi 69 g,",
-        "originalName": "Kiwi 69 g,",
+        "name": "Erytrytol 5 g",
+        "originalName": "Erytrytol 5 g",
         "amount": 1.0,
-        "unit": "szt"
+        "unit": "g"
       },
       {
-        "name": "Malina 140 g,",
-        "originalName": "Malina 140 g,",
-        "amount": 2.0,
-        "unit": "garstka"
-      },
-      {
-        "name": "Oliwa z oliwek 5 g,",
-        "originalName": "Oliwa z oliwek 5 g,",
+        "name": "Proszek do pieczenia 2 g",
+        "originalName": "Proszek do pieczenia 2 g",
         "amount": 1.0,
-        "unit": "lyzeczka"
+        "unit": "g"
+      },
+      {
+        "name": "Cynamon mielony 1 g",
+        "originalName": "Cynamon mielony 1 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Kiwi 69 g",
+        "originalName": "Kiwi 69 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Malina 140 g",
+        "originalName": "Malina 140 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Oliwa z oliwek 5 g",
+        "originalName": "Oliwa z oliwek 5 g",
+        "amount": 1.0,
+        "unit": "g"
       }
     ]
   },
@@ -5986,6 +6508,66 @@
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Pomidory w puszce",
+        "originalName": "pomidory w puszce",
+        "amount": 0.5,
+        "unit": "g"
+      },
+      {
+        "name": "Chorizo",
+        "originalName": "chorizo",
+        "amount": 70.0,
+        "unit": "g"
+      },
+      {
+        "name": "Cebula",
+        "originalName": "cebula",
+        "amount": 0.3333333333333333,
+        "unit": "szt"
+      },
+      {
+        "name": "Czosnek",
+        "originalName": "czosnek",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Wędzona papryka",
+        "originalName": "wędzona papryka",
+        "amount": 0.3333333333333333,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Natka pietruszki",
+        "originalName": "natka pietruszki",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Grahamka",
+        "originalName": "grahamka",
+        "amount": 1.0,
+        "unit": "szt"
       }
     ]
   },
@@ -6009,6 +6591,66 @@
         "originalName": "jajka",
         "amount": 2.0,
         "unit": "szt"
+      },
+      {
+        "name": "Ciecierzyca konserwowa",
+        "originalName": "ciecierzyca konserwowa",
+        "amount": 120.0,
+        "unit": "g"
+      },
+      {
+        "name": "Cebula",
+        "originalName": "cebula",
+        "amount": 0.3333333333333333,
+        "unit": "szt"
+      },
+      {
+        "name": "Czosnek",
+        "originalName": "czosnek",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Pomidory z puszki",
+        "originalName": "pomidory z puszki",
+        "amount": 200.0,
+        "unit": "g"
+      },
+      {
+        "name": "Oliwa",
+        "originalName": "oliwa",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Kumin",
+        "originalName": "kumin",
+        "amount": 2.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Papryka słodka",
+        "originalName": "papryka słodka",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Sezam",
+        "originalName": "sezam",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Natka pietruszki",
+        "originalName": "natka pietruszki",
+        "amount": 1.0,
+        "unit": "lyzeczka"
       }
     ]
   },
@@ -6302,6 +6944,42 @@
         "originalName": "banan",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Jogurt naturalny",
+        "originalName": "jogurt naturalny",
+        "amount": 100.0,
+        "unit": "g"
+      },
+      {
+        "name": "Mąka owsiana",
+        "originalName": "mąka owsiana",
+        "amount": 150.0,
+        "unit": "g"
+      },
+      {
+        "name": "Proszek do pieczenia",
+        "originalName": "proszek do pieczenia",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -6530,45 +7208,45 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Chleb żytni razowy 105 g,",
-        "originalName": "Chleb żytni razowy 105 g,",
-        "amount": 3.0,
+        "name": "Chleb żytni razowy 105 g",
+        "originalName": "Chleb żytni razowy 105 g",
+        "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "Pesto 20 g,",
-        "originalName": "Pesto 20 g,",
+        "name": "Pesto 20 g",
+        "originalName": "Pesto 20 g",
         "amount": 1.0,
-        "unit": "lyzka"
+        "unit": "g"
       },
       {
-        "name": "Ser mozzarella 30 g,",
-        "originalName": "Ser mozzarella 30 g,",
-        "amount": 2.0,
-        "unit": "plaster"
-      },
-      {
-        "name": "Suszone pomidory 21 g,",
-        "originalName": "Suszone pomidory 21 g,",
-        "amount": 3.0,
-        "unit": "szt"
-      },
-      {
-        "name": "Szynka z indyka 45 g,",
-        "originalName": "Szynka z indyka 45 g,",
-        "amount": 3.0,
-        "unit": "plaster"
-      },
-      {
-        "name": "Rukola 20 g,",
-        "originalName": "Rukola 20 g,",
+        "name": "Ser mozzarella 30 g",
+        "originalName": "Ser mozzarella 30 g",
         "amount": 1.0,
-        "unit": "garstka"
+        "unit": "g"
       },
       {
-        "name": "Papryka czerwona s łodka 110 g,",
-        "originalName": "Papryka czerwona s łodka 110 g,",
-        "amount": 0.5,
+        "name": "Suszone pomidory 21 g",
+        "originalName": "Suszone pomidory 21 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Szynka z indyka 45 g",
+        "originalName": "Szynka z indyka 45 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Rukola 20 g",
+        "originalName": "Rukola 20 g",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Papryka czerwona s łodka 110 g",
+        "originalName": "Papryka czerwona s łodka 110 g",
+        "amount": 1.0,
         "unit": "g"
       }
     ]
@@ -6748,7 +7426,7 @@
         "name": "Roszponka",
         "originalName": "roszponka",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "garstka"
       },
       {
         "name": "Cheddar",
@@ -7053,6 +7731,78 @@
         "originalName": "Jajko",
         "amount": 2.0,
         "unit": "szt"
+      },
+      {
+        "name": "Cebula",
+        "originalName": "cebula",
+        "amount": 0.25,
+        "unit": "szt"
+      },
+      {
+        "name": "Czosnek",
+        "originalName": "czosnek",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Szpinak",
+        "originalName": "szpinak",
+        "amount": 3.0,
+        "unit": "garstka"
+      },
+      {
+        "name": "Papryka zielona",
+        "originalName": "papryka zielona",
+        "amount": 0.3333333333333333,
+        "unit": "szt"
+      },
+      {
+        "name": "Natka pietruszki",
+        "originalName": "natka pietruszki",
+        "amount": 1.0,
+        "unit": "garstka"
+      },
+      {
+        "name": "Mleczko kokosowe",
+        "originalName": "mleczko kokosowe",
+        "amount": 0.3333333333333333,
+        "unit": "szklanka"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "Kumin",
+        "originalName": "kumin",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Kurkuma",
+        "originalName": "kurkuma",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Sól",
+        "originalName": "sól",
+        "amount": 2.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Czarnuszka",
+        "originalName": "czarnuszka",
+        "amount": 0.3333333333333333,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "Pestki dyni",
+        "originalName": "pestki dyni",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -7141,6 +7891,30 @@
         "originalName": "jajka",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Szczypiorek",
+        "originalName": "szczypiorek",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "Czerwona papryka",
+        "originalName": "czerwona papryka",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "Chleb żytni na zakwasie",
+        "originalName": "chleb żytni na zakwasie",
+        "amount": 1.0,
+        "unit": "szt"
       }
     ]
   },
@@ -7162,7 +7936,7 @@
         "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
-        "unit": "g"
+        "unit": "szt"
       },
       {
         "name": "Awokado",
@@ -7223,6 +7997,18 @@
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
+      },
+      {
+        "name": "Oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Sok z Cytryna",
+        "originalName": "sok z cytryny",
+        "amount": 1.0,
+        "unit": "lyzeczka"
       }
     ]
   },
@@ -7262,6 +8048,18 @@
         "originalName": "jajko",
         "amount": 1.0,
         "unit": "szt"
+      },
+      {
+        "name": "Ogórek kiszony",
+        "originalName": "ogórek kiszony",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "Pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "szczypta"
       }
     ]
   },
@@ -7974,8 +8772,8 @@
     ],
     "ingredients": [
       {
-        "name": "1,5 szklanki Mąka pełnoziarnistej u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
-        "originalName": "1,5 szklanki mąki pełnoziarnistej (200 g) u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
+        "name": "1 5 szklanki Mąka pełnoziarnistej u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
+        "originalName": "1 5 szklanki mąki pełnoziarnistej (200 g) u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
         "amount": 300.0,
         "unit": "ml"
       },
@@ -8456,8 +9254,14 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "24 sztuki biszkoptów 2 łyżki gorzkiego kakao",
-        "originalName": "24 sztuki biszkoptów (ilość zależy od tego, jaką masz blaszkę)(100 g) 1 szklanka mocnego naparu z kawy(250 g) 2 opakowania serka Bieluch waniliowego(300 g) 2 opakowania serka Bieluch naturalnego(300 g) 2 łyżki gorzkiego kakao",
+        "name": "24 sztuki biszkoptów (ilość zależy od tego",
+        "originalName": "24 sztuki biszkoptów (ilość zależy od tego",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "Jaką masz blaszkę) 2 łyżki gorzkiego kakao",
+        "originalName": "jaką masz blaszkę)(100 g) 1 szklanka mocnego naparu z kawy(250 g) 2 opakowania serka Bieluch waniliowego(300 g) 2 opakowania serka Bieluch naturalnego(300 g) 2 łyżki gorzkiego kakao",
         "amount": 20.0,
         "unit": "g"
       }
@@ -12632,6 +13436,12 @@
         "originalName": "Szpinak",
         "amount": 3.0,
         "unit": "g"
+      },
+      {
+        "name": "Seed cyling",
+        "originalName": "seed cyling",
+        "amount": 1.0,
+        "unit": "lyzka"
       }
     ]
   },
@@ -26760,10 +27570,10 @@
         "unit": "g"
       },
       {
-        "name": "Bazylia lub oregano – szczypta",
-        "originalName": "Bazylia (najlepiej świeża) lub oregano – szczypta",
+        "name": "Bazylia lub oregano –",
+        "originalName": "Bazylia (najlepiej świeża) lub oregano –",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szczypta"
       },
       {
         "name": "Sól i pieprz – do smaku",
