@@ -294,10 +294,10 @@
     ],
     "ingredients": [
       {
-        "name": "Bajgiel pełnoziarnisty: 1 sztuka, awokado: 1/2 sztuka, łosoś wędzony: 50g, serek philadelphia: 2 łyżeczki",
-        "originalName": "Bajgiel pełnoziarnisty: 1 sztuka, awokado: 1/2 sztuka, łosoś wędzony: 50g, serek philadelphia: 2 łyżeczki",
+        "name": "Bajgiel pełnoziarnisty",
+        "originalName": "Bajgiel pełnoziarnisty",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szt"
       }
     ]
   },
@@ -315,10 +315,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 2 sztuki, ser kozi: 2 plastry, rukola: 2 garście, ogórek: 1/2 sztuki, papryka czerwona: 1/2 sztuki, awokado: 1/2 sztuki, twarożek grani: 1/2 małe opakowanie, szczypiorek: 1 łyżka, sól: szczypta, czosnek w proszku: 3 szczypty, pieprz: 2 szczypty",
-        "originalName": "jajko: 2 sztuki, ser kozi: 2 plastry, rukola: 2 garście, ogórek: 1/2 sztuki, papryka czerwona: 1/2 sztuki, awokado: 1/2 sztuki, twarożek grani: 1/2 małe opakowanie, szczypiorek: 1 łyżka, sól: szczypta, czosnek w proszku: 3 szczypty, pieprz: 2 szczypty",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "szt"
       }
     ]
   },
@@ -337,9 +337,9 @@
     ],
     "ingredients": [
       {
-        "name": "kaszy gryczana: 50 g, hummus: 50 g, jajka: 2 sztuki, ogórek: 1/2 sztuki, pomidor: 1/2 sztuki. rukola: garść, sól: szczypta, pieprz: szczypta, oliwa z oliwek: 1 łyżka",
-        "originalName": "kaszy gryczana: 50 g, hummus: 50 g, jajka: 2 sztuki, ogórek: 1/2 sztuki, pomidor: 1/2 sztuki. rukola: garść, sól: szczypta, pieprz: szczypta, oliwa z oliwek: 1 łyżka",
-        "amount": 1.0,
+        "name": "kaszy gryczana",
+        "originalName": "kaszy gryczana",
+        "amount": 50.0,
         "unit": "g"
       }
     ]
@@ -1376,9 +1376,9 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni razowy: 2 kromki, jajko: 2 sztuki, szynka z indyka: 2 plastry, mozzarella: 40 g, pomidor czerwony: 3 plastry, szpinak: garść, oliwa z oliwek: 1 łyżeczka, sól: szczypta, pieprz: szczypta, kurkuma: szczypta",
-        "originalName": "chleb żytni razowy: 2 kromki, jajko: 2 sztuki, szynka z indyka: 2 plastry, mozzarella: 40 g, pomidor czerwony: 3 plastry, szpinak: garść, oliwa z oliwek: 1 łyżeczka, sól: szczypta, pieprz: szczypta, kurkuma: szczypta",
-        "amount": 1.0,
+        "name": "chleb żytni razowy",
+        "originalName": "chleb żytni razowy",
+        "amount": 2.0,
         "unit": "g"
       }
     ]
@@ -1745,10 +1745,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajka: 2 sztuki, ogórek: 1/3 sztuki, jogurt grecki: 100 g, łosoś wędzony: 50 g, czosnek w proszku: 1/3 łyżeczki, sok z cytryny: 1 łyżeczka, oliwa z oliwek: 1 łyżka, sezam: 2 łyżeczki, koper: 1/2 łyżeczki, sól: szczypta, pieprz: szczypta, bagietka pełnoziarnista: 1/2 sztuki",
-        "originalName": "jajka: 2 sztuki, ogórek: 1/3 sztuki, jogurt grecki: 100 g, łosoś wędzony: 50 g, czosnek w proszku: 1/3 łyżeczki, sok z cytryny: 1 łyżeczka, oliwa z oliwek: 1 łyżka, sezam: 2 łyżeczki, koper: 1/2 łyżeczki, sól: szczypta, pieprz: szczypta, bagietka pełnoziarnista: 1/2 sztuki",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajka",
+        "originalName": "jajka",
+        "amount": 2.0,
+        "unit": "szt"
       }
     ]
   },
@@ -2053,9 +2053,9 @@
     ],
     "ingredients": [
       {
-        "name": "Chleb żytni razowy: 2 kromki, hummus klasyczny: 40 g, łosoś wędzony na gorąco: 50 g, sałata lodowa: 2 liście, sok z cytryny: 1 łyżeczka, ogórek: 1/3 sztuki, rzodkiewki: 3 sztuki",
-        "originalName": "Chleb żytni razowy: 2 kromki, hummus klasyczny: 40 g, łosoś wędzony na gorąco: 50 g, sałata lodowa: 2 liście, sok z cytryny: 1 łyżeczka, ogórek: 1/3 sztuki, rzodkiewki: 3 sztuki",
-        "amount": 1.0,
+        "name": "Chleb żytni razowy",
+        "originalName": "Chleb żytni razowy",
+        "amount": 2.0,
         "unit": "g"
       }
     ]
@@ -2074,10 +2074,64 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 2 sztuki, awokado: 1/2 sztuki, sok z cytryny: 1 łyżeczka, oliwa z oliwek: 1 łyżeczka, natka pietruszki: 1 łyżka, sól: szczypta, pieprz: szczypta, kurkuma: 2 szczypty, chleb żytni razowy: 2 kromki, papryka czerwona: 1/2 sztuki",
-        "originalName": "jajko: 2 sztuki, awokado: 1/2 sztuki, sok z cytryny: 1 łyżeczka, oliwa z oliwek: 1 łyżeczka, natka pietruszki: 1 łyżka, sól: szczypta, pieprz: szczypta, kurkuma: 2 szczypty, chleb żytni razowy: 2 kromki, papryka czerwona: 1/2 sztuki",
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "awokado",
+        "originalName": "awokado",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "sok z cytryny",
+        "originalName": "sok z cytryny",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "natka pietruszki",
+        "originalName": "natka pietruszki",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "sól",
+        "originalName": "sól",
         "amount": 1.0,
         "unit": "g"
+      },
+      {
+        "name": "pieprz",
+        "originalName": "pieprz",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "kurkuma",
+        "originalName": "kurkuma",
+        "amount": 2.0,
+        "unit": "szczypta"
+      },
+      {
+        "name": "chleb żytni razowy",
+        "originalName": "chleb żytni razowy",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "papryka czerwona",
+        "originalName": "papryka czerwona",
+        "amount": 0.5,
+        "unit": "szt"
       }
     ]
   },
@@ -2095,8 +2149,38 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni: 2 kromki, jajka: 2 szt., jogurt, musztarda, szczypiorek, ogórek",
-        "originalName": "chleb żytni: 2 kromki, jajka: 2 szt., jogurt, musztarda, szczypiorek, ogórek",
+        "name": "chleb żytni",
+        "originalName": "chleb żytni",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "jajka",
+        "originalName": "jajka",
+        "amount": 2.0,
+        "unit": "szt"
+      },
+      {
+        "name": "jogurt",
+        "originalName": "jogurt",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "musztarda",
+        "originalName": "musztarda",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "szczypiorek",
+        "originalName": "szczypiorek",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "ogórek",
+        "originalName": "ogórek",
         "amount": 1.0,
         "unit": "g"
       }
@@ -2118,9 +2202,9 @@
     ],
     "ingredients": [
       {
-        "name": "Chleb żytni razowy: 2 kromki, jajko: 2 sztuki, łosoś wędzony na gorąco: 50 g, jogurt naturalny: 2 łyżki, ogórki kiszone: 2 sztuki, sól: szczypta, pieprz: 2 szczypty, kurkuma: 2 szczypty",
-        "originalName": "Chleb żytni razowy: 2 kromki, jajko: 2 sztuki, łosoś wędzony na gorąco: 50 g, jogurt naturalny: 2 łyżki, ogórki kiszone: 2 sztuki, sól: szczypta, pieprz: 2 szczypty, kurkuma: 2 szczypty",
-        "amount": 1.0,
+        "name": "Chleb żytni razowy",
+        "originalName": "Chleb żytni razowy",
+        "amount": 2.0,
         "unit": "g"
       }
     ]
@@ -2588,10 +2672,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 3 sztuki, czosnek: 1 żabek, pomidory krojone w puszce: 1/2 puszki, oliwa z oliwek: 1 łyżka, natka pietruszki: 1 łyżka, sól: szczypta, pieprz: szczypta, kminek: 1/3 łyżeczki, ser feta: 10 g, pestki dyni: 1 łyżka",
-        "originalName": "jajko: 3 sztuki, czosnek: 1 żabek, pomidory krojone w puszce: 1/2 puszki, oliwa z oliwek: 1 łyżka, natka pietruszki: 1 łyżka, sól: szczypta, pieprz: szczypta, kminek: 1/3 łyżeczki, ser feta: 10 g, pestki dyni: 1 łyżka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -4311,10 +4395,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajka: 3 szt., łosoś wędzony na gorąco: 70 g, szpinak: 2 garście, pomidorki: 5 szt., oliwa: 1 łyżka, pestki dyni: 1 łyżeczka, sól: szczypta, pieprz: szczypta, zioła prowansalskie: szczypta",
-        "originalName": "jajka: 3 szt., łosoś wędzony na gorąco: 70 g, szpinak: 2 garście, pomidorki: 5 szt., oliwa: 1 łyżka, pestki dyni: 1 łyżeczka, sól: szczypta, pieprz: szczypta, zioła prowansalskie: szczypta",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajka",
+        "originalName": "jajka",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -4483,9 +4567,9 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "płatki owsiane górskie: 50g, nasiona chia: 1 łyżka, napój migdałowy: 40 ml matcha: 1 łyżeczka, jogurt grecki: 2 łyżki, truskawki: 100 g, syrop klonowy: 1 łyżeczka, masło orzechowe: 1 łyżka",
-        "originalName": "płatki owsiane górskie: 50g, nasiona chia: 1 łyżka, napój migdałowy: 40 ml matcha: 1 łyżeczka, jogurt grecki: 2 łyżki, truskawki: 100 g, syrop klonowy: 1 łyżeczka, masło orzechowe: 1 łyżka",
-        "amount": 1.0,
+        "name": "płatki owsiane górskie",
+        "originalName": "płatki owsiane górskie",
+        "amount": 50.0,
         "unit": "g"
       }
     ]
@@ -4557,9 +4641,9 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "płatki owsiane górskie: 50 g, budyń waniliowy: 10g, woda: 200 ml, napój migdałowy: 20 ml, jajko: 1 sztuka; jogurt naturalny: 80 g, matcha: 2g, syrop klonowy: 1 łyżeczka, truskawki: 100 g, gorzka czekolada: 2 kostki",
-        "originalName": "płatki owsiane górskie: 50 g, budyń waniliowy: 10g, woda: 200 ml, napój migdałowy: 20 ml, jajko: 1 sztuka; jogurt naturalny: 80 g, matcha: 2g, syrop klonowy: 1 łyżeczka, truskawki: 100 g, gorzka czekolada: 2 kostki",
-        "amount": 1.0,
+        "name": "płatki owsiane górskie",
+        "originalName": "płatki owsiane górskie",
+        "amount": 50.0,
         "unit": "g"
       }
     ]
@@ -5111,8 +5195,8 @@
         "unit": "g"
       },
       {
-        "name": "Mleko 1,5%",
-        "originalName": "Mleko 1,5% (0.4 szklanka)",
+        "name": "Mleko 1 5%",
+        "originalName": "Mleko 1 5% (0.4 szklanka)",
         "amount": 100.0,
         "unit": "g"
       },
@@ -5395,10 +5479,52 @@
     ],
     "ingredients": [
       {
-        "name": "mąka owsiana: 5 łyżek, jajko: 1 sztuka, jogurt naturalnu: 1 opakowanie, soda oczyszczona: 1/2 łyżeczki, jabłko: 1 sztuka, olej rzepakowy: 1 łyżeczka, erytrytol: 1 łyżka, cynamon: 1/2 łyżeczki",
-        "originalName": "mąka owsiana: 5 łyżek, jajko: 1 sztuka, jogurt naturalnu: 1 opakowanie, soda oczyszczona: 1/2 łyżeczki, jabłko: 1 sztuka, olej rzepakowy: 1 łyżeczka, erytrytol: 1 łyżka, cynamon: 1/2 łyżeczki",
+        "name": "mąka owsiana",
+        "originalName": "mąka owsiana",
+        "amount": 5.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "jajko",
+        "originalName": "jajko",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szt"
+      },
+      {
+        "name": "jogurt naturalnu",
+        "originalName": "jogurt naturalnu",
+        "amount": 1.0,
+        "unit": "opakowanie"
+      },
+      {
+        "name": "soda oczyszczona",
+        "originalName": "soda oczyszczona",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "jabłko",
+        "originalName": "jabłko",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "olej rzepakowy",
+        "originalName": "olej rzepakowy",
+        "amount": 1.0,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "erytrytol",
+        "originalName": "erytrytol",
+        "amount": 1.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "cynamon",
+        "originalName": "cynamon",
+        "amount": 0.5,
+        "unit": "lyzeczka"
       }
     ]
   },
@@ -5856,10 +5982,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 3 sztuki, pomidory w puszce: 1/2 puszki, chorizo: 70g, cebula: 1/3 sztuki, czosnek: 1 ząbek, wędzona papryka: 1/3 łyżeczki, sól: szczypta, pieprz: szczypta, oliwa z oliwek: 1 łyżka, natka pietruszki: 1 łyżeczka, grahamka: 1 sztuka",
-        "originalName": "jajko: 3 sztuki, pomidory w puszce: 1/2 puszki, chorizo: 70g, cebula: 1/3 sztuki, czosnek: 1 ząbek, wędzona papryka: 1/3 łyżeczki, sól: szczypta, pieprz: szczypta, oliwa z oliwek: 1 łyżka, natka pietruszki: 1 łyżeczka, grahamka: 1 sztuka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -5879,10 +6005,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajka: 2 sztuki, ciecierzyca konserwowa: 120g, cebula: 1/3 sztuki, czosnek: 1 ząbek, pomidory z puszki: 200g, oliwa: 1 łyżka, kumin: 2 szczypty, papryka słodka: 1/2 łyżeczki, sól: szczypta, sezam: 1 łyżeczka, natka pietruszki: 1 łyżeczka",
-        "originalName": "jajka: 2 sztuki, ciecierzyca konserwowa: 120g, cebula: 1/3 sztuki, czosnek: 1 ząbek, pomidory z puszki: 200g, oliwa: 1 łyżka, kumin: 2 szczypty, papryka słodka: 1/2 łyżeczki, sól: szczypta, sezam: 1 łyżeczka, natka pietruszki: 1 łyżeczka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajka",
+        "originalName": "jajka",
+        "amount": 2.0,
+        "unit": "szt"
       }
     ]
   },
@@ -6172,10 +6298,10 @@
     ],
     "ingredients": [
       {
-        "name": "banan: 3 sztuki, jajko: 2 sztuki, jogurt naturalny: 100 g, mąka owsiana: 150 g, proszek do pieczenia: 1 łyżeczka, sól: szczypta, oliwa z oliwek: 1 łyżka",
-        "originalName": "banan: 3 sztuki, jajko: 2 sztuki, jogurt naturalny: 100 g, mąka owsiana: 150 g, proszek do pieczenia: 1 łyżeczka, sól: szczypta, oliwa z oliwek: 1 łyżka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "banan",
+        "originalName": "banan",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -6583,10 +6709,52 @@
     ],
     "ingredients": [
       {
-        "name": "Tortilla pszenna pełnoziarnista: 1 sztuka, jajko: 2 szuki, cebula: 1/4 sztuki, oliwa z oliwek: 2 łyżki, pomidor czerwony: 1/2 sztuki, papryka czerwona: 1/2 sztuki, roszponka: garść, cheddar: 2 plastry",
-        "originalName": "Tortilla pszenna pełnoziarnista: 1 sztuka, jajko: 2 szuki, cebula: 1/4 sztuki, oliwa z oliwek: 2 łyżki, pomidor czerwony: 1/2 sztuki, papryka czerwona: 1/2 sztuki, roszponka: garść, cheddar: 2 plastry",
+        "name": "Tortilla pszenna pełnoziarnista",
+        "originalName": "Tortilla pszenna pełnoziarnista",
+        "amount": 1.0,
+        "unit": "szt"
+      },
+      {
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "cebula",
+        "originalName": "cebula",
+        "amount": 0.25,
+        "unit": "szt"
+      },
+      {
+        "name": "oliwa z oliwek",
+        "originalName": "oliwa z oliwek",
+        "amount": 2.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "pomidor czerwony",
+        "originalName": "pomidor czerwony",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "papryka czerwona",
+        "originalName": "papryka czerwona",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "roszponka",
+        "originalName": "roszponka",
         "amount": 1.0,
         "unit": "g"
+      },
+      {
+        "name": "cheddar",
+        "originalName": "cheddar",
+        "amount": 2.0,
+        "unit": "plaster"
       }
     ]
   },
@@ -6881,10 +7049,10 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Jajko: 2 sztuki, cebula: 1/4 sztuki, czosnek: ząbek, szpinak: 3 garście, papryka zielona: 1/3 sztuki, natka pietruszki: garść, mleczko kokosowe: 1/3 szklanki, oliwa z oliwek: 1 łyżka, kumin: 1/2 łyżeczki, kurkuma: 1/2 łyżeczki, sól: 2 szczypty, czarnuszka: 1/3 łyżeczki, pestki dyni",
-        "originalName": "Jajko: 2 sztuki, cebula: 1/4 sztuki, czosnek: ząbek, szpinak: 3 garście, papryka zielona: 1/3 sztuki, natka pietruszki: garść, mleczko kokosowe: 1/3 szklanki, oliwa z oliwek: 1 łyżka, kumin: 1/2 łyżeczki, kurkuma: 1/2 łyżeczki, sól: 2 szczypty, czarnuszka: 1/3 łyżeczki, pestki dyni",
-        "amount": 1.0,
-        "unit": "lyzka"
+        "name": "Jajko",
+        "originalName": "Jajko",
+        "amount": 2.0,
+        "unit": "szt"
       }
     ]
   },
@@ -6924,8 +7092,8 @@
         "unit": "g"
       },
       {
-        "name": "Mleko 1,5%",
-        "originalName": "Mleko 1,5% (0.3 szklanka)",
+        "name": "Mleko 1 5%",
+        "originalName": "Mleko 1 5% (0.3 szklanka)",
         "amount": 75.0,
         "unit": "g"
       },
@@ -6969,10 +7137,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajka: 3 sztuki; szynka z indyka: 50g, szczypiorek: łyzka; pestki dyni: 1 łyzka; oliwa z oliwek: 1 łyzka; sól: szczypta, pieprz: szczypta, czerwona papryka: 1/2 sztuki, chleb żytni na zakwasie: 1 kromka",
-        "originalName": "jajka: 3 sztuki; szynka z indyka: 50g, szczypiorek: łyzka; pestki dyni: 1 łyzka; oliwa z oliwek: 1 łyzka; sól: szczypta, pieprz: szczypta, czerwona papryka: 1/2 sztuki, chleb żytni na zakwasie: 1 kromka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajka",
+        "originalName": "jajka",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -6991,10 +7159,16 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni razowy: 2 kromki ; jajko: 2 sztuki, awokado: 1/2 sztuki ; sok z cytryny",
-        "originalName": "chleb żytni razowy: 2 kromki ; jajko: 2 sztuki, awokado: 1/2 sztuki ; sok z cytryny",
-        "amount": 1.0,
-        "unit": "lyzka"
+        "name": "chleb żytni razowy",
+        "originalName": "chleb żytni razowy",
+        "amount": 2.0,
+        "unit": "g"
+      },
+      {
+        "name": "awokado",
+        "originalName": "awokado",
+        "amount": 0.5,
+        "unit": "szt"
       }
     ]
   },
@@ -7012,9 +7186,21 @@
     ],
     "ingredients": [
       {
-        "name": "płatki jaglane: 6 łyżek, napój sojowy: 150 ml; miód: 1 łyżeczka; nasiona chia: 1 łyżka; truskawki: garść, pestki dyni: 2 łyzki",
-        "originalName": "płatki jaglane: 6 łyżek, napój sojowy: 150 ml; miód: 1 łyżeczka; nasiona chia: 1 łyżka; truskawki: garść, pestki dyni: 2 łyzki",
-        "amount": 1.0,
+        "name": "płatki jaglane",
+        "originalName": "płatki jaglane",
+        "amount": 6.0,
+        "unit": "lyzka"
+      },
+      {
+        "name": "napój sojowy",
+        "originalName": "napój sojowy",
+        "amount": 150.0,
+        "unit": "ml"
+      },
+      {
+        "name": "pestki dyni",
+        "originalName": "pestki dyni",
+        "amount": 2.0,
         "unit": "g"
       }
     ]
@@ -7033,10 +7219,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 3 sztuki; łosoś wędzony na gorąco: 70g; koperek: 1 łyżeczka; pomidorki koktajlowe: garść, oliwa z oliwek: 1 łyzka; nasiona słonecznika: 1 łyżka, sok z cytryny: 1 łyżeczka",
-        "originalName": "jajko: 3 sztuki; łosoś wędzony na gorąco: 70g; koperek: 1 łyżeczka; pomidorki koktajlowe: garść, oliwa z oliwek: 1 łyzka; nasiona słonecznika: 1 łyżka, sok z cytryny: 1 łyżeczka",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "jajko",
+        "originalName": "jajko",
+        "amount": 3.0,
+        "unit": "szt"
       }
     ]
   },
@@ -7072,10 +7258,10 @@
     ],
     "ingredients": [
       {
-        "name": "jajko: 1 sztuka; sardynki: 80 g; jogurt kokosowy: 1 łyżka; natka pietruszki: 1 łyżka, ogórek kiszony: 2 sztuki, pieprz: szczypta",
-        "originalName": "jajko: 1 sztuka; sardynki: 80 g; jogurt kokosowy: 1 łyżka; natka pietruszki: 1 łyżka, ogórek kiszony: 2 sztuki, pieprz: szczypta",
+        "name": "jajko",
+        "originalName": "jajko",
         "amount": 1.0,
-        "unit": "g"
+        "unit": "szt"
       }
     ]
   },
@@ -8036,8 +8222,14 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Składniki mokre: 1½ szklanki tartej cukinii",
-        "originalName": "Składniki mokre: 1½ szklanki tartej cukinii (lekko odciśniętej, nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool (10–12 dużych)",
+        "name": "Składniki mokre",
+        "originalName": "Składniki mokre",
+        "amount": 1.0,
+        "unit": "g"
+      },
+      {
+        "name": "nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool",
+        "originalName": "nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool (10–12 dużych)",
         "amount": 1.0,
         "unit": "g"
       },
@@ -8054,10 +8246,10 @@
         "unit": "g"
       },
       {
-        "name": "Składniki suche: 2 szklanki mąki migdałowej",
-        "originalName": "Składniki suche: 2 szklanki mąki migdałowej",
-        "amount": 1.0,
-        "unit": "g"
+        "name": "Składniki suche",
+        "originalName": "Składniki suche",
+        "amount": 2.0,
+        "unit": "szklanka"
       },
       {
         "name": "⅓ szklanki kakao holenderskiego 1 łyżeczka sody oczyszczonej",
@@ -8078,8 +8270,8 @@
         "unit": "g"
       },
       {
-        "name": "Dodatki:",
-        "originalName": "Dodatki:",
+        "name": "Dodatki",
+        "originalName": "Dodatki -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -8416,9 +8608,9 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Ciasto: 2 jajka",
-        "originalName": "Ciasto: 2 jajka",
-        "amount": 1.0,
+        "name": "Ciasto",
+        "originalName": "Ciasto",
+        "amount": 2.0,
         "unit": "g"
       },
       {
@@ -8434,8 +8626,8 @@
         "unit": "g"
       },
       {
-        "name": "Dodatki / topping:",
-        "originalName": "Dodatki / topping:",
+        "name": "Dodatki / topping",
+        "originalName": "Dodatki / topping -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -12436,9 +12628,9 @@
     ],
     "ingredients": [
       {
-        "name": "Szpinak: 3 garści; pomarańcza: 1/2 sztuki; kiwi: 1 sztuka; banan: 1 sztuka; odżywka roślinna: 1 sztuka; napój sojowy: 150 ml, seed cyling: 1 łyżka",
-        "originalName": "Szpinak: 3 garści; pomarańcza: 1/2 sztuki; kiwi: 1 sztuka; banan: 1 sztuka; odżywka roślinna: 1 sztuka; napój sojowy: 150 ml, seed cyling: 1 łyżka",
-        "amount": 1.0,
+        "name": "Szpinak",
+        "originalName": "Szpinak",
+        "amount": 3.0,
         "unit": "g"
       }
     ]
@@ -16952,15 +17144,15 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Główne: 120 g świeżego łososia 200 g cukinii 100 g papryki 40 g pieczarek 15 ml oliwy z oliwek",
-        "originalName": "Główne: 120 g świeżego łososia 200 g cukinii 100 g papryki 40 g pieczarek 15 ml oliwy z oliwek",
-        "amount": 1.0,
+        "name": "Główne",
+        "originalName": "Główne",
+        "amount": 120.0,
         "unit": "g"
       },
       {
-        "name": "Sos: 50 g jogurtu greckiego 10 g majonezu 30 g ogórka",
-        "originalName": "Sos: 50 g jogurtu greckiego 10 g majonezu 30 g ogórka",
-        "amount": 1.0,
+        "name": "Sos",
+        "originalName": "Sos",
+        "amount": 50.0,
         "unit": "g"
       },
       {
@@ -16970,8 +17162,8 @@
         "unit": "g"
       },
       {
-        "name": "Przyprawy:",
-        "originalName": "Przyprawy:",
+        "name": "Przyprawy",
+        "originalName": "Przyprawy -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -17439,8 +17631,8 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Sos:",
-        "originalName": "Sos:",
+        "name": "Sos",
+        "originalName": "Sos -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -17463,9 +17655,9 @@
         "unit": "g"
       },
       {
-        "name": "Reszta: 300 g piersi z kurczaka 90 g makaronu",
-        "originalName": "Reszta: 300 g piersi z kurczaka 90 g makaronu",
-        "amount": 1.0,
+        "name": "Reszta",
+        "originalName": "Reszta",
+        "amount": 300.0,
         "unit": "g"
       },
       {
@@ -17945,8 +18137,8 @@
         "unit": "g"
       },
       {
-        "name": "Mleko 1,5%",
-        "originalName": "Mleko 1,5% (0.5 szklanka)",
+        "name": "Mleko 1 5%",
+        "originalName": "Mleko 1 5% (0.5 szklanka)",
         "amount": 125.0,
         "unit": "g"
       },
@@ -21419,8 +21611,8 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Główne: 1 brokuł 2 jajka",
-        "originalName": "Główne: 1 brokuł 2 jajka (lub więcej)",
+        "name": "Główne",
+        "originalName": "Główne",
         "amount": 1.0,
         "unit": "g"
       },
@@ -21431,14 +21623,14 @@
         "unit": "g"
       },
       {
-        "name": "Sos: 40 g majonezu 70 g jogurtu greckiego 1 łyżka sosu Worcestershire 15 g Grana Padano 1 łyżka musztardy francuskiej 1 ząbek czosnku",
-        "originalName": "Sos: 40 g majonezu 70 g jogurtu greckiego 1 łyżka sosu Worcestershire 15 g Grana Padano 1 łyżka musztardy francuskiej 1 ząbek czosnku",
-        "amount": 1.0,
+        "name": "Sos",
+        "originalName": "Sos",
+        "amount": 40.0,
         "unit": "g"
       },
       {
-        "name": "Dodatkowo:",
-        "originalName": "Dodatkowo:",
+        "name": "Dodatkowo",
+        "originalName": "Dodatkowo -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -25617,8 +25809,8 @@
         "unit": "g"
       },
       {
-        "name": "Mleko 1,5%",
-        "originalName": "Mleko 1,5% (1 szklanka)",
+        "name": "Mleko 1 5%",
+        "originalName": "Mleko 1 5% (1 szklanka)",
         "amount": 250.0,
         "unit": "g"
       },
@@ -25806,8 +25998,8 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Placki:",
-        "originalName": "Placki:",
+        "name": "Placki",
+        "originalName": "Placki -",
         "amount": 1.0,
         "unit": "g"
       },
@@ -25830,9 +26022,9 @@
         "unit": "g"
       },
       {
-        "name": "Pasta / topping: 80 g awokado 20 g czerwonej cebuli 50 g pomidora",
-        "originalName": "Pasta / topping: 80 g awokado 20 g czerwonej cebuli 50 g pomidora",
-        "amount": 1.0,
+        "name": "Pasta / topping",
+        "originalName": "Pasta / topping",
+        "amount": 80.0,
         "unit": "g"
       },
       {
@@ -26544,8 +26736,8 @@
         "unit": "g"
       },
       {
-        "name": "Dressing:",
-        "originalName": "Dressing:",
+        "name": "Dressing",
+        "originalName": "Dressing -",
         "amount": 1.0,
         "unit": "g"
       },

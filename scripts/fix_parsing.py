@@ -42,6 +42,9 @@ UNIT_MAP = {
 }
 
 def clean_ingredient(raw_line):
+    # Handle colon style: "jajko: 2 sztuki"
+    raw_line = raw_line.replace(':', ' - ')
+    
     raw_line = raw_line.strip()
     if not raw_line or len(raw_line) < 2:
         return None
@@ -50,29 +53,42 @@ def clean_ingredient(raw_line):
     amount = 1.0
     unit = 'g'
 
-    # 1. Handle "Name (measure) - 100g"
+    # 1. Handle "Name (measure) - 100g" or "Name: 100g"
     if ' - ' in raw_line:
         parts = raw_line.split(' - ')
         name = parts[0].strip()
         amount_part = parts[1].strip()
         
-        match = re.search(r'([\d.]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)', amount_part)
+        # Match number and unit
+        match = re.search(r'([\d./]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)', amount_part)
         if match:
-            amount = float(match.group(1))
+            amt_str = match.group(1)
+            # Handle fractions like 1/2
+            if '/' in amt_str:
+                num, den = amt_str.split('/')
+                amount = float(num) / float(den)
+            else:
+                amount = float(amt_str)
+            
             unit_raw = match.group(2).lower()
             unit = UNIT_MAP.get(unit_raw, 'g')
     else:
         # 2. Handle "Name (100g)"
-        match = re.search(r'(.*)\(([\d.]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\)', name)
+        match = re.search(r'(.*)\(([\d./]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\)', name)
         if match:
             name = match.group(1).strip()
-            amount = float(match.group(2))
+            amt_str = match.group(2)
+            if '/' in amt_str:
+                num, den = amt_str.split('/')
+                amount = float(num) / float(den)
+            else:
+                amount = float(amt_str)
             unit_raw = match.group(3).lower()
             unit = UNIT_MAP.get(unit_raw, 'g')
 
     # Clean name from measure notes: "Płatki (6 łyżek)" -> "Płatki"
     name_clean = re.sub(r'\(.*\)', '', name).strip()
-    name_clean = re.sub(r'\s*-?\s*$', '', name_clean) # Remove trailing dashes
+    name_clean = re.sub(r'\s*-?\s*$', '', name_clean) 
     
     if not name_clean:
         return None
@@ -85,20 +101,28 @@ def clean_ingredient(raw_line):
     }
 
 def split_ingredients(raw_text):
-    # The major problem: sometimes ingredients are separated by \n, sometimes by , (if all in one line)
-    # But usually, a new ingredient starts with a string followed by a number or bracket in the next line or after a period.
-    
-    # First, replace weird newlines where a line ends with " - " or starts with "60g"
-    # Actually, a more robust way is to join lines that start with a digit or unit
+    # Split by newline first
     lines = raw_text.split('\n')
-    true_lines = []
     
+    processed_lines = []
     for l in lines:
         l = l.strip()
         if not l: continue
         
-        # If line starts with a digit or "g" or "ml" or "szt" and we have a previous line, append it
-        if true_lines and (re.match(r'^\d', l) or l.lower() in UNIT_MAP or l.startswith('-')):
+        # Check if this line is a comma-separated list of ingredients
+        # Pattern: "Name: 1, Name: 2" OR "Name (1), Name (2)"
+        if (',' in l and (':' in l or '(' in l)) and not re.search(r'\d\s*g', l):
+            # Potential comma list
+            parts = [p.strip() for p in l.split(',')]
+            processed_lines.extend(parts)
+        else:
+            processed_lines.append(l)
+
+    # Join fragmented lines (e.g. name on one line, amount on next)
+    true_lines = []
+    for l in processed_lines:
+        # If line starts with a digit or unit and we have a previous line, append it
+        if true_lines and (re.match(r'^[\d./]', l) or l.lower() in UNIT_MAP or l.startswith('-')):
             true_lines[-1] = true_lines[-1] + ' ' + l
         else:
             true_lines.append(l)

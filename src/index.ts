@@ -265,11 +265,12 @@ export default {
           delete dataToSync.entries;
         }
 
-        // 3. Status check
+        // 3. Status check - Robust check for Strapi 5
         const isPublished = !!(
           dataToSync.publishedAt ||
           dataToSync.published_at ||
           dataToSync.status === 'published' ||
+          (result.publishedAt) ||
           action === 'publish'
         );
 
