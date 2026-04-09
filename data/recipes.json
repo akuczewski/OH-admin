@@ -181,7 +181,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -242,7 +242,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -315,7 +315,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 2.0,
         "unit": "szt"
@@ -337,7 +337,7 @@
     ],
     "ingredients": [
       {
-        "name": "kaszy gryczana",
+        "name": "Kasza gryczana",
         "originalName": "kaszy gryczana",
         "amount": 50.0,
         "unit": "g"
@@ -368,7 +368,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło migdałowe bez soli",
+        "name": "Masło migdałowe bez Sól",
         "originalName": "Masło migdałowe bez soli (1 łyżka)",
         "amount": 20.0,
         "unit": "g"
@@ -496,7 +496,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło orzechowe bez soli",
+        "name": "Masło orzechowe bez Sól",
         "originalName": "Masło orzechowe bez soli (1 łyżeczka)",
         "amount": 10.0,
         "unit": "g"
@@ -600,7 +600,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny 12 g,",
+        "name": "Sok z Cytryna 12 g,",
         "originalName": "Sok z cytryny 12 g,",
         "amount": 2.0,
         "unit": "lyzka"
@@ -1376,7 +1376,7 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni razowy",
+        "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
         "unit": "g"
@@ -1745,7 +1745,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajka",
+        "name": "Jajko",
         "originalName": "jajka",
         "amount": 2.0,
         "unit": "szt"
@@ -1786,7 +1786,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -1969,7 +1969,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło orzechowe bez soli",
+        "name": "Masło orzechowe bez Sól",
         "originalName": "Masło orzechowe bez soli (1 łyżka)",
         "amount": 24.0,
         "unit": "g"
@@ -2074,61 +2074,61 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 2.0,
         "unit": "szt"
       },
       {
-        "name": "awokado",
+        "name": "Awokado",
         "originalName": "awokado",
         "amount": 0.5,
         "unit": "szt"
       },
       {
-        "name": "sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "sok z cytryny",
         "amount": 1.0,
         "unit": "lyzeczka"
       },
       {
-        "name": "oliwa z oliwek",
+        "name": "Oliwa z oliwek",
         "originalName": "oliwa z oliwek",
         "amount": 1.0,
         "unit": "lyzeczka"
       },
       {
-        "name": "natka pietruszki",
+        "name": "Natka pietruszki",
         "originalName": "natka pietruszki",
         "amount": 1.0,
         "unit": "lyzka"
       },
       {
-        "name": "sól",
+        "name": "Sól",
         "originalName": "sól",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "pieprz",
+        "name": "Pieprz",
         "originalName": "pieprz",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "kurkuma",
+        "name": "Kurkuma",
         "originalName": "kurkuma",
         "amount": 2.0,
         "unit": "szczypta"
       },
       {
-        "name": "chleb żytni razowy",
+        "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
         "unit": "g"
       },
       {
-        "name": "papryka czerwona",
+        "name": "Papryka czerwona",
         "originalName": "papryka czerwona",
         "amount": 0.5,
         "unit": "szt"
@@ -2149,37 +2149,37 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni",
+        "name": "Chleb żytni",
         "originalName": "chleb żytni",
         "amount": 2.0,
         "unit": "g"
       },
       {
-        "name": "jajka",
+        "name": "Jajko",
         "originalName": "jajka",
         "amount": 2.0,
         "unit": "szt"
       },
       {
-        "name": "jogurt",
+        "name": "Jogurt",
         "originalName": "jogurt",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "musztarda",
+        "name": "Musztarda",
         "originalName": "musztarda",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypiorek",
+        "name": "Szczypiorek",
         "originalName": "szczypiorek",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "ogórek",
+        "name": "Ogórek",
         "originalName": "ogórek",
         "amount": 1.0,
         "unit": "g"
@@ -2313,7 +2313,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -2510,7 +2510,7 @@
         "unit": "g"
       },
       {
-        "name": "sól – do smaku",
+        "name": "Sól – do smaku",
         "originalName": "(opcjonalnie) sól – do smaku",
         "amount": 1.0,
         "unit": "g"
@@ -2672,7 +2672,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
@@ -2800,7 +2800,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -2886,7 +2886,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -3276,7 +3276,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło migdałowe bez soli",
+        "name": "Masło migdałowe bez Sól",
         "originalName": "Masło migdałowe bez soli (1 łyżeczka)",
         "amount": 10.0,
         "unit": "g"
@@ -3934,7 +3934,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -4217,13 +4217,13 @@
         "unit": "g"
       },
       {
-        "name": "szklanek)",
+        "name": "Szklanek)",
         "originalName": "szklanek)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "Ser mozzarella  30 g,",
+        "name": "Ser mozzarella 30 g,",
         "originalName": "Ser mozzarella (tar ty) 30 g,",
         "amount": 1.0,
         "unit": "lyzka"
@@ -4336,7 +4336,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "jajko kurze",
+        "name": "Jajko kurze",
         "originalName": "jajko kurze (3 średnia sztuka)",
         "amount": 150.0,
         "unit": "g"
@@ -4395,7 +4395,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajka",
+        "name": "Jajko",
         "originalName": "jajka",
         "amount": 3.0,
         "unit": "szt"
@@ -4567,7 +4567,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "płatki owsiane górskie",
+        "name": "Płatki owsiane górskie",
         "originalName": "płatki owsiane górskie",
         "amount": 50.0,
         "unit": "g"
@@ -4641,7 +4641,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "płatki owsiane górskie",
+        "name": "Płatki owsiane górskie",
         "originalName": "płatki owsiane górskie",
         "amount": 50.0,
         "unit": "g"
@@ -4794,7 +4794,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń bez cukru",
+        "name": "Budyń bez Cukier",
         "originalName": "Budyń bez cukru (20 g)",
         "amount": 20.0,
         "unit": "g"
@@ -4843,7 +4843,7 @@
         "unit": "g"
       },
       {
-        "name": "szklanek)",
+        "name": "Szklanek)",
         "originalName": "szklanek)",
         "amount": 1.0,
         "unit": "g"
@@ -4916,7 +4916,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -4976,7 +4976,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -5408,7 +5408,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -5479,49 +5479,49 @@
     ],
     "ingredients": [
       {
-        "name": "mąka owsiana",
+        "name": "Mąka owsiana",
         "originalName": "mąka owsiana",
         "amount": 5.0,
         "unit": "lyzka"
       },
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 1.0,
         "unit": "szt"
       },
       {
-        "name": "jogurt naturalnu",
+        "name": "Jogurt naturalnu",
         "originalName": "jogurt naturalnu",
         "amount": 1.0,
         "unit": "opakowanie"
       },
       {
-        "name": "soda oczyszczona",
+        "name": "Soda oczyszczona",
         "originalName": "soda oczyszczona",
         "amount": 0.5,
         "unit": "lyzeczka"
       },
       {
-        "name": "jabłko",
+        "name": "Jabłko",
         "originalName": "jabłko",
         "amount": 1.0,
         "unit": "szt"
       },
       {
-        "name": "olej rzepakowy",
+        "name": "Olej rzepakowy",
         "originalName": "olej rzepakowy",
         "amount": 1.0,
         "unit": "lyzeczka"
       },
       {
-        "name": "erytrytol",
+        "name": "Erytrytol",
         "originalName": "erytrytol",
         "amount": 1.0,
         "unit": "lyzka"
       },
       {
-        "name": "cynamon",
+        "name": "Cynamon",
         "originalName": "cynamon",
         "amount": 0.5,
         "unit": "lyzeczka"
@@ -5833,7 +5833,7 @@
         "unit": "g"
       },
       {
-        "name": "Napój migdałowy bez cukru z wapniem",
+        "name": "Napój migdałowy bez Cukier z wapniem",
         "originalName": "Napój migdałowy bez cukru z wapniem (Alpro) (0.8 szklanka)",
         "amount": 200.0,
         "unit": "g"
@@ -5888,79 +5888,79 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "1 opakowanie pomidorów z puszki 400 g 0,8",
+        "name": "1 opakowanie Pomidor z puszki 400 g 0,8",
         "originalName": "1 opakowanie pomidorów z puszki 400 g 0,8",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "opakowania burraty 100 g 4",
+        "name": "Opakowania burraty 100 g 4",
         "originalName": "opakowania burraty 100 g 4",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sztuki jajek 224 g 1",
+        "name": "Sztuki Jajko 224 g 1",
         "originalName": "sztuki jajek 224 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sztuka cebuli 80 g 2",
+        "name": "Sztuka Cebula 80 g 2",
         "originalName": "sztuka cebuli 80 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "ząbki czosnku 12 g 1",
+        "name": "Ząbki Czosnek 12 g 1",
         "originalName": "ząbki czosnku 12 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sztuka papryki czerwonej 170 g 1",
+        "name": "Sztuka papryki czerwonej 170 g 1",
         "originalName": "sztuka papryki czerwonej 170 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczka papryki wędzonej 3 g 0,2",
+        "name": "Łyżeczka papryki wędzonej 3 g 0,2",
         "originalName": "łyżeczka papryki wędzonej 3 g 0,2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki ostrej papryki 0,5 g 1",
+        "name": "Łyżeczki ostrej papryki 0,5 g 1",
         "originalName": "łyżeczki ostrej papryki 0,5 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "garść świeżej bazylii 3 g 1",
+        "name": "Garść świeżej bazylii 3 g 1",
         "originalName": "garść świeżej bazylii 3 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczka natki pietruszki 5 g 2",
+        "name": "Łyżeczka natki pietruszki 5 g 2",
         "originalName": "łyżeczka natki pietruszki 5 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki oliwy z oliwek 10 g 1",
+        "name": "Łyżeczki Oliwa z oliwek 10 g 1",
         "originalName": "łyżeczki oliwy z oliwek 10 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypta soli 0,25 g 1",
+        "name": "Szczypta Sól 0,25 g 1",
         "originalName": "szczypta soli 0,25 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypta pieprzu 0,25 g",
+        "name": "Szczypta Pieprz 0,25 g",
         "originalName": "szczypta pieprzu 0,25 g",
         "amount": 1.0,
         "unit": "g"
@@ -5982,7 +5982,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
@@ -6005,7 +6005,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajka",
+        "name": "Jajko",
         "originalName": "jajka",
         "amount": 2.0,
         "unit": "szt"
@@ -6233,7 +6233,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -6298,7 +6298,7 @@
     ],
     "ingredients": [
       {
-        "name": "banan",
+        "name": "Banan",
         "originalName": "banan",
         "amount": 3.0,
         "unit": "szt"
@@ -6438,7 +6438,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -6715,43 +6715,43 @@
         "unit": "szt"
       },
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 2.0,
         "unit": "g"
       },
       {
-        "name": "cebula",
+        "name": "Cebula",
         "originalName": "cebula",
         "amount": 0.25,
         "unit": "szt"
       },
       {
-        "name": "oliwa z oliwek",
+        "name": "Oliwa z oliwek",
         "originalName": "oliwa z oliwek",
         "amount": 2.0,
         "unit": "lyzka"
       },
       {
-        "name": "pomidor czerwony",
+        "name": "Pomidor czerwony",
         "originalName": "pomidor czerwony",
         "amount": 0.5,
         "unit": "szt"
       },
       {
-        "name": "papryka czerwona",
+        "name": "Papryka czerwona",
         "originalName": "papryka czerwona",
         "amount": 0.5,
         "unit": "szt"
       },
       {
-        "name": "roszponka",
+        "name": "Roszponka",
         "originalName": "roszponka",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "cheddar",
+        "name": "Cheddar",
         "originalName": "cheddar",
         "amount": 2.0,
         "unit": "plaster"
@@ -7098,7 +7098,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -7137,7 +7137,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajka",
+        "name": "Jajko",
         "originalName": "jajka",
         "amount": 3.0,
         "unit": "szt"
@@ -7159,13 +7159,13 @@
     ],
     "ingredients": [
       {
-        "name": "chleb żytni razowy",
+        "name": "Chleb żytni razowy",
         "originalName": "chleb żytni razowy",
         "amount": 2.0,
         "unit": "g"
       },
       {
-        "name": "awokado",
+        "name": "Awokado",
         "originalName": "awokado",
         "amount": 0.5,
         "unit": "szt"
@@ -7186,19 +7186,19 @@
     ],
     "ingredients": [
       {
-        "name": "płatki jaglane",
+        "name": "Płatki jaglane",
         "originalName": "płatki jaglane",
         "amount": 6.0,
         "unit": "lyzka"
       },
       {
-        "name": "napój sojowy",
+        "name": "Napój sojowy",
         "originalName": "napój sojowy",
         "amount": 150.0,
         "unit": "ml"
       },
       {
-        "name": "pestki dyni",
+        "name": "Pestki dyni",
         "originalName": "pestki dyni",
         "amount": 2.0,
         "unit": "g"
@@ -7219,7 +7219,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 3.0,
         "unit": "szt"
@@ -7258,7 +7258,7 @@
     ],
     "ingredients": [
       {
-        "name": "jajko",
+        "name": "Jajko",
         "originalName": "jajko",
         "amount": 1.0,
         "unit": "szt"
@@ -7452,7 +7452,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -7638,7 +7638,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "kyr waniliowy",
+        "name": "Kyr waniliowy",
         "originalName": "kyr waniliowy (Piątnica) (1 opakowanie)",
         "amount": 150.0,
         "unit": "g"
@@ -7762,7 +7762,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.25 łyżeczka)",
         "amount": 1.0,
         "unit": "g"
@@ -7938,7 +7938,7 @@
     ],
     "ingredients": [
       {
-        "name": "1 szklanka mąki owsianej lub pszennej typ 500 2 jajka",
+        "name": "1 szklanka Mąka owsianej lub pszennej typ 500 2 Jajko",
         "originalName": "1 szklanka mąki owsianej lub pszennej typ 500(100 g) 1 szklanka mąki z ciecierzycy(150 g) 2 łyżeczki proszku do pieczenia(8 g) 2 jajka",
         "amount": 98.0,
         "unit": "g"
@@ -7974,25 +7974,25 @@
     ],
     "ingredients": [
       {
-        "name": "1,5 szklanki mąki pełnoziarnistej  u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
+        "name": "1,5 szklanki Mąka pełnoziarnistej u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
         "originalName": "1,5 szklanki mąki pełnoziarnistej (200 g) u mnie pszenna pełnoziarnista 2 jogurty naturalne proteinowe Pilos z Lidla",
         "amount": 300.0,
         "unit": "ml"
       },
       {
-        "name": "szklanka ksylitolu",
+        "name": "Szklanka ksylitolu",
         "originalName": "szklanka ksylitolu (zmiksowanego na puder)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczka proszku do pieczenia",
+        "name": "Łyżeczka proszku do pieczenia",
         "originalName": "łyżeczka proszku do pieczenia",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypta soli",
+        "name": "Szczypta Sól",
         "originalName": "szczypta soli",
         "amount": 1.0,
         "unit": "g"
@@ -8228,19 +8228,19 @@
         "unit": "g"
       },
       {
-        "name": "nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool",
+        "name": "Nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool",
         "originalName": "nie całkowicie suchej) 1 szklanka suszonych daktyli Medjool (10–12 dużych)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "½ szklanki ciepłego mleka",
+        "name": "½ szklanki ciepłego Mleko",
         "originalName": "½ szklanki ciepłego mleka",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "⅓ szklanki oliwy extra virgin 3 duże jajka w temperaturze pokojowej 1 łyżeczka ekstraktu waniliowego",
+        "name": "⅓ szklanki Oliwa extra virgin 3 duże Jajko w temperaturze pokojowej 1 łyżeczka ekstraktu waniliowego",
         "originalName": "⅓ szklanki oliwy extra virgin 3 duże jajka w temperaturze pokojowej 1 łyżeczka ekstraktu waniliowego",
         "amount": 1.0,
         "unit": "g"
@@ -8264,7 +8264,7 @@
         "unit": "g"
       },
       {
-        "name": "¼ łyżeczki soli 1 łyżeczka proszku espresso",
+        "name": "¼ łyżeczki Sól 1 łyżeczka proszku espresso",
         "originalName": "¼ łyżeczki soli 1 łyżeczka proszku espresso (opcjonalnie)",
         "amount": 1.0,
         "unit": "g"
@@ -8282,7 +8282,7 @@
         "unit": "g"
       },
       {
-        "name": "¾ szklanki posiekanych orzechów włoskich",
+        "name": "¾ szklanki posiekanych Orzechy włoskich",
         "originalName": "¾ szklanki posiekanych orzechów włoskich (opcjonalnie)",
         "amount": 1.0,
         "unit": "g"
@@ -8456,7 +8456,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "24 sztuki biszkoptów  2 łyżki gorzkiego kakao",
+        "name": "24 sztuki biszkoptów 2 łyżki gorzkiego kakao",
         "originalName": "24 sztuki biszkoptów (ilość zależy od tego, jaką masz blaszkę)(100 g) 1 szklanka mocnego naparu z kawy(250 g) 2 opakowania serka Bieluch waniliowego(300 g) 2 opakowania serka Bieluch naturalnego(300 g) 2 łyżki gorzkiego kakao",
         "amount": 20.0,
         "unit": "g"
@@ -8556,7 +8556,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -8588,7 +8588,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło orzechowe bez soli",
+        "name": "Masło orzechowe bez Sól",
         "originalName": "Masło orzechowe bez soli (1 łyżka)",
         "amount": 24.0,
         "unit": "g"
@@ -8614,13 +8614,13 @@
         "unit": "g"
       },
       {
-        "name": "¾ szklanki mąki migdałowej",
+        "name": "¾ szklanki Mąka migdałowej",
         "originalName": "¾ szklanki mąki migdałowej",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "½ szklanki twarogu  2 łyżki słodzika 2 łyżki masła, roztopionego 1 łyżeczka proszku do pieczenia 1 łyżeczka ekstraktu waniliowego",
+        "name": "½ szklanki Twaróg 2 łyżki słodzika 2 łyżki Masło roztopionego 1 łyżeczka proszku do pieczenia 1 łyżeczka ekstraktu waniliowego",
         "originalName": "½ szklanki twarogu (lub jogurtu greckiego) 2 łyżki słodzika 2 łyżki masła, roztopionego 1 łyżeczka proszku do pieczenia 1 łyżeczka ekstraktu waniliowego",
         "amount": 1.0,
         "unit": "g"
@@ -8632,7 +8632,7 @@
         "unit": "g"
       },
       {
-        "name": "¼ szklanki mieszanych owoców jagodowych",
+        "name": "¼ szklanki mieszanych Owoce jagodowych",
         "originalName": "¼ szklanki mieszanych owoców jagodowych",
         "amount": 1.0,
         "unit": "g"
@@ -8670,7 +8670,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń bez cukru",
+        "name": "Budyń bez Cukier",
         "originalName": "Budyń bez cukru (3 łyżka)",
         "amount": 24.0,
         "unit": "g"
@@ -8726,7 +8726,7 @@
         "unit": "g"
       },
       {
-        "name": "Skórka z cytryny",
+        "name": "Skórka z Cytryna",
         "originalName": "Skórka z cytryny (2 łyżeczka)",
         "amount": 4.0,
         "unit": "g"
@@ -8840,7 +8840,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Jogurt kokosowy naturalny bez cukru",
+        "name": "Jogurt kokosowy naturalny bez Cukier",
         "originalName": "Jogurt kokosowy naturalny bez cukru (PlantON) (1 opakowanie)",
         "amount": 160.0,
         "unit": "g"
@@ -8884,7 +8884,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "Jogurt kokosowy naturalny bez cukru",
+        "name": "Jogurt kokosowy naturalny bez Cukier",
         "originalName": "Jogurt kokosowy naturalny bez cukru (PlantON) (1 opakowanie)",
         "amount": 160.0,
         "unit": "g"
@@ -9292,7 +9292,7 @@
         "unit": "g"
       },
       {
-        "name": "Dżem 100% owoców",
+        "name": "Dżem 100% Owoce",
         "originalName": "Dżem 100% owoców (1 łyżka)",
         "amount": 25.0,
         "unit": "g"
@@ -9756,7 +9756,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -9850,13 +9850,13 @@
         "unit": "g"
       },
       {
-        "name": "Masło migdałowe bez soli",
+        "name": "Masło migdałowe bez Sól",
         "originalName": "Masło migdałowe bez soli (1 łyżeczka)",
         "amount": 10.0,
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -9950,7 +9950,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -10758,7 +10758,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -10926,7 +10926,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -11018,7 +11018,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -11056,7 +11056,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło orzechowe bez soli",
+        "name": "Masło orzechowe bez Sól",
         "originalName": "Masło orzechowe bez soli (1 łyżeczka)",
         "amount": 10.0,
         "unit": "g"
@@ -11420,7 +11420,7 @@
         "unit": "g"
       },
       {
-        "name": "Dżem 100% z owoców czarna porzeczka",
+        "name": "Dżem 100% z Owoce czarna porzeczka",
         "originalName": "Dżem 100% z owoców czarna porzeczka (Łowicz) (1 łyżka)",
         "amount": 25.0,
         "unit": "g"
@@ -11644,7 +11644,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -11806,7 +11806,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -11930,7 +11930,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (2 łyżka)",
         "amount": 12.0,
         "unit": "g"
@@ -12004,7 +12004,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń waniliowy bez cukru",
+        "name": "Budyń waniliowy bez Cukier",
         "originalName": "Budyń waniliowy bez cukru (2 łyżeczka)",
         "amount": 8.0,
         "unit": "g"
@@ -13065,7 +13065,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -13575,7 +13575,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -14457,7 +14457,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "ok. 225 g sera halloumi 1 mała cukinia 1 łyżka oleju roślinnego 1 cebula szalotka lub 1/2 zwykłej 2 ząbki czosnku 1 papryczka chili 1 łyżeczka startego imbiru 1 łyżeczka przyprawy curry w proszku 1 łyżeczka kminu rzymskiego 1/2 łyżeczki papryki słodkiej 125 ml passaty pomidorowej 200 g pomidorków koktajlowych 125 ml bulionu warzywnego  100 g szpinaku baby",
+        "name": "Ok. 225 g Ser halloumi 1 mała cukinia 1 łyżka Olej roślinnego 1 cebula szalotka lub 1/2 zwykłej 2 ząbki Czosnek 1 papryczka chili 1 łyżeczka startego imbiru 1 łyżeczka przyprawy curry w proszku 1 łyżeczka kminu rzymskiego 1/2 łyżeczki papryki słodkiej 125 ml passaty pomidorowej 200 g pomidorków koktajlowych 125 ml bulionu warzywnego 100 g szpinaku baby",
         "originalName": "ok. 225 g sera halloumi 1 mała cukinia 1 łyżka oleju roślinnego 1 cebula szalotka lub 1/2 zwykłej 2 ząbki czosnku 1 papryczka chili 1 łyżeczka startego imbiru 1 łyżeczka przyprawy curry w proszku 1 łyżeczka kminu rzymskiego 1/2 łyżeczki papryki słodkiej 125 ml passaty pomidorowej 200 g pomidorków koktajlowych 125 ml bulionu warzywnego (np. z eko kostki) 100 g szpinaku baby",
         "amount": 1.0,
         "unit": "g"
@@ -14652,7 +14652,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (2 łyżka)",
         "amount": 12.0,
         "unit": "g"
@@ -14840,7 +14840,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -14974,7 +14974,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -15059,7 +15059,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -15856,7 +15856,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (3 łyżeczka)",
         "amount": 9.0,
         "unit": "g"
@@ -15923,7 +15923,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (3 łyżeczka)",
         "amount": 9.0,
         "unit": "g"
@@ -16111,7 +16111,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -16184,7 +16184,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -16373,7 +16373,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -16694,7 +16694,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -17156,7 +17156,7 @@
         "unit": "g"
       },
       {
-        "name": "koperek",
+        "name": "Koperek",
         "originalName": "koperek",
         "amount": 1.0,
         "unit": "g"
@@ -17168,19 +17168,19 @@
         "unit": "g"
       },
       {
-        "name": "sól",
+        "name": "Sól",
         "originalName": "sól (szczypta)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "pieprz czarny",
+        "name": "Pieprz czarny",
         "originalName": "pieprz czarny",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "papryka słodka",
+        "name": "Papryka słodka",
         "originalName": "papryka słodka",
         "amount": 1.0,
         "unit": "g"
@@ -17217,7 +17217,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (3 łyżeczka)",
         "amount": 9.0,
         "unit": "g"
@@ -17296,7 +17296,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -17479,7 +17479,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -17527,7 +17527,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -17643,13 +17643,13 @@
         "unit": "g"
       },
       {
-        "name": "~50 g mleka lub serka śmietankowego 60 g sera typu parmezan 1–2 ząbki czosnku",
+        "name": "~50 g Mleko lub serka śmietankowego 60 g Ser typu parmezan 1–2 ząbki Czosnek",
         "originalName": "~50 g mleka lub serka śmietankowego 60 g sera typu parmezan 1–2 ząbki czosnku",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "oregano, pieprz",
+        "name": "Oregano, pieprz",
         "originalName": "oregano, pieprz",
         "amount": 1.0,
         "unit": "g"
@@ -17661,7 +17661,7 @@
         "unit": "g"
       },
       {
-        "name": "oliwa z oliwek",
+        "name": "Oliwa z oliwek",
         "originalName": "oliwa z oliwek (~8 g)",
         "amount": 1.0,
         "unit": "g"
@@ -17741,25 +17741,25 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "makaron pełnoziarnisty 80 g 1 brokuł  1 szalotka",
+        "name": "Makaron pełnoziarnisty 80 g 1 brokuł 1 szalotka",
         "originalName": "makaron pełnoziarnisty 80 g 1 brokuł (ugotowany) 1 szalotka",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "płatki chili",
+        "name": "Płatki chili",
         "originalName": "płatki chili (do smaku)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "śmietanka 30%",
+        "name": "Śmietanka 30%",
         "originalName": "śmietanka 30%",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "ser cheddar  1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
+        "name": "Ser cheddar 1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
         "originalName": "ser cheddar (starty) 1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
         "amount": 1.0,
         "unit": "g"
@@ -17887,7 +17887,7 @@
         "unit": "g"
       },
       {
-        "name": "Masło migdałowe bez soli",
+        "name": "Masło migdałowe bez Sól",
         "originalName": "Masło migdałowe bez soli (1 łyżeczka)",
         "amount": 10.0,
         "unit": "g"
@@ -17991,19 +17991,19 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "makaron pełnoziarnisty 80 g 1 brokuł  1 szalotka",
+        "name": "Makaron pełnoziarnisty 80 g 1 brokuł 1 szalotka",
         "originalName": "makaron pełnoziarnisty 80 g 1 brokuł (ugotowany) 1 szalotka",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "śmietanka kokosowa",
+        "name": "Śmietanka kokosowa",
         "originalName": "śmietanka kokosowa",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "ser parmezan  1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
+        "name": "Ser parmezan 1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
         "originalName": "ser parmezan (starty) 1–2 łyżki zielonego pesto 1 łyżeczka koncentratu pomidorowego",
         "amount": 1.0,
         "unit": "g"
@@ -18459,7 +18459,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -18562,7 +18562,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -18659,7 +18659,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -18704,7 +18704,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -19026,7 +19026,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -19105,7 +19105,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19511,7 +19511,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19681,7 +19681,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19754,7 +19754,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19912,7 +19912,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19936,7 +19936,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -19999,7 +19999,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -20068,7 +20068,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -20384,91 +20384,91 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "150 g ryżu jaśminowego",
+        "name": "150 g Ryż jaśminowego",
         "originalName": "150 g ryżu jaśminowego",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 puszka tuńczyka w sosie własnym",
+        "name": "• 1 puszka tuńczyka w sosie własnym",
         "originalName": "•        1 puszka tuńczyka w sosie własnym (może być też pieczony łosoś)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 ½ łyżki majonezu",
+        "name": "• 1 ½ łyżki majonezu",
         "originalName": "•        1 ½ łyżki majonezu",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        2 łyżeczki sosu sojowego",
+        "name": "• 2 łyżeczki sosu sojowego",
         "originalName": "•        2 łyżeczki sosu sojowego",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1–2 łyżeczki srirachy",
+        "name": "• 1–2 łyżeczki srirachy",
         "originalName": "•        1–2 łyżeczki srirachy",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 marchewka",
+        "name": "• 1 marchewka",
         "originalName": "•        1 marchewka",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        ½ ogórka",
+        "name": "• ½ Ogórek",
         "originalName": "•        ½ ogórka (bez gniazd nasiennych)",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        3–4 łyżki kimchi",
+        "name": "• 3–4 łyżki kimchi",
         "originalName": "•        3–4 łyżki kimchi",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1/3 mango",
+        "name": "• 1/3 mango",
         "originalName": "•        1/3 mango",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 awokado",
+        "name": "• 1 awokado",
         "originalName": "•        1 awokado",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        kilka listków nori",
+        "name": "• kilka listków nori",
         "originalName": "•        kilka listków nori",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        2 łyżki szczypiorku",
+        "name": "• 2 łyżki szczypiorku",
         "originalName": "•        2 łyżki szczypiorku",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 łyżeczka sezamu",
+        "name": "• 1 łyżeczka sezamu",
         "originalName": "•        1 łyżeczka sezamu",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        1 łyżeczka furikake",
+        "name": "• 1 łyżeczka furikake",
         "originalName": "•        1 łyżeczka furikake",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "•        kilka kropel oleju sezamowego",
+        "name": "• kilka kropel Olej sezamowego",
         "originalName": "•        kilka kropel oleju sezamowego",
         "amount": 1.0,
         "unit": "g"
@@ -21227,7 +21227,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -21343,7 +21343,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (4 łyżka)",
         "amount": 24.0,
         "unit": "g"
@@ -21544,7 +21544,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -21617,7 +21617,7 @@
         "unit": "g"
       },
       {
-        "name": "kilka pomidorków koktajlowych 50 g boczku",
+        "name": "Kilka pomidorków koktajlowych 50 g boczku",
         "originalName": "kilka pomidorków koktajlowych 50 g boczku",
         "amount": 1.0,
         "unit": "g"
@@ -21635,13 +21635,13 @@
         "unit": "g"
       },
       {
-        "name": "oliwa z oliwek",
+        "name": "Oliwa z oliwek",
         "originalName": "oliwa z oliwek",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sól do smaku",
+        "name": "Sól do smaku",
         "originalName": "sól do smaku",
         "amount": 1.0,
         "unit": "g"
@@ -21781,7 +21781,7 @@
         "unit": "g"
       },
       {
-        "name": "Dżem 100% owoców",
+        "name": "Dżem 100% Owoce",
         "originalName": "Dżem 100% owoców (2 łyżka)",
         "amount": 50.0,
         "unit": "g"
@@ -21872,7 +21872,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -22018,7 +22018,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń waniliowy bez cukru",
+        "name": "Budyń waniliowy bez Cukier",
         "originalName": "Budyń waniliowy bez cukru (4 łyżka)",
         "amount": 32.0,
         "unit": "g"
@@ -22340,7 +22340,7 @@
         "unit": "g"
       },
       {
-        "name": "Pesto rosso z suszonych pomidorów",
+        "name": "Pesto rosso z suszonych Pomidor",
         "originalName": "Pesto rosso z suszonych pomidorów (2 łyżeczka)",
         "amount": 20.0,
         "unit": "g"
@@ -23277,13 +23277,13 @@
         "unit": "g"
       },
       {
-        "name": "Masło orzechowe bez soli",
+        "name": "Masło orzechowe bez Sól",
         "originalName": "Masło orzechowe bez soli (1 łyżka)",
         "amount": 24.0,
         "unit": "g"
       },
       {
-        "name": "Dżem 100% owoców",
+        "name": "Dżem 100% Owoce",
         "originalName": "Dżem 100% owoców (1 łyżka)",
         "amount": 25.0,
         "unit": "g"
@@ -23718,7 +23718,7 @@
         "unit": "g"
       },
       {
-        "name": "Dżem 100% owoców",
+        "name": "Dżem 100% Owoce",
         "originalName": "Dżem 100% owoców (1 łyżka)",
         "amount": 25.0,
         "unit": "g"
@@ -23969,7 +23969,7 @@
         "unit": "g"
       },
       {
-        "name": "Dżem 100% owoców",
+        "name": "Dżem 100% Owoce",
         "originalName": "Dżem 100% owoców (2 łyżeczka)",
         "amount": 20.0,
         "unit": "g"
@@ -24608,7 +24608,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -24772,7 +24772,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -24900,7 +24900,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (3 łyżeczka)",
         "amount": 9.0,
         "unit": "g"
@@ -24961,7 +24961,7 @@
         "unit": "g"
       },
       {
-        "name": "Pesto rosso z suszonych pomidorów",
+        "name": "Pesto rosso z suszonych Pomidor",
         "originalName": "Pesto rosso z suszonych pomidorów (1.5 łyżka)",
         "amount": 30.0,
         "unit": "g"
@@ -25237,7 +25237,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -25377,7 +25377,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń bez cukru",
+        "name": "Budyń bez Cukier",
         "originalName": "Budyń bez cukru (3 łyżka)",
         "amount": 24.0,
         "unit": "g"
@@ -25553,7 +25553,7 @@
         "unit": "g"
       },
       {
-        "name": "Budyń waniliowy bez cukru",
+        "name": "Budyń waniliowy bez Cukier",
         "originalName": "Budyń waniliowy bez cukru (2 łyżka)",
         "amount": 16.0,
         "unit": "g"
@@ -26016,7 +26016,7 @@
         "unit": "g"
       },
       {
-        "name": "ulubione przyprawy",
+        "name": "Ulubione przyprawy",
         "originalName": "ulubione przyprawy",
         "amount": 1.0,
         "unit": "g"
@@ -26028,7 +26028,7 @@
         "unit": "g"
       },
       {
-        "name": "rukola",
+        "name": "Rukola",
         "originalName": "rukola",
         "amount": 1.0,
         "unit": "g"
@@ -26107,7 +26107,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -26517,7 +26517,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -26657,7 +26657,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (0.5 łyżka)",
         "amount": 3.0,
         "unit": "g"
@@ -26694,7 +26694,7 @@
         "unit": "g"
       },
       {
-        "name": "Pomidory  – 120 g",
+        "name": "Pomidory – 120 g",
         "originalName": "Pomidory (np. koktajlowe) – 120 g",
         "amount": 1.0,
         "unit": "g"
@@ -26748,7 +26748,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny – 10 g",
+        "name": "Sok z Cytryna – 10 g",
         "originalName": "Sok z cytryny – 10 g (ok. 2 łyżeczki)",
         "amount": 1.0,
         "unit": "g"
@@ -26760,7 +26760,7 @@
         "unit": "g"
       },
       {
-        "name": "Bazylia  lub oregano – szczypta",
+        "name": "Bazylia lub oregano – szczypta",
         "originalName": "Bazylia (najlepiej świeża) lub oregano – szczypta",
         "amount": 1.0,
         "unit": "g"
@@ -26791,7 +26791,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -26906,7 +26906,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -27058,7 +27058,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -27186,7 +27186,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (2 łyżeczka)",
         "amount": 6.0,
         "unit": "g"
@@ -27399,7 +27399,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżka)",
         "amount": 6.0,
         "unit": "g"
@@ -27526,7 +27526,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (1 łyżeczka)",
         "amount": 3.0,
         "unit": "g"
@@ -27575,7 +27575,7 @@
     "tags": [],
     "ingredients": [
       {
-        "name": "500 g brokułów 3 jajka 2–3 łyżki domowego sosu pomidorowego",
+        "name": "500 g brokułów 3 Jajko 2–3 łyżki domowego sosu pomidorowego",
         "originalName": "500 g brokułów 3 jajka 2–3 łyżki domowego sosu pomidorowego",
         "amount": 1.0,
         "unit": "g"
@@ -27917,7 +27917,7 @@
         "unit": "g"
       },
       {
-        "name": "Pesto rosso z suszonych pomidorów",
+        "name": "Pesto rosso z suszonych Pomidor",
         "originalName": "Pesto rosso z suszonych pomidorów (2 łyżeczka)",
         "amount": 20.0,
         "unit": "g"
@@ -28282,55 +28282,55 @@
         "unit": "g"
       },
       {
-        "name": "komosy ryżowej 1",
+        "name": "Komosy ryżowej 1",
         "originalName": "komosy ryżowej 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szklanka mleka 250 g 0,5",
+        "name": "Szklanka Mleko 250 g 0,5",
         "originalName": "szklanka mleka 250 g 0,5",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki kurkumy 1 g 0,3",
+        "name": "Łyżeczki kurkumy 1 g 0,3",
         "originalName": "łyżeczki kurkumy 1 g 0,3",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki imbiru mielonego 1 g 2",
+        "name": "Łyżeczki imbiru mielonego 1 g 2",
         "originalName": "łyżeczki imbiru mielonego 1 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki miodu 24 g 20 g",
+        "name": "Łyżeczki Miód 24 g 20 g",
         "originalName": "łyżeczki miodu 24 g 20 g",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "migdałów 0,5",
+        "name": "Migdałów 0,5",
         "originalName": "migdałów 0,5",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sztuki jabłka 75 g 1",
+        "name": "Sztuki jabłka 75 g 1",
         "originalName": "sztuki jabłka 75 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypta soli 0,25 g 2",
+        "name": "Szczypta Sól 0,25 g 2",
         "originalName": "szczypta soli 0,25 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżki odżywki białkowej 20 g",
+        "name": "Łyżki odżywki białkowej 20 g",
         "originalName": "łyżki odżywki białkowej 20 g",
         "amount": 1.0,
         "unit": "g"
@@ -28358,55 +28358,55 @@
         "unit": "g"
       },
       {
-        "name": "komosy ryżowej 1",
+        "name": "Komosy ryżowej 1",
         "originalName": "komosy ryżowej 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szklanka mleka 250 g 0,5",
+        "name": "Szklanka Mleko 250 g 0,5",
         "originalName": "szklanka mleka 250 g 0,5",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki kurkumy 1 g 0,3",
+        "name": "Łyżeczki kurkumy 1 g 0,3",
         "originalName": "łyżeczki kurkumy 1 g 0,3",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki imbiru mielonego 1 g 2",
+        "name": "Łyżeczki imbiru mielonego 1 g 2",
         "originalName": "łyżeczki imbiru mielonego 1 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżeczki miodu 24 g 20 g",
+        "name": "Łyżeczki Miód 24 g 20 g",
         "originalName": "łyżeczki miodu 24 g 20 g",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "migdałów 0,5",
+        "name": "Migdałów 0,5",
         "originalName": "migdałów 0,5",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "sztuki jabłka 75 g 1",
+        "name": "Sztuki jabłka 75 g 1",
         "originalName": "sztuki jabłka 75 g 1",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "szczypta soli 0,25 g 2",
+        "name": "Szczypta Sól 0,25 g 2",
         "originalName": "szczypta soli 0,25 g 2",
         "amount": 1.0,
         "unit": "g"
       },
       {
-        "name": "łyżki odżywki białkowej 20 g",
+        "name": "Łyżki odżywki białkowej 20 g",
         "originalName": "łyżki odżywki białkowej 20 g",
         "amount": 1.0,
         "unit": "g"
@@ -28880,7 +28880,7 @@
         "unit": "g"
       },
       {
-        "name": "Sok z cytryny",
+        "name": "Sok z Cytryna",
         "originalName": "Sok z cytryny (2 łyżka)",
         "amount": 12.0,
         "unit": "g"

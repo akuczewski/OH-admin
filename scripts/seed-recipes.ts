@@ -47,67 +47,86 @@ async function runSeeder(strapi: Core.Strapi) {
     console.log('[SEEDER] Starting import phase...');
     const recipesJson = JSON.parse(fs.readFileSync(recipesDataPath, 'utf8'));
     
-    // Cache ingredients in memory for speed
-    console.log('[SEEDER] Fetching ingredients for cache...');
+    // Phase 1: Pre-process ALL ingredients to avoid race conditions
+    console.log('[SEEDER] Phase 1: Pre-creating ingredients...');
     const allIngs = await strapi.documents('api::ingredient.ingredient' as any).findMany({ limit: -1 });
     const ingMap = new Map();
     allIngs.forEach((i: any) => ingMap.set(i.name.toLowerCase(), i));
 
-    let addedCount = 0;
-    for (const recipeData of recipesJson) {
-        const processedIngredients = [];
-        for (const ing of recipeData.ingredients) {
-            const ingName = ing.name;
-            const normalizedName = ingName.toLowerCase();
-            
-            let targetIng = ingMap.get(normalizedName);
-            
-            if (!targetIng) {
-                console.log(`[SEEDER] Creating missing ingredient: ${ingName}`);
-                // @ts-ignore
-            // @ts-ignore
-                targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
+    const uniqueIngredients = new Set<string>();
+    const ingUnitMap = new Map<string, string>(); // name -> unit for unitType detection
+
+    recipesJson.forEach((r: any) => {
+        r.ingredients.forEach((ing: any) => {
+            uniqueIngredients.add(ing.name);
+            ingUnitMap.set(ing.name, ing.unit);
+        });
+    });
+
+    for (const ingName of uniqueIngredients) {
+        const normalizedName = ingName.toLowerCase();
+        if (!ingMap.has(normalizedName)) {
+            console.log(`[SEEDER] Creating missing ingredient: ${ingName}`);
+            try {
+                const targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
                     data: {
                         name: ingName.substring(0, 255),
                         slug: normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255),
                         category: 'Inne',
-                        unitType: (ing.unit === 'szt' || ing.unit === 'opakowanie') ? 'piece' : 'weight',
+                        unitType: (ingUnitMap.get(ingName) === 'szt' || ingUnitMap.get(ingName) === 'opakowanie') ? 'piece' : 'weight',
                         kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
                         publishedAt: new Date(),
                     },
                     status: 'published'
                 });
                 ingMap.set(normalizedName, targetIng);
+            } catch (err: any) {
+                console.error(`[SEEDER] Failed to create ingredient ${ingName}:`, err.message);
             }
-
-            processedIngredients.push({
-                ...ing,
-                __component: 'shared.ingredient',
-                ingredient: targetIng.documentId // Strapi 5 relation
-            });
         }
+    }
 
-        try {
-            // @ts-ignore
-            await strapi.documents('api::recipe.recipe' as any).create({
-                data: {
-                    name: recipeData.name.substring(0, 255),
-                    description: recipeData.description,
-                    preparation: recipeData.preparation,
-                    prepTime: recipeData.prepTime,
-                    servings: recipeData.servings,
-                    mealSlots: recipeData.mealSlot,
-                    ingredients: processedIngredients,
-                    tags: (recipeData.tags || []).join(', ').substring(0, 255),
-                    publishedAt: new Date(),
-                },
-                status: 'published'
-            });
-            addedCount++;
-            if (addedCount % 5 === 0) console.log(`[SEEDER] Processed ${addedCount}/${recipesJson.length}...`);
-        } catch (e) {
-            console.error(`[SEEDER] Failed for ${recipeData.name}:`, e);
-        }
+    // Phase 2: Parallel Recipe Import in chunks
+    console.log('[SEEDER] Phase 2: Creating recipes in parallel batches...');
+    let addedCount = 0;
+    const CHUNK_SIZE = 10;
+
+    for (let i = 0; i < recipesJson.length; i += CHUNK_SIZE) {
+        const chunk = recipesJson.slice(i, i + CHUNK_SIZE);
+        
+        await Promise.all(chunk.map(async (recipeData: any) => {
+            const processedIngredients = recipeData.ingredients.map((ing: any) => {
+                const targetIng = ingMap.get(ing.name.toLowerCase());
+                return {
+                    ...ing,
+                    __component: 'shared.ingredient',
+                    ingredient: targetIng?.documentId
+                };
+            }).filter((ing: any) => ing.ingredient);
+
+            try {
+                // @ts-ignore
+                await strapi.documents('api::recipe.recipe' as any).create({
+                    data: {
+                        name: recipeData.name.substring(0, 255),
+                        description: recipeData.description,
+                        preparation: recipeData.preparation,
+                        prepTime: recipeData.prepTime,
+                        servings: recipeData.servings,
+                        mealSlots: recipeData.mealSlot,
+                        ingredients: processedIngredients,
+                        tags: (recipeData.tags || []).join(', ').substring(0, 255),
+                        publishedAt: new Date(),
+                    },
+                    status: 'published'
+                });
+                addedCount++;
+            } catch (e: any) {
+                console.error(`[SEEDER] Failed for ${recipeData.name}:`, e.message);
+            }
+        }));
+
+        console.log(`[SEEDER] Progress: ${addedCount}/${recipesJson.length}...`);
     }
 
     console.log(`[SEEDER] COMPLETED. Seeded ${addedCount} recipes.`);

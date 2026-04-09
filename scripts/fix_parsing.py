@@ -3,6 +3,64 @@ import json
 import os
 import re
 
+# Common Polish ingredient declension mapping
+NORMALIZE_MAP = {
+    'oliwy': 'Oliwa',
+    'oleju': 'Olej',
+    'jogurtu': 'Jogurt',
+    'cukru': 'Cukier',
+    'masła': 'Masło',
+    'mąki': 'Mąka',
+    'soli': 'Sól',
+    'pieprzu': 'Pieprz',
+    'wody': 'Woda',
+    'mleka': 'Mleko',
+    'sera': 'Ser',
+    'twarogu': 'Twaróg',
+    'miodu': 'Miód',
+    'soku': 'Sok',
+    'cytryny': 'Cytryna',
+    'jajka': 'Jajko',
+    'jajek': 'Jajko',
+    'piersi': 'Pierś',
+    'mięsa': 'Mięso',
+    'pomidora': 'Pomidor',
+    'pomidorów': 'Pomidor',
+    'ogórka': 'Ogórek',
+    'ogórków': 'Ogórek',
+    'cebuli': 'Cebula',
+    'czosnku': 'Czosnek',
+    'makaronu': 'Makaron',
+    'ryżu': 'Ryż',
+    'kaszy': 'Kasza',
+    'owsianki': 'Owsianka',
+    'płatków': 'Płatki',
+    'orzechów': 'Orzechy',
+    'owoców': 'Owoce',
+    'warzyw': 'Warzywa',
+}
+
+def normalize_ingredient_name(name):
+    name = name.strip()
+    if not name: return name
+    
+    # Try to normalize words
+    words = name.split()
+    normalized_words = []
+    for w in words:
+        w_low = w.lower().rstrip(',.')
+        if w_low in NORMALIZE_MAP:
+            normalized_words.append(NORMALIZE_MAP[w_low])
+        else:
+            # If word is lowercase and doesn't have a special form, keep it but maybe capitalize later
+            normalized_words.append(w)
+    
+    result = " ".join(normalized_words)
+    # Capitalize first letter
+    if result:
+        result = result[0].upper() + result[1:]
+    return result
+
 CSV_FILES = [
     { 'name': 'recipes  - I śniadanie.csv', 'slots': ['sniadanie'] },
     { 'name': 'recipes  - przekąska.csv', 'slots': ['przekaska-1', 'przekaska-2'] },
@@ -89,6 +147,9 @@ def clean_ingredient(raw_line):
     # Clean name from measure notes: "Płatki (6 łyżek)" -> "Płatki"
     name_clean = re.sub(r'\(.*\)', '', name).strip()
     name_clean = re.sub(r'\s*-?\s*$', '', name_clean) 
+    
+    # Normalize name (e.g. Kaszy -> Kasza)
+    name_clean = normalize_ingredient_name(name_clean)
     
     if not name_clean:
         return None
