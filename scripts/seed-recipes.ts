@@ -43,23 +43,21 @@ async function runSeeder(strapi: Core.Strapi) {
         console.log(`[SEEDER] Deleted ${snapshot.size} Firebase recipes.`);
     }
 
-    // Phase 0: Cleanup of garbage ingredients (those with , : ; or brackets)
-    console.log('[SEEDER] Phase 0: Cleanup of garbage ingredients...');
+    // Phase 0: Cleanup of faulty ingredients (kcal: 0 ones created by seeder)
+    console.log('[SEEDER] Phase 0: Cleanup of ingredients created by seeder (kcal: 0)...');
     const badIngredients = await strapi.documents('api::ingredient.ingredient' as any).findMany({
         filters: {
             $or: [
+                { kcal: 0 },
                 { name: { $contains: ',' } },
-                { name: { $contains: ':' } },
-                { name: { $contains: ';' } },
-                { name: { $contains: '(' } },
-                { name: { $contains: ')' } }
+                { name: { $contains: ':' } }
             ]
         },
         limit: -1
     });
 
     if (badIngredients.length > 0) {
-        console.log(`[SEEDER] Found ${badIngredients.length} garbage ingredients. Deleting...`);
+        console.log(`[SEEDER] Found ${badIngredients.length} ingredients to clean. Deleting...`);
         for (const bad of badIngredients) {
             try {
                 await strapi.documents('api::ingredient.ingredient' as any).delete({
@@ -106,7 +104,7 @@ async function runSeeder(strapi: Core.Strapi) {
                 const targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
                     data: {
                         name: ingName.substring(0, 255),
-                        slug: normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255),
+                        slug: slug,
                         category: 'Inne',
                         unitType: (ingUnitMap.get(ingName) === 'szt' || ingUnitMap.get(ingName) === 'opakowanie') ? 'piece' : 'weight',
                         kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
@@ -115,6 +113,7 @@ async function runSeeder(strapi: Core.Strapi) {
                     status: 'published'
                 });
                 ingMap.set(normalizedName, targetIng);
+                ingMap.set(slug, targetIng);
             } catch (err: any) {
                 console.error(`[SEEDER] Failed to create ingredient ${ingName}:`, err.message);
             }
@@ -124,7 +123,7 @@ async function runSeeder(strapi: Core.Strapi) {
     // Phase 2: Parallel Recipe Import in chunks
     console.log('[SEEDER] Phase 2: Creating recipes in parallel batches...');
     let addedCount = 0;
-    const CHUNK_SIZE = 10;
+    const CHUNK_SIZE = 5; // Smaller chunks for reliability with new fields
 
     for (let i = 0; i < recipesJson.length; i += CHUNK_SIZE) {
         const chunk = recipesJson.slice(i, i + CHUNK_SIZE);
@@ -135,7 +134,10 @@ async function runSeeder(strapi: Core.Strapi) {
                 const slug = normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255);
                 const targetIng = ingMap.get(normalizedName) || ingMap.get(slug);
                 return {
-                    ...ing,
+                    name: ing.name.substring(0, 255),
+                    amount: ing.amount,
+                    unit: ing.unit,
+                    weight: ing.weight || 0.0,
                     __component: 'shared.ingredient',
                     ingredient: targetIng?.documentId
                 };

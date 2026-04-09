@@ -107,82 +107,84 @@ UNIT_MAP = {
     'opakowania': 'opakowanie'
 }
 
+def parse_float(s):
+    if not s: return 0.0
+    s = s.replace(',', '.').strip()
+    if '/' in s:
+        try:
+            num, den = s.split('/')
+            return float(num) / float(den)
+        except:
+            return 1.0
+    try:
+        return float(s)
+    except:
+        return 1.0
+
 def clean_ingredient(raw_line):
-    # Handle colon style: "jajko: 2 sztuki"
-    raw_line = raw_line.replace(':', ' - ')
-    
     raw_line = raw_line.strip()
     if not raw_line or len(raw_line) < 2:
         return None
 
+    # Strip trailing junk
+    raw_line = re.sub(r'\s*-?\s*$', '', raw_line)
+
     name = raw_line
     amount = 1.0
-    unit = 'g'
+    unit = 'szt'
+    weight = 0.0
 
-    # Special case: "Name: szczypta" or "Name: garstka" (unit only)
-    for u_raw, u_mapped in UNIT_MAP.items():
-        if raw_line.lower().endswith(' - ' + u_raw) or raw_line.lower().endswith(' ' + u_raw):
-             # Ensure it's not preceded by a number (already handled by regex below)
-             if not re.search(r'\d\s*' + re.escape(u_raw) + r'$', raw_line.lower()):
-                 name = re.sub(r'\s*-?\s*' + re.escape(u_raw) + r'$', '', raw_line, flags=re.I).strip()
-                 amount = 1.0
-                 unit = u_mapped
-                 break
+    # -- RULE A: Name (Amount [Unit]) - Weight --
+    # Example: "Marchew (1 średnia sztuka) - 60g"
+    match_a = re.search(r'^(.*?)\s*\(\s*([\d,./]+)\s*(?:.+?\s*)?([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\s*\)\s*-\s*([\d,./]+)\s*([gml]+)', raw_line, re.I)
+    if match_a:
+        name = match_a.group(1).strip()
+        amount = parse_float(match_a.group(2))
+        unit = UNIT_MAP.get(match_a.group(3).lower(), 'szt')
+        weight = parse_float(match_a.group(4))
+        return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
 
-    # 1. Handle "Name (measure) - 100g" or "Name: 100g"
-    if ' - ' in raw_line:
+    # -- RULE B: [Count] [Unit] [Name] [Weight] [Unit2] [Multiplier] --
+    # Example: "1 opakowanie pomidorów z puszki 400 g 0,8"
+    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]+)\s+(.+?)\s+([\d,./]+)\s+([gml]+)\s+([\d,./]+)$', raw_line, re.I)
+    if match_b:
+        amount = parse_float(match_b.group(6))
+        name = match_b.group(3).strip()
+        unit = UNIT_MAP.get(match_b.group(2).lower(), 'szt')
+        weight = parse_float(match_b.group(4))
+        return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
+
+    # -- RULE C: Simple Dash with Weight --
+    # Example: "Makaron ryżowy - 50g"
+    if ' - ' in raw_line or raw_line.endswith('g') or raw_line.endswith('ml'):
         parts = raw_line.split(' - ')
-        name = parts[0].strip()
-        amount_part = parts[1].strip()
+        name_part = parts[0].strip()
+        amount_part = parts[1].strip() if len(parts) > 1 else name_part
         
-        # Match number and unit
-        match = re.search(r'([\d./]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)', amount_part)
-        if match:
-            amt_str = match.group(1)
-            # Handle fractions like 1/2
-            if '/' in amt_str:
-                try:
-                    num, den = amt_str.split('/')
-                    amount = float(num) / float(den)
-                except:
-                    amount = 1.0
-            else:
-                try:
-                    amount = float(amt_str)
-                except:
-                    amount = 1.0
-            
-            unit_raw = match.group(2).lower()
-            unit = UNIT_MAP.get(unit_raw, 'g')
-    else:
-        # 2. Handle "Name (100g)"
-        match = re.search(r'(.*)\(([\d./]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\)', name)
-        if match:
-            name = match.group(1).strip()
-            amt_str = match.group(2)
-            if '/' in amt_str:
-                num, den = amt_str.split('/')
-                amount = float(num) / float(den)
-            else:
-                amount = float(amt_str)
-            unit_raw = match.group(3).lower()
-            unit = UNIT_MAP.get(unit_raw, 'g')
+        match_c = re.search(r'([\d,./]+)\s*([gml]+)', amount_part, re.I)
+        if match_c:
+            weight = parse_float(match_c.group(1))
+            name = re.sub(r'\s*-?\s*[\d,./]+\s*[gml]+$', '', name_part, flags=re.I).strip()
+            return { 'name': normalize_ingredient_name(name), 'amount': weight, 'unit': 'g', 'weight': weight, 'originalName': raw_line }
 
-    # Clean name from measure notes: "Płatki (6 łyżek)" -> "Płatki"
-    name_clean = re.sub(r'\(.*\)', '', name).strip()
-    name_clean = re.sub(r'\s*-?\s*$', '', name_clean) 
-    
-    # Normalize name (e.g. Kaszy -> Kasza)
-    name_clean = normalize_ingredient_name(name_clean)
-    
-    if not name_clean:
-        return None
+    # -- RULE D: Colon Style --
+    # Example: "jajko: 2 sztuki"
+    if ':' in raw_line:
+        parts = raw_line.split(':')
+        name = parts[0].strip()
+        amt_match = re.search(r'([\d,./]+)\s*([a-zA-Ząćęłńóśźż]+)', parts[1], re.I)
+        if amt_match:
+            amount = parse_float(amt_match.group(1))
+            unit = UNIT_MAP.get(amt_match.group(2).lower(), 'szt')
+            return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': 0.0, 'originalName': raw_line }
 
+    # Fallback: Just the name
     return {
-        'name': name_clean,
-        'originalName': name,
-        'amount': amount,
-        'unit': unit
+        'name': normalize_ingredient_name(raw_line),
+        'amount': 1.0,
+        'unit': 'szt',
+        'weight': 0.0,
+        'originalName': raw_line
     }
 
 def split_ingredients(raw_text):

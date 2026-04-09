@@ -32,6 +32,9 @@
                 "opakowanie"
             ],
             "required": true
+        },
+        "weight": {
+            "type": "decimal"
         }
     }
 }
