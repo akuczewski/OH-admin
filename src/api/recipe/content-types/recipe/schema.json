@@ -38,7 +38,7 @@
             ],
             "multiple": false
         },
-        "mealSlot": {
+        "mealSlots": {
             "type": "json"
         },
         "macros": {

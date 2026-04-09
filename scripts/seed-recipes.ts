@@ -95,7 +95,7 @@ async function runSeeder(strapi: Core.Strapi) {
                     preparation: recipeData.preparation,
                     prepTime: recipeData.prepTime,
                     servings: recipeData.servings,
-                    mealSlot: recipeData.mealSlot,
+                    mealSlots: recipeData.mealSlot,
                     ingredients: processedIngredients,
                     tags: recipeData.tags.join(', '),
                     publishedAt: new Date(),
