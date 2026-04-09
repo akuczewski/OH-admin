@@ -65,10 +65,11 @@ async function runSeeder(strapi: Core.Strapi) {
             if (!targetIng) {
                 console.log(`[SEEDER] Creating missing ingredient: ${ingName}`);
                 // @ts-ignore
+            // @ts-ignore
                 targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
                     data: {
-                        name: ingName,
-                        slug: normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+                        name: ingName.substring(0, 255),
+                        slug: normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255),
                         category: 'Inne',
                         unitType: (ing.unit === 'szt' || ing.unit === 'opakowanie') ? 'piece' : 'weight',
                         kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
@@ -90,14 +91,14 @@ async function runSeeder(strapi: Core.Strapi) {
             // @ts-ignore
             await strapi.documents('api::recipe.recipe' as any).create({
                 data: {
-                    name: recipeData.name,
+                    name: recipeData.name.substring(0, 255),
                     description: recipeData.description,
                     preparation: recipeData.preparation,
                     prepTime: recipeData.prepTime,
                     servings: recipeData.servings,
                     mealSlots: recipeData.mealSlot,
                     ingredients: processedIngredients,
-                    tags: recipeData.tags.join(', '),
+                    tags: (recipeData.tags || []).join(', ').substring(0, 255),
                     publishedAt: new Date(),
                 },
                 status: 'published'
