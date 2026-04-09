@@ -13,43 +13,97 @@ CSV_FILES = [
 INPUT_DIR = '../OH'
 OUTPUT_PATH = 'data/recipes.json'
 
+UNIT_MAP = {
+    'g': 'g',
+    'ml': 'ml',
+    'szt': 'szt',
+    'sztuka': 'szt',
+    'sztuki': 'szt',
+    'porcja': 'szt',
+    'lyzka': 'lyzka',
+    'łyżka': 'lyzka',
+    'łyżek': 'lyzka',
+    'łyżki': 'lyzka',
+    'lyzeczka': 'lyzeczka',
+    'łyżeczka': 'lyzeczka',
+    'łyżeczek': 'lyzeczka',
+    'łyżeczki': 'lyzeczka',
+    'szklanka': 'szklanka',
+    'szklanki': 'szklanka',
+    'szczypta': 'szczypta',
+    'szczypty': 'szczypta',
+    'plaster': 'plaster',
+    'plastry': 'plaster',
+    'garść': 'garstka',
+    'garście': 'garstka',
+    'garstka': 'garstka',
+    'opakowanie': 'opakowanie',
+    'opakowania': 'opakowanie'
+}
+
 def clean_ingredient(raw_line):
     raw_line = raw_line.strip()
-    if not raw_line:
+    if not raw_line or len(raw_line) < 2:
         return None
 
     name = raw_line
     amount = 1.0
-    unit = 'szt'
+    unit = 'g'
 
-    # Try to extract amount and unit from format: "Name (...) - 100g"
+    # 1. Handle "Name (measure) - 100g"
     if ' - ' in raw_line:
         parts = raw_line.split(' - ')
         name = parts[0].strip()
         amount_part = parts[1].strip()
         
-        # Match number and unit (e.g. 100g, 50 ml, 1.5 szt)
-        match = re.search(r'([\d.]+)\s*([a-zA-Z]+)', amount_part)
+        match = re.search(r'([\d.]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)', amount_part)
         if match:
             amount = float(match.group(1))
-            unit = match.group(2)
+            unit_raw = match.group(2).lower()
+            unit = UNIT_MAP.get(unit_raw, 'g')
     else:
-        # Fallback for format: "Name (100g)"
-        match = re.search(r'(.*)\(([\d.]+)\s*([a-zA-Z]+)\)', name)
+        # 2. Handle "Name (100g)"
+        match = re.search(r'(.*)\(([\d.]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\)', name)
         if match:
             name = match.group(1).strip()
             amount = float(match.group(2))
-            unit = match.group(3)
+            unit_raw = match.group(3).lower()
+            unit = UNIT_MAP.get(unit_raw, 'g')
 
-    # Clean name from measure notes in brackets: "Płatki owsiane (6 łyżek)" -> "Płatki owsiane"
+    # Clean name from measure notes: "Płatki (6 łyżek)" -> "Płatki"
     name_clean = re.sub(r'\(.*\)', '', name).strip()
+    name_clean = re.sub(r'\s*-?\s*$', '', name_clean) # Remove trailing dashes
     
+    if not name_clean:
+        return None
+
     return {
-        'name': name_clean if name_clean else name,
+        'name': name_clean,
         'originalName': name,
         'amount': amount,
         'unit': unit
     }
+
+def split_ingredients(raw_text):
+    # The major problem: sometimes ingredients are separated by \n, sometimes by , (if all in one line)
+    # But usually, a new ingredient starts with a string followed by a number or bracket in the next line or after a period.
+    
+    # First, replace weird newlines where a line ends with " - " or starts with "60g"
+    # Actually, a more robust way is to join lines that start with a digit or unit
+    lines = raw_text.split('\n')
+    true_lines = []
+    
+    for l in lines:
+        l = l.strip()
+        if not l: continue
+        
+        # If line starts with a digit or "g" or "ml" or "szt" and we have a previous line, append it
+        if true_lines and (re.match(r'^\d', l) or l.lower() in UNIT_MAP or l.startswith('-')):
+            true_lines[-1] = true_lines[-1] + ' ' + l
+        else:
+            true_lines.append(l)
+            
+    return true_lines
 
 def main():
     all_recipes = []
@@ -66,8 +120,8 @@ def main():
             for row in reader:
                 # Get raw ingredients string
                 raw_ing = row.get('ingredients') or row.get('skladniki') or ''
-                # Split by newline
-                lines = raw_ing.split('\n')
+                # Split ingredients using the robust logic
+                lines = split_ingredients(raw_ing)
                 
                 processed_ings = []
                 for line in lines:

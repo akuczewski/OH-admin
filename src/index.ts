@@ -178,10 +178,10 @@ export default {
         // 2. Resolve Full Data (Strapi 5 Document Service)
 
         const POPULATE_MAP: Record<string, string[]> = {
-          'api::habit.habit': ['assignedProfiles', 'image', 'media'],
+          'api::habit.habit': ['profiles', 'image', 'media'],
           'api::skin-care.skin-care': ['image', 'media'],
           'api::training.training': ['thumbnail', 'media'],
-          'api::recipe.recipe': ['image', 'assignedProfiles'],
+          'api::recipe.recipe': ['image', 'profiles'],
           'api::profile.profile': ['image']
         };
 
