@@ -245,7 +245,7 @@ async function runRecovery(strapi: Core.Strapi) {
                         category: item.category,
                         unitType: item.unitType,
                         averagePieceWeight: item.averagePieceWeight
-                    }
+                    } as any
                 });
             } else {
                 // Create
@@ -261,7 +261,7 @@ async function runRecovery(strapi: Core.Strapi) {
                         category: item.category,
                         unitType: item.unitType,
                         averagePieceWeight: item.averagePieceWeight
-                    },
+                    } as any,
                     status: 'published'
                 });
             }
