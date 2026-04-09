@@ -104,7 +104,7 @@ async function runSeeder(strapi: Core.Strapi) {
                 status: 'published'
             });
             addedCount++;
-            if (addedCount % 10 === 0) console.log(`[SEEDER] Processed ${addedCount}/${recipesJson.length}...`);
+            if (addedCount % 5 === 0) console.log(`[SEEDER] Processed ${addedCount}/${recipesJson.length}...`);
         } catch (e) {
             console.error(`[SEEDER] Failed for ${recipeData.name}:`, e);
         }

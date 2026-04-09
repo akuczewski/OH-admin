@@ -143,8 +143,8 @@ export default {
     };
 
     const syncToFirestore = async (uid: string, result: any, action: string) => {
-      // Add randomized jitter (0-5000ms) to stagger bulk requests
-      const jitter = Math.floor(Math.random() * 5000);
+      // Add randomized jitter (0-500ms) to stagger bulk requests
+      const jitter = Math.floor(Math.random() * 500);
       await new Promise(resolve => setTimeout(resolve, jitter));
 
       const collectionName = collectionsToSync[uid as keyof typeof collectionsToSync];
