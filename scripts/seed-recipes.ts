@@ -1,4 +1,4 @@
-import { Strapi } from '@strapi/strapi';
+import type { Core } from '@strapi/strapi';
 import fs from 'fs';
 import path from 'path';
 import admin from 'firebase-admin';
@@ -20,7 +20,7 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
-async function runSeeder(strapi: Strapi) {
+async function runSeeder(strapi: Core.Strapi) {
     const recipesDataPath = path.join(__dirname, '../data/recipes.json');
     
     if (!fs.existsSync(recipesDataPath)) {
