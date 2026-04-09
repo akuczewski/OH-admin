@@ -20,7 +20,12 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+import runRecovery from './restore-core-ingredients';
+
 async function runSeeder(strapi: Core.Strapi) {
+    // Phase -1: Recovery of core ingredients with correct macros
+    await runRecovery(strapi);
+
     const recipesDataPath = path.resolve(process.cwd(), 'data/recipes.json');
     
     if (!fs.existsSync(recipesDataPath)) {
@@ -41,33 +46,6 @@ async function runSeeder(strapi: Core.Strapi) {
         snapshot.forEach(doc => batch.delete(doc.ref));
         await batch.commit();
         console.log(`[SEEDER] Deleted ${snapshot.size} Firebase recipes.`);
-    }
-
-    // Phase 0: Aggressive Cleanup (Delete ALL ingredients created today)
-    console.log('[SEEDER] Phase 0: Aggressive cleanup of all ingredients created today (>= 2026-04-09)...');
-    const today = '2026-04-09T00:00:00.000Z';
-    const badIngredients = await strapi.documents('api::ingredient.ingredient' as any).findMany({
-        filters: {
-            createdAt: { $gte: today }
-        },
-        limit: -1
-    });
-
-    if (badIngredients.length > 0) {
-        console.log(`[SEEDER] Found ${badIngredients.length} ingredients created today. Deleting...`);
-        for (const bad of badIngredients) {
-            try {
-                await strapi.documents('api::ingredient.ingredient' as any).delete({
-                    documentId: (bad as any).documentId
-                });
-                await db.collection('ingredients').doc((bad as any).slug || (bad as any).documentId).delete();
-            } catch (err: any) {
-                console.warn(`[SEEDER] Failed to delete ingredient ${(bad as any).name}:`, err.message);
-            }
-        }
-        console.log('[SEEDER] Cleanup completed.');
-    } else {
-        console.log('[SEEDER] No ingredients created today found.');
     }
 
     // 3. Import
