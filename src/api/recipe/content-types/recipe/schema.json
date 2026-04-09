@@ -39,14 +39,7 @@
             "multiple": false
         },
         "mealSlot": {
-            "type": "enumeration",
-            "enum": [
-                "sniadanie",
-                "sniadanie-2",
-                "obiad",
-                "przekaska",
-                "kolacja"
-            ]
+            "type": "json"
         },
         "macros": {
             "type": "component",

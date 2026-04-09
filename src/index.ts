@@ -491,7 +491,91 @@ export default {
       console.error('[SEED] Error during ingredients migration:', error);
     }
 
-    // --- 5. Final Re-Sync Trigger (Optional: force sync all quotes on start) ---
+    // --- 5. Clean & Seed Recipes from JSON ---
+    const recipesDataPath = path.join(__dirname, '../../data/recipes.json');
+    if (fs.existsSync(recipesDataPath)) {
+      console.log('[SEED] recipes.json found. Phase 1: Clearing existing recipes...');
+      try {
+        // Clear Strapi DB
+        await strapi.db.query('api::recipe.recipe').deleteMany({});
+        console.log('[SEED] Strapi recipes cleared.');
+        
+        // Clear Firebase Collection
+        const snapshot = await db.collection('recipes').get();
+        if (!snapshot.empty) {
+          const batch = db.batch();
+          snapshot.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+          console.log(`[SEED] Deleted ${snapshot.size} Firebase recipes.`);
+        }
+      } catch (err) {
+        console.error('[SEED] Clearing failed:', err);
+      }
+
+      console.log('[SEED] Phase 2: Starting recipe seeding from CSV JSON...');
+      const recipesJson = JSON.parse(fs.readFileSync(recipesDataPath, 'utf8'));
+      
+      let addedCount = 0;
+      for (const recipeData of recipesJson) {
+          const processedIngredients = [];
+          for (const ing of recipeData.ingredients) {
+            const ingName = ing.name;
+            // Search ingredient by name
+            // @ts-ignore
+            let ingDocs = await strapi.documents('api::ingredient.ingredient').findMany({
+              filters: { name: { $eqi: ingName } },
+              limit: 1
+            });
+            
+            if (ingDocs.length === 0) {
+              console.log(`[SEED] Creating missing ingredient: ${ingName}`);
+              // @ts-ignore
+              const newIng = await strapi.documents('api::ingredient.ingredient').create({
+                data: {
+                  name: ingName,
+                  slug: ingName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+                  category: 'Inne',
+                  unitType: (ing.unit === 'szt' || ing.unit === 'opakowanie') ? 'piece' : 'weight',
+                  averagePieceWeight: ing.unit === 'szt' ? 100 : null,
+                  kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
+                  publishedAt: new Date(),
+                },
+                status: 'published'
+              });
+              ingDocs = [newIng];
+            }
+            processedIngredients.push({
+              ...ing,
+              __component: 'shared.ingredient'
+            });
+          }
+          
+          try {
+            // @ts-ignore
+            await strapi.documents('api::recipe.recipe').create({
+              data: {
+                name: recipeData.name,
+                description: recipeData.description,
+                preparation: recipeData.preparation,
+                prepTime: recipeData.prepTime,
+                servings: recipeData.servings,
+                mealSlot: recipeData.mealSlot,
+                ingredients: processedIngredients,
+                tags: recipeData.tags.join(', '),
+                publishedAt: new Date(),
+              },
+              status: 'published'
+            });
+            addedCount++;
+          } catch(e) {
+            console.error(`[SEED] Failed to create recipe: ${recipeData.name}`, e);
+          }
+      }
+      console.log(`[SEED] Seeded ${addedCount} recipes successfully.`);
+      fs.renameSync(recipesDataPath, recipesDataPath + '.done');
+    }
+
+    // --- 6. Final Re-Sync Trigger (Optional) ---
     console.log('[FIREBASE] Triggering manual re-sync for quotes...');
     try {
       const existingQuotes = await strapi.documents('api::motivation-quote.motivation-quote').findMany({

@@ -14,8 +14,9 @@ Na start (MVP) skupiamy się na 4 głównych programach:
 ---
 
 ## 2. Fazy Cyklu
-Aplikacja używa uproszczonego modelu **2 faz**:
-- **Folikularna** (follicular) — rozpoczyna się od menstruacji. W tej fazie dojrzewa pęcherzyk jajnikowy i rośnie poziom estrogenów. Użytkowniczka zazwyczaj ma więcej energii i jest w lepszym nastroju.
+Aplikacja z perspektywy dodawania treści rozróżnia **3 fazy**:
+- **Menstruacja** (menstruation) — pierwsze 7 dni cyklu, dla których możemy proponować nieco lżejsze, odmienne nawyki, treningi i rytuały pielęgnacyjne. Wyodrębnione roboczo z fazy folikularnej dla celów CMS.
+- **Folikularna** (follicular) — faza (tutaj w CMS) bezpośrednio po menstruacji. W tej fazie dojrzewa pęcherzyk jajnikowy i rośnie poziom estrogenów. Użytkowniczka zazwyczaj ma więcej energii i jest w lepszym nastroju.
 - **Lutealna** (luteal) — rozpoczyna się po owulacji. Dominuje progesteron, organizm przygotowuje się na ewentualną ciążę. Mogą nasilać się objawy PMS.
 
 > [!IMPORTANT]

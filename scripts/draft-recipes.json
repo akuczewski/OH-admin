@@ -1,0 +1,922 @@
+[
+  {
+    "name": "Jaglanka z sosem tahini i granatem",
+    "description": "Pyszna jaglanka z mlekiem kokosowym oraz sosem tahini, podawana z granatem.",
+    "kcal": 1250,
+    "macros": {
+      "protein": 20,
+      "carbs": 160,
+      "fat": 50,
+      "fiber": 10
+    },
+    "ingredients": [
+      {
+        "name": "kasza jaglana",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "mleko kokosowe",
+        "amount": 250,
+        "unit": "ml"
+      },
+      {
+        "name": "cukier trzcinowy",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "granat",
+        "amount": 0.5,
+        "unit": "szt"
+      },
+      {
+        "name": "tahini",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "syrop klonowy",
+        "amount": 2,
+        "unit": "lyzka"
+      },
+      {
+        "name": "sok z cytryny",
+        "amount": 1,
+        "unit": "lyzka"
+      }
+    ],
+    "preparation": "Kaszę jaglaną opłukać zmieniając kilkakrotnie wodę aż będzie klarowna. Wsypać do niedużego garnka, dodać mleko oraz połowę mleka kokosowego (125 ml), cukier i zagotować na średnim ogniu.\nPrzykryć, zmniejszyć ogień do minimum i gotować do miękkości przez ok. 15 minut.\nGarnek otworzyć, dolać resztę mleka kokosowego, wymieszać i odstawić z ognia.\nWyłuskać nasiona z granatu i wymieszać składniki sosu tahini. Podawać z jaglanką.",
+    "prepTime": 20,
+    "servings": 2,
+    "mealSlot": "sniadanie",
+    "tags": "przepisy-fit, wegańskie, bezglutenowe",
+    "author": "kwestiasmaku",
+    "sourceUrl": "https://www.kwestiasmaku.com/przepis/jaglanka-z-sosem-tahini-i-granatem"
+  },
+  {
+    "name": "Kotleciki mielone z indyka",
+    "description": "Bardzo szybki obiad dla całej rodziny. Kotleciki mielone z indyka z dodatkiem ryżu. Uwielbiane przez dzieci.",
+    "kcal": 1690,
+    "macros": {
+      "protein": 140,
+      "carbs": 80,
+      "fat": 90,
+      "fiber": 5
+    },
+    "ingredients": [
+      {
+        "name": "filet z indyka",
+        "amount": 500,
+        "unit": "g"
+      },
+      {
+        "name": "jajko",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "cebula",
+        "amount": 50,
+        "unit": "g"
+      },
+      {
+        "name": "ryż biały",
+        "amount": 150,
+        "unit": "g"
+      },
+      {
+        "name": "przetarte pomidory",
+        "amount": 45,
+        "unit": "g"
+      },
+      {
+        "name": "bułka tarta",
+        "amount": 30,
+        "unit": "lyzka"
+      },
+      {
+        "name": "olej roślinny",
+        "amount": 3,
+        "unit": "lyzka"
+      },
+      {
+        "name": "papryka słodka",
+        "amount": 2,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "pieprz czarny",
+        "amount": 1,
+        "unit": "szczypta"
+      },
+      {
+        "name": "sól",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "oregano",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "czosnek w proszku",
+        "amount": 1,
+        "unit": "lyzeczka"
+      }
+    ],
+    "preparation": "Mięso umyj, osusz i zmiel w maszynce lub poproś o to w sklepie kupując filet.\nDo miski ze zmieloną piersią indyka dodaj surowe jajko, przyprawy, pomidory i ugotowany wcześniej ryż. Wymieszaj składniki i odstaw.\nNa małej patelni podsmażaj na odrobinie oleju drobno pokrojoną cebulkę. Po 10 minutach wyłącz i dodaj od razu do masy mięsnej. Wymieszaj.\nNagrzej dużą patelnię z grubym dnem. Na talerz wysyp bułkę tartą.\nWlej olej na patelnię. Z masy mięsnej formuj dłońmi kulki wielkości mandarynki. Obtaczaj w bułce nadając im lekko wydłużony i spłaszczony kształt i układaj na patelni.\nSmaż w kilku partiach po 2-3 minut z każdej strony do ładnego zarumienia. Układaj na talerzach wyłożonych umytymi i pokrojonymi ulubionymi warzywami lub mieszanką sałat czy młodym szpinakiem.",
+    "prepTime": 25,
+    "servings": 20,
+    "mealSlot": "obiad",
+    "tags": "niski-ig",
+    "author": "aniagotuje.pl",
+    "sourceUrl": "https://aniagotuje.pl/przepis/soczyste-kotleciki-z-filetu-z-indyka-z-ryzem"
+  },
+  {
+    "name": "Korzenne brownie z suszonymi śliwkami",
+    "description": "Wasze ulubione brownie tym razem w świątecznej odsłonie, z dodatkiem suszonych śliwek i przyprawy piernikowej.",
+    "kcal": 4879,
+    "macros": {
+      "protein": 49,
+      "carbs": 520,
+      "fat": 280,
+      "fiber": 28
+    },
+    "ingredients": [
+      {
+        "name": "masło",
+        "amount": 200,
+        "unit": "g"
+      },
+      {
+        "name": "przyprawa piernikowa",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "czekolada gorzka",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "czekolada deserowa",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "jajka",
+        "amount": 3,
+        "unit": "szt"
+      },
+      {
+        "name": "cukier",
+        "amount": 270,
+        "unit": "g"
+      },
+      {
+        "name": "mąka",
+        "amount": 135,
+        "unit": "g"
+      },
+      {
+        "name": "sól",
+        "amount": 1,
+        "unit": "szczypta"
+      },
+      {
+        "name": "suszone śliwki",
+        "amount": 150,
+        "unit": "g"
+      },
+      {
+        "name": "czekolada deserowa",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "masło",
+        "amount": 1,
+        "unit": "lyzka"
+      }
+    ],
+    "preparation": "Piekarnik nagrzać do 160 stopni C. Przygotować małą prostokątną foremkę, posmarować ją masłem i wyłożyć papierem do pieczenia.\nMasło włożyć do rondelka, dodać przyprawę piernikową i na minimalnym ogniu roztopić. Dodać obydwie czekolady połamane na kosteczki i cały czas mieszając roztopić, odstawić z ognia.\nW oddzielnej misce rozmiksować lub wymieszać rózgą jajka z cukrem. Dodać do nich roztopioną czekoladę z masłem i zmiksować lub wymieszać rózgą na gładką masę.\nDodać mąkę i sól, zmiksować na jednolite ciasto, dodać posiekane śliwki (2 - 3 sztuki zostawić do dekoracji) i wymieszać. Wyłożyć do przygotowanej blaszki i wstawić do piekarnika.\nPiec przez ok. 32 minuty, aż ciasto lekko urośnie. Po przestudzeniu polać polewą (roztopiona czekolada z masłem). Pokroić na porcje i udekorować kawałeczkami suszonych śliwek.",
+    "prepTime": 60,
+    "servings": 20,
+    "mealSlot": "przekaska",
+    "tags": "ciasta, brownie, ciasta czekoladowe",
+    "author": "kwestiasmaku.com",
+    "sourceUrl": "https://www.kwestiasmaku.com/przepis/korzenne-brownie-z-suszonymi-sliwkami"
+  },
+  {
+    "name": "Hiszpański Kociołek",
+    "description": "Danie w stylu leczo z chorizo, ciecierzycą i cukinią.",
+    "kcal": 1510,
+    "macros": {
+      "protein": 75,
+      "carbs": 135,
+      "fat": 77,
+      "fiber": 28
+    },
+    "ingredients": [
+      {
+        "name": "kiełbasa chorizo",
+        "amount": 200,
+        "unit": "g"
+      },
+      {
+        "name": "oliwa",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "cebula",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "czosnek",
+        "amount": 2,
+        "unit": "ząbek"
+      },
+      {
+        "name": "papryka",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "cukinia",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "bulion",
+        "amount": 160,
+        "unit": "ml"
+      },
+      {
+        "name": "ciecierzyca",
+        "amount": 240,
+        "unit": "g"
+      },
+      {
+        "name": "oregano",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "przecier pomidorowy",
+        "amount": 250,
+        "unit": "ml"
+      }
+    ],
+    "preparation": "Kiełbasę chorizo obrać z cienkiej skórki i pokroić w kostkę. Włożyć do szerokiego rondla i na małym ogniu podsmażać przez ok. 3 minuty co chwilę mieszając.\nDodać oliwę, obraną i pokrojoną w kosteczkę cebulę oraz obrany i pokrojony na plasterki czosnek. Smażyć na nieco większym ogniu przez ok. 5 minut, aż kiełbasa się wytopi a cebula zeszkli.\nDodać pokrojoną w kostkę paprykę oraz cukinię. Doprawić solą oraz pieprzem, wymieszać i smażyć przez ok. 5 minut.\nZwiększyć ogień, wlać bulion i po zagotowaniu gotować przez ok. 3 minuty. W międzyczasie dodać ciecierzycę (całą zawartość puszki) oraz oregano.\nWlać przecier pomidorowy, wymieszać i gotować jeszcze przez ok. 3 minuty.",
+    "prepTime": 20,
+    "servings": 2,
+    "mealSlot": "kolacja",
+    "tags": "niski-ig",
+    "author": "kwestiasmaku",
+    "sourceUrl": "https://www.kwestiasmaku.com/przepis/hiszpanski-kociolek"
+  },
+  {
+    "name": "Pasztet z białej fasoli z pieczarkami",
+    "description": "Aromatyczny pasztet z białej fasoli, pieczarek i przypraw, idealny jako wegańska przekąska.",
+    "kcal": 2600,
+    "macros": {
+      "protein": 90,
+      "carbs": 300,
+      "fat": 150,
+      "fiber": 70
+    },
+    "ingredients": [
+      {
+        "name": "jabłko",
+        "amount": 120,
+        "unit": "g"
+      },
+      {
+        "name": "majeranek suszony",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "czosnek",
+        "amount": 3,
+        "unit": "szt"
+      },
+      {
+        "name": "musztarda",
+        "amount": 2,
+        "unit": "lyzka"
+      },
+      {
+        "name": "płatki owsiane",
+        "amount": 80,
+        "unit": "g"
+      },
+      {
+        "name": "mąka ziemniaczana",
+        "amount": 20,
+        "unit": "g"
+      },
+      {
+        "name": "koncentrat bulionu warzywnego",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "przyprawa uniwersalna",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "olej rzepakowy",
+        "amount": 120,
+        "unit": "g"
+      },
+      {
+        "name": "pieczarki",
+        "amount": 250,
+        "unit": "g"
+      },
+      {
+        "name": "sól",
+        "amount": 0.5,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "biała fasola",
+        "amount": 400,
+        "unit": "g"
+      },
+      {
+        "name": "cebula",
+        "amount": 200,
+        "unit": "g"
+      }
+    ],
+    "preparation": "Krok 1\nFasolę zalać wodą i odstawić na noc, następnego dnia wypłukać.\nKrok 2\nFasolę przełożyć do naczynia, dodać ok. 800 g wody i gotować 50 min /90 st. /obr. 1. 10 minut przed końcem dodać ½ łyżeczki soli.\nKrok 3\nUgotowaną fasolę przecedzić, przelać zimną wodą.\nKrok 4\nDo wypłukanego naczynia włożyć cebulę i czosnek, posiekać 5 sek. / obr. 5.\nKrok 5\nDodać 40 g oleju i dusić 5 min / Varoma / obr.1.\nKrok 6\nDodać pieczarki i jabłko, rozdrobnić 5 s. / obr. 4, dusić 7 min / 100*C / obr.2.\nKrok 7\nDodać fasolę i resztę składników + 80 g oleju i miksować pomagając kopystka - na jednolitą masę 1 min. /obr.9.\nKrok 8\nPiekarnik rozgrzać do 180 st. (góra-dół), formę natłuścić olejem, posypać płatkami owsianymi lub mąką ryżową, przełożyć masę, wyrównać wierzch łyżką maczaną w wodzie.\nKrok 9\nPiec ok.40 minut. W połowie czasu można przełączyć tylko na grzanie dolne, żeby wierzch nie był spieczony.",
+    "prepTime": 90,
+    "servings": 12,
+    "mealSlot": "przekaska",
+    "tags": "niski-ig",
+    "author": "zmiksowane.com",
+    "sourceUrl": "https://www.zmiksowane.com/przepis/pasztet-z-bialej-fasoli-z-pieczarkami/"
+  },
+  {
+    "name": "Nutella z awokado",
+    "description": "Alternatywna, zdrowsza wersja nutelli z awokado, orzechami laskowymi i miodem.",
+    "kcal": 1040,
+    "macros": {
+      "protein": 17,
+      "carbs": 129,
+      "fat": 64,
+      "fiber": 27
+    },
+    "ingredients": [
+      {
+        "name": "awokado",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "banan",
+        "amount": 2,
+        "unit": "szt"
+      },
+      {
+        "name": "miod",
+        "amount": 2,
+        "unit": "lyzka"
+      },
+      {
+        "name": "kakao",
+        "amount": 2,
+        "unit": "lyzka"
+      },
+      {
+        "name": "orzechy laskowe",
+        "amount": 200,
+        "unit": "g"
+      }
+    ],
+    "preparation": "Wszystkie składniki wystarczy dokładnie zblendować na gładką masę bez grudek.",
+    "prepTime": 10,
+    "servings": 1,
+    "mealSlot": "sniadanie-2",
+    "tags": "awokado, bez cukru, bez glutenu, fit słodycze, orzechy, zdrowe słodycze, zdrowe śniadanie, zdrowe tłuszcze",
+    "author": "My Kitchen Life",
+    "sourceUrl": "https://www.mykitchenlife.pl/nutella-z-awokado/"
+  },
+  {
+    "name": "Kurczak Tikka Masala",
+    "description": "Kurczak tikka masala to bardzo popularna w Wielkiej Brytanii potrawa, inspirowana kuchnią indyjską. Kawałki kurczaka marynowane w jogurcie i przyprawach, grillowane, a następnie gotowane w gęstym sosie pomidorowym.",
+    "kcal": 1800,
+    "macros": {
+      "protein": 150,
+      "carbs": 100,
+      "fat": 90,
+      "fiber": 10
+    },
+    "ingredients": [
+      {
+        "name": "filet z kurczaka",
+        "amount": 400,
+        "unit": "g"
+      },
+      {
+        "name": "jogurt naturalny",
+        "amount": 150,
+        "unit": "g"
+      },
+      {
+        "name": "oliwa",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "imbir",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "cynamon",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "ostra papryka",
+        "amount": 2,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "kmin rzymski",
+        "amount": 2,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "garam masala",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "przecier pomidorowy",
+        "amount": 600,
+        "unit": "ml"
+      },
+      {
+        "name": "czosnek",
+        "amount": 2,
+        "unit": "szt"
+      },
+      {
+        "name": "masło",
+        "amount": 2,
+        "unit": "lyzka"
+      },
+      {
+        "name": "słodka papryka",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "cukier",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "ocet winny",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "smietanka kremowka",
+        "amount": 6,
+        "unit": "lyzka"
+      },
+      {
+        "name": "ryż",
+        "amount": 200,
+        "unit": "g"
+      },
+      {
+        "name": "kolendra",
+        "amount": 1,
+        "unit": "garstka"
+      }
+    ],
+    "preparation": "Kurczaka pokroić w kostkę około 2 cm, posypać solą i pieprzem, włożyć do miski ze wszystkimi składnikami marynaty, wymieszać i odstawić na minimum 30 minut.\nKurczaka wyjąć z marynaty i papierowymi ręcznikami usunąć jej nadmiar. Mięso zgrillować na patelni grillowej lub obsmażyć na zwykłej patelni z każdej strony po minucie.\nW garnku roztopić masło razem z czosnkiem. Podsmażyć na umiarkowanym ogniu przez minutę, dodać wszystkie przyprawy i mieszając smażyć przez minutę.\nDodać pomidory, cukier, ocet winny i sól, świeżo zmielony pieprz i zagotować. Przykryć, zmniejszyć ogień do minimum i gotować pod przykryciem przez 10 minut.\nDodać obsmażone kawałki kurczaka i gotować pod przykryciem na bardzo małym ogniu przez około 10 - 15 minut.\nNa koniec zdjąć z ognia i dodać śmietankę kremówkę. Podawać z ryżem, jogurtem naturalnym, pieczywem. Posypać kolendrą.",
+    "prepTime": 60,
+    "servings": 4,
+    "mealSlot": "obiad",
+    "tags": "niski-ig",
+    "author": "kwestiasmaku.com",
+    "sourceUrl": "https://www.kwestiasmaku.com/kuchnia_angielska/kurczak_tikka_masala/przepis.html"
+  },
+  {
+    "name": "Zupa Krem z Kalafiora",
+    "description": "Wspaniała kremowa zupa z dodatkiem smażonych kurek.",
+    "kcal": 1220,
+    "macros": {
+      "protein": 40,
+      "carbs": 150,
+      "fat": 60,
+      "fiber": 25
+    },
+    "ingredients": [
+      {
+        "name": "kalafior",
+        "amount": 1300,
+        "unit": "g"
+      },
+      {
+        "name": "ziemniaki",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "cebula",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "masło",
+        "amount": 25,
+        "unit": "g"
+      },
+      {
+        "name": "oliwa z oliwek",
+        "amount": 4,
+        "unit": "lyzka"
+      },
+      {
+        "name": "bulion warzywny",
+        "amount": 1200,
+        "unit": "ml"
+      },
+      {
+        "name": "mleko",
+        "amount": 600,
+        "unit": "ml"
+      },
+      {
+        "name": "śmietanka 30%",
+        "amount": 150,
+        "unit": "ml"
+      },
+      {
+        "name": "kurki",
+        "amount": 250,
+        "unit": "g"
+      },
+      {
+        "name": "szczypiorek",
+        "amount": 3,
+        "unit": "lyzka"
+      }
+    ],
+    "preparation": "Z kalafiora usunąć liście i wyciąć głąb, rozdzielić różyczki i włożyć je do dużego garnka. Ziemniaka i cebulę obrać i pokroić w kostkę, dodać do kalafiora wraz z masłem i połową oliwy. Podgrzewać na lekkim ogniu aż warzywa zaczną skwierczeć. Przykryć i podgrzewać jeszcze przez 10 minut, od czasu do czasu mieszając, aż warzywa zmiękną, ale nie zrumienią się.\nWlać bulion, zagotować, dodać mleko i na wolnym ogniu ponownie zagotować. Doprawić solą oraz pieprzem, gotować na małym ogniu bez przykrycia przez 10 - 15 minut, aż warzywa będą całkowicie miękkie.\nZdjąć z ognia i dodać śmietanę, zupę zmiksować. Zupę przetrzeć przez sito drewnianą łyżką, dla uzyskania idealnego kremu. Przed podaniem zupę dobrze podgrzać, ale nie zagotowywać.\nKurki dokładnie umyć i osuszyć, pokroić na mniejsze kawałki. Rozgrzać pozostały olej na patelni i smażyć grzyby, aż będą lekko zrumienione. Na koniec doprawić solą oraz pieprzem.\nZupę rozlać do talerzy, włożyć do niej kurki i posypać szczypiorkiem. Można podawać z grzankami.",
+    "prepTime": 40,
+    "servings": 4,
+    "mealSlot": "przekaska",
+    "tags": "niski-ig",
+    "author": "kwestiasmaku.com",
+    "sourceUrl": "https://www.kwestiasmaku.com/zielony_srodek/kalafior/krem_z_kalafiora/przepis.html"
+  },
+  {
+    "name": "Bezglutenowe naleśniki pomarańczowe z makiem",
+    "description": "Miękkie i elastyczne bezglutenowe naleśniki o aromacie pomarańczy, idealne na świąteczne śniadanie.",
+    "kcal": 1800,
+    "macros": {
+      "protein": 30,
+      "carbs": 300,
+      "fat": 60,
+      "fiber": 18
+    },
+    "ingredients": [
+      {
+        "name": "napój roślinny",
+        "amount": 375,
+        "unit": "ml"
+      },
+      {
+        "name": "pomarańcza",
+        "amount": 85,
+        "unit": "ml"
+      },
+      {
+        "name": "jajo",
+        "amount": 2,
+        "unit": "szt"
+      },
+      {
+        "name": "mąka ryżowa",
+        "amount": 55,
+        "unit": "g"
+      },
+      {
+        "name": "mąka gryczana",
+        "amount": 55,
+        "unit": "g"
+      },
+      {
+        "name": "mąka kukurydziana",
+        "amount": 35,
+        "unit": "g"
+      },
+      {
+        "name": "budyń waniliowy",
+        "amount": 50,
+        "unit": "g"
+      },
+      {
+        "name": "cukier kokosowy",
+        "amount": 5,
+        "unit": "g"
+      },
+      {
+        "name": "mak",
+        "amount": 10,
+        "unit": "g"
+      },
+      {
+        "name": "ekstrakt waniliowy",
+        "amount": 5,
+        "unit": "ml"
+      },
+      {
+        "name": "sól",
+        "amount": 1,
+        "unit": "szczypta"
+      },
+      {
+        "name": "masło klarowane",
+        "amount": 15,
+        "unit": "ml"
+      }
+    ],
+    "preparation": "Pomarańczę wyszoruj, sparz wrzątkiem, a następnie z połowy wyciśnij sok i zetrzyj skórkę.\nJajka ubij na jednolitą masę z mlekiem roślinnym i sokiem z pomarańczy. Dodaj skórkę pomarańczową i wszystkie mąki z budyniem.\nDopraw szczyptą soli, wybranym słodem i ekstraktem waniliowym. Dosyp maku i wymieszaj.\nOdstaw ciasto na 15-20 min.\nDodaj olej lub masło klarowane. Jeśli gęstsze, dodaj kilka łyżek wody.\nRozgrzej nasmarowaną tłuszczem patelnię. Wylej łyżkę ciasta. Smaż, aż się zetnie, przewróć i dosmaż.\nPrzed każdym nabraniem ciasta, zamieszaj masę.\nGotowe naleśniki trzymaj pod przykryciem.\nPodawaj z ulubioną konfiturą lub kremem czekoladowym z banana.",
+    "prepTime": 45,
+    "servings": 9,
+    "mealSlot": "kolacja",
+    "tags": "niski-ig",
+    "author": "Kasia | BezBez",
+    "sourceUrl": "https://bezbez.pl/diety/bez-cukru/bezglutenowe-nalesniki-pomaranczowe-z-makiem/"
+  },
+  {
+    "name": "Śródziemnomorska sałatka z płatkami parmezanu, oliwkami, rukolą i orzechami pinii",
+    "description": "Lekkostrawna sałatka z rukolą, szpinakiem, pomidorami koktajlowymi, oliwkami i płatkami parmezanu.",
+    "kcal": 780,
+    "macros": {
+      "protein": 31,
+      "carbs": 20,
+      "fat": 66,
+      "fiber": 10
+    },
+    "ingredients": [
+      {
+        "name": "rukola",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "szpinak świeży",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "pomidor koktajlowy",
+        "amount": 10,
+        "unit": "szt"
+      },
+      {
+        "name": "oliwa z oliwek",
+        "amount": 40,
+        "unit": "g"
+      },
+      {
+        "name": "oliwki czarne",
+        "amount": 50,
+        "unit": "g"
+      },
+      {
+        "name": "oliwki zielone",
+        "amount": 50,
+        "unit": "g"
+      },
+      {
+        "name": "parmezan",
+        "amount": 40,
+        "unit": "g"
+      },
+      {
+        "name": "sól",
+        "amount": 2,
+        "unit": "szczypta"
+      }
+    ],
+    "preparation": "1. Umyte pomidory koktajlowe kroimy w ćwiartki. Ewentualnie wycinamy szypułki jeżeli są twarde.\n2. Ścieramy na tarce świeży parmezan na duże płatki.\n3. Umytą rukolę oraz szpinak delikatnie suszymy ręcznikiem papierowym i dodajemy oliwę z oliwek. Całość mieszamy aby na każdym listku znalazła się oliwa.\n4. Odcedzone czarne oliwki suszymy na ręczniku papierowym. Kroimy w cienkie plastry.\n5. Odcedzone zielone oliwki suszymy na ręczniku papierowym. Kroimy w cienkie plastry.\n6. Mieszamy pomidory, oliwki z rukolą i szpinakiem. Dodajemy na koniec płatki parmezanu wraz z orzechami pinii. Polewamy całość odrobiną oliwy z oliwek i doprawiamy solą.",
+    "prepTime": 20,
+    "servings": 1,
+    "mealSlot": "sniadanie-2",
+    "tags": "niski-ig",
+    "author": "doradcasmaku.pl",
+    "sourceUrl": "https://www.doradcasmaku.pl/przepis-srodziemnomorska-salatka-z-platkami-parmezanu-oliwkami-rukola-i-orzechami-pinii-372503"
+  },
+  {
+    "name": "Pappardelle z borowikami i polędwicą",
+    "description": "Pyszny i wykwintny obiad z makaronem, borowikami i polędwiczkami wieprzowymi.",
+    "kcal": 1050,
+    "macros": {
+      "protein": 70,
+      "carbs": 140,
+      "fat": 40,
+      "fiber": 10
+    },
+    "ingredients": [
+      {
+        "name": "grzyby borowiki",
+        "amount": 100,
+        "unit": "g"
+      },
+      {
+        "name": "polędwiczki wieprzowe",
+        "amount": 150,
+        "unit": "g"
+      },
+      {
+        "name": "makaron pappardelle",
+        "amount": 200,
+        "unit": "g"
+      },
+      {
+        "name": "pietruszka natka",
+        "amount": 10,
+        "unit": "g"
+      },
+      {
+        "name": "śmietana",
+        "amount": 30,
+        "unit": "g"
+      },
+      {
+        "name": "masło",
+        "amount": 30,
+        "unit": "g"
+      },
+      {
+        "name": "sól",
+        "amount": 2,
+        "unit": "szczypta"
+      },
+      {
+        "name": "pieprz",
+        "amount": 2,
+        "unit": "szczypta"
+      }
+    ],
+    "preparation": "Na patelni roztapiamy masło, na bardzo małym ogniu tak by masło się nie przypaliło, dodajemy pokrojone borowiki i dusimy kilka minut pod przykryciem.\nDodajemy pokrojoną w mniejsze kawałki polędwiczkę i dalej dusimy aż mięso będzie miękkie - dosłownie kilka minut.\nDoprawiamy solą, pieprzem i posiekaną natką pietruszki.\nMakaron gotujemy w lekko osolonej wodzie według przepisu na opakowaniu - zazwyczaj około 6-8 minut.\nOdcedzony makaron mieszamy ze śmietaną i łączymy z grzybami i mięsem na patelni.\nPodajemy od razu po zrobieniu, dekorujemy natką pietruszki.",
+    "prepTime": 30,
+    "servings": 2,
+    "mealSlot": "obiad",
+    "tags": "niski-ig",
+    "author": "zpierwszegotloczenia.pl",
+    "sourceUrl": "https://zpierwszegotloczenia.pl/przepis/pappardelle-z-borowikami-i-poledwiczkami#"
+  },
+  {
+    "name": "Fit Tiramisu ze Skyrem",
+    "description": "Lekki deser tiramisu na bazie skyru waniliowego.",
+    "kcal": 316,
+    "macros": {
+      "protein": 19.3,
+      "carbs": 51.8,
+      "fat": 5.2,
+      "fiber": 0
+    },
+    "ingredients": [
+      {
+        "name": "biszkopty",
+        "amount": 18,
+        "unit": "szt"
+      },
+      {
+        "name": "skyr waniliowy",
+        "amount": 1,
+        "unit": "opakowanie"
+      },
+      {
+        "name": "kakao",
+        "amount": 1,
+        "unit": "lyzeczka"
+      },
+      {
+        "name": "kawa rozpuszczalna",
+        "amount": 1,
+        "unit": "lyzka"
+      }
+    ],
+    "preparation": "Na dno naczynia wyłóż kolejno warstwę biszkoptów, każdy z nich namocz uprzednio od spodu w kawie. Na to nałóż warstwę serka skyr, kolejno następna warstwa namoczonych od spodu w kawie biszkoptów i warstwa serka skyr. Wierzch posyp delikatnie kakao i odstaw do lodówki na około 5 godzin, po tym czasie fit tiramisu będzie gotowe do spożycia – przybierze konsystencję „ciasta”.",
+    "prepTime": 20,
+    "servings": 1,
+    "mealSlot": "przekaska",
+    "tags": "niski-ig",
+    "author": "Dominika Hatala",
+    "sourceUrl": "https://dietetykpowszechny.pl/fit-tiramisu/"
+  },
+  {
+    "name": "Ryba w sosie curry według Magdy Gessler",
+    "description": "Przepis inspirowany kuchnią hinduską. Idealny dla miłośników aromatów i intensywnych smaków orientalnych. Danie niedrogie i łatwe do przyrządzenia.",
+    "kcal": 1080,
+    "macros": {
+      "protein": 140,
+      "carbs": 50,
+      "fat": 50,
+      "fiber": 15
+    },
+    "ingredients": [
+      {
+        "name": "filety z białej ryby",
+        "amount": 450,
+        "unit": "g"
+      },
+      {
+        "name": "szalotka",
+        "amount": 4,
+        "unit": "szt"
+      },
+      {
+        "name": "nasiona gorczycy",
+        "amount": 1,
+        "unit": "lyzka"
+      },
+      {
+        "name": "szczypior",
+        "amount": 1,
+        "unit": "peczek"
+      },
+      {
+        "name": "papryka",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "pomidor",
+        "amount": 1,
+        "unit": "szt"
+      },
+      {
+        "name": "imbir",
+        "amount": 1,
+        "unit": "szt"
+      },
+      "size",
+      "length",
+      "cm",
+      "granularity",
+      "approximation",
+      "degree",
+      "rank",
+      "steps",
+      "adoptions",
+      "cash"
+    ],
+    "fales": {
+      "name": "pasta curry",
+      "amount": 3,
+      "unit": "lyzka"
+    },
+    "{ ": "  ,",
+    "kurkuma": {
+      "amount": 2,
+      "unit": "lyzeczka"
+    },
+    "": [
+      "",
+      ""
+    ],
+    "  ": "",
+    "\n": "\n  Palace",
+    "sos sojowy": {
+      "amount": 2,
+      "unit": "lyzka"
+    },
+    "mleczko ewed/": {
+      "  ": "puszka"
+    },
+    "olej roślinny": {
+      "  ": "",
+      "unit": ""
+    },
+    "natka  pietruski": {
+      "  ": ""
+    },
+    "preparation": "Na patelni lub w rondlu rozgrzać olej, podsmażyć na nim gorczycę aby oddała aromat, następnie wrzucić pokrojoną paprykę, starty imbir i pokrojoną cebulę.\nGdy cebula trochę zmięknie, dodać pokrojonego pomidora, rybę pokrojoną na kawałki - na jeden kęs, dodać pastę curry, sos sojowy, kurkumę, zalać mleczkiem kokosowym i dusić przez ok. 10-15 min.\nNa koniec posypać szczypiorem i świeżą kolendrą bądź natką. Podawać z ryżem albo chlebkiem pita.",
+    "prepTime": 15,
+    "servings": 4,
+    "mealSlot": "kolacja",
+    "tags": "niski-ig",
+    "author": "beszamel.se.pl",
+    "sourceUrl": "https://beszamel.se.pl/przepisy/dania-glowne-rybne/ryba-w-sosie-curry-wedlug-magdy-gessler-re-LEdc-d8pS-KiEh.html"
+  }
+]

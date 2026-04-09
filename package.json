@@ -1,10 +1,10 @@
 {
   "name": "cms",
-  "version": "0.1.19",
+  "version": "0.1.14",
   "private": true,
   "description": "A Strapi application",
   "scripts": {
-    "build": "rm -rf .cache build && strapi build",
+    "build": "strapi build",
     "console": "strapi console",
     "deploy": "strapi deploy",
     "dev": "strapi develop",

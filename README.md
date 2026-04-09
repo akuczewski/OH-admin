@@ -46,12 +46,13 @@ Panel będzie dostępny pod `http://localhost:1337/admin`.
 
 ## Model Faz Cyklu
 
-Aplikacja używa uproszczonego modelu **2 faz**:
-- **Folikularna** (follicular) — rozpoczyna się od menstruacji. Dojrzewa pęcherzyk jajnikowy, rośnie poziom estrogenów.
+Aplikacja w CMS używa modelu **3 faz** (z odseparowaną menstruacją):
+- **Menstruacja** (menstruation) — wyodrębniona faza z folikularnej (pierwsze 7 dni) w celu spersonalizowania CMS.
+- **Folikularna** (follicular) — faza potraktowana jako "po menstruacji", rośnie poziom estrogenów.
 - **Lutealna** (luteal) — rozpoczyna się po owulacji. Dominuje progesteron, mogą nasilać się objawy PMS.
 
 > [!IMPORTANT]
-> Wszystkie content types używające faz (training, skin-care, motivation-quote, habit) muszą korzystać wyłącznie z tych 2 wartości.
+> Wszystkie content types używające faz (training, skin-care, motivation-quote, habit) muszą korzystać wyłącznie z tych 3 wartości.
 
 ---
 

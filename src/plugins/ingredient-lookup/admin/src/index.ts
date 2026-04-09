@@ -1,4 +1,5 @@
 import { Search } from '@strapi/icons';
+import RecipeImporterButton from './components/RecipeImporterButton';
 
 export default {
     register(app: any) {
@@ -36,6 +37,10 @@ export default {
     },
 
     bootstrap(app: any) {
+        app.getPlugin('content-manager').injectComponent('editView', 'right-links', {
+            name: 'RecipeImporterButton',
+            Component: RecipeImporterButton,
+        });
     },
 
     async registerTrads({ locales }: { locales: string[] }) {
