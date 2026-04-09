@@ -42,24 +42,7 @@
       "required": true
     },
     "category": {
-      "type": "enumeration",
-      "enum": [
-        "warzywa",
-        "owoce",
-        "mięso",
-        "ryby",
-        "jaja",
-        "nabiał",
-        "białko roślinne",
-        "ziarna",
-        "strączki",
-        "mąki",
-        "orzechy",
-        "nasiona",
-        "tłuszcze",
-        "przyprawy",
-        "inne"
-      ],
+      "type": "string",
       "required": true
     },
     "unitType": {
