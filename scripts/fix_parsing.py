@@ -122,20 +122,33 @@ def parse_float(s):
         return 1.0
 
 def clean_ingredient(raw_line):
-    raw_line = raw_line.strip()
+    # Normalize dash types
+    raw_line = raw_line.replace('–', '-').replace('—', '-').strip()
+    
     if not raw_line or len(raw_line) < 2:
         return None
 
     # Strip trailing junk
     raw_line = re.sub(r'\s*-?\s*$', '', raw_line)
 
+    # If the whole line is in parentheses, strip them
+    if raw_line.startswith('(') and raw_line.endswith(')'):
+        raw_line = raw_line[1:-1].strip()
+
     name = raw_line
     amount = 1.0
     unit = 'szt'
     weight = 0.0
 
+    # -- PRE-CLEAN: Handle double parentheses or comments --
+    # "24 sztuki biszkoptów (ilość zależy od tego, jaką masz blaszkę)(100 g)"
+    # Extract the weight if it's the last thing in parentheses
+    match_weight = re.search(r'\(\s*([\d,./]+)\s*([gml]+)\s*\)$', raw_line, re.I)
+    if match_weight:
+        weight = parse_float(match_weight.group(1))
+        raw_line = re.sub(r'\s*\(\s*[\d,./]+\s*[gml]+\s*\)$', '', raw_line, flags=re.I).strip()
+
     # -- RULE A: Name (Amount [Unit]) - Weight --
-    # Example: "Marchew (1 średnia sztuka) - 60g"
     match_a = re.search(r'^(.*?)\s*\(\s*([\d,./]+)\s*(?:.+?\s*)?([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\s*\)\s*-\s*([\d,./]+)\s*([gml]+)', raw_line, re.I)
     if match_a:
         name = match_a.group(1).strip()
@@ -145,17 +158,15 @@ def clean_ingredient(raw_line):
         return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
 
     # -- RULE B: [Count] [Unit] [Name] [Weight] [Unit2] [Multiplier] --
-    # Example: "1 opakowanie pomidorów z puszki 400 g 0,8"
-    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]+)\s+(.+?)\s+([\d,./]+)\s+([gml]+)\s+([\d,./]+)$', raw_line, re.I)
+    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]+)\s+(.+?)\s+([\d,./]+)\s+([gml]+)(?:\s+([\d,./]+))?$', raw_line, re.I)
     if match_b:
-        amount = parse_float(match_b.group(6))
+        amount = parse_float(match_b.group(6)) if match_b.group(6) else parse_float(match_b.group(1)) or 1.0
         name = match_b.group(3).strip()
         unit = UNIT_MAP.get(match_b.group(2).lower(), 'szt')
         weight = parse_float(match_b.group(4))
         return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
 
     # -- RULE C: Simple Dash with Weight --
-    # Example: "Makaron ryżowy - 50g"
     if ' - ' in raw_line or raw_line.endswith('g') or raw_line.endswith('ml'):
         parts = raw_line.split(' - ')
         name_part = parts[0].strip()
@@ -168,7 +179,6 @@ def clean_ingredient(raw_line):
             return { 'name': normalize_ingredient_name(name), 'amount': weight, 'unit': 'g', 'weight': weight, 'originalName': raw_line }
 
     # -- RULE D: Colon Style --
-    # Example: "jajko: 2 sztuki"
     if ':' in raw_line:
         parts = raw_line.split(':')
         name = parts[0].strip()
@@ -176,41 +186,59 @@ def clean_ingredient(raw_line):
         if amt_match:
             amount = parse_float(amt_match.group(1))
             unit = UNIT_MAP.get(amt_match.group(2).lower(), 'szt')
-            return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': 0.0, 'originalName': raw_line }
+            return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
 
-    # Fallback: Just the name
+    # Fallback: Just the name but strip grammage and parenthetical comments
+    clean_name = re.sub(r'\s*\(\s*.*?\s*\)', '', raw_line).strip()
+    clean_name = re.sub(r'\s*-?\s*[\d,./]+\s*[gml]+$', '', clean_name, flags=re.I).strip()
     return {
-        'name': normalize_ingredient_name(raw_line),
-        'amount': 1.0,
-        'unit': 'szt',
-        'weight': 0.0,
+        'name': normalize_ingredient_name(clean_name),
+        'amount': amount,
+        'unit': unit,
+        'weight': weight,
         'originalName': raw_line
     }
 
 def split_ingredients(raw_text):
-    # Split by newline first
-    lines = raw_text.split('\n')
+    # 0. The "Blob Buster" - split before grammages in parentheses if they are followed by anything
+    raw_text = re.sub(r'(\([\d,./]+\s*[gml]+\))\s*', r'\1\n', raw_text)
+    # Split before digits that look like new ingredient lines (e.g. "1 szklanka", "2 opakowania")
+    # but NOT before "1." or "2." (steps) - we use positive lookahead
+    raw_text = re.sub(r'(?<!\.)\s+(\d+\s+(?:szklanka|opakowanie|łyżka|łyżeczka|sztuka|g|ml))', r'\n\1', raw_text)
+
+    # 1. Split by newline, semicolon, or bullet points
+    parts = re.split(r'[\n;•*-]', raw_text)
     
     processed_lines = []
-    for l in lines:
+    for p in parts:
+        p = p.strip()
+        if not p: continue
+        
+        # 2. Heuristic for comma lists
+        # Split if comma is followed by (optional space) and (digit OR known unit)
+        comma_parts = re.split(r',(?=\s*[\d,./]+\s*[a-zA-Z]|\s*(?:szt|g|ml|łyż))', p, flags=re.I)
+        if len(comma_parts) > 1:
+            processed_lines.extend([cp.strip() for cp in comma_parts])
+        else:
+            processed_lines.append(p)
+
+    # 3. Selective Join
+    true_lines = []
+    for l in processed_lines:
         l = l.strip()
         if not l: continue
         
-        # Check if this line is a comma-separated list of ingredients
-        # Pattern: "Name: 1, Name: 2" OR "Name (1), Name (2)"
-        if (',' in l and (':' in l or '(' in l)):
-            # Potential comma list
-            parts = [p.strip() for p in l.split(',')]
-            processed_lines.extend(parts)
-        else:
-            processed_lines.append(l)
-
-    # Join fragmented lines (e.g. name on one line, amount on next)
-    true_lines = []
-    for l in processed_lines:
-        # If line starts with a digit or unit and we have a previous line, append it
-        if true_lines and (re.match(r'^[\d./]', l) or l.lower() in UNIT_MAP or l.startswith('-')):
-            true_lines[-1] = true_lines[-1] + ' ' + l
+        # Don't merge if it looks like a numbered step (e.g. "1.", "2.")
+        is_step = re.match(r'^\d+\.', l)
+        
+        # Merge only if it's a "naked" grammage or unit continuation (e.g. "100g" on its own line)
+        is_continuation = (re.match(r'^[\d,./]+\s*[gml]+$', l, re.I) or 
+                           l.lower() in UNIT_MAP or 
+                           (l.startswith('(') and l.endswith(')')))
+        
+        if true_lines and is_continuation and not is_step:
+            separator = ' ' if not true_lines[-1].endswith('-') else ''
+            true_lines[-1] = true_lines[-1] + separator + l
         else:
             true_lines.append(l)
             

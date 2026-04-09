@@ -39,13 +39,43 @@ async function runSeeder(strapi: Core.Strapi) {
     await strapi.db.query('api::recipe.recipe').deleteMany({});
     console.log('[SEEDER] Strapi recipes cleared.');
 
-    // 2. Clear Firebase
-    const snapshot = await db.collection('recipes').get();
-    if (!snapshot.empty) {
-        const batch = db.batch();
-        snapshot.forEach(doc => batch.delete(doc.ref));
-        await batch.commit();
-        console.log(`[SEEDER] Deleted ${snapshot.size} Firebase recipes.`);
+    // Phase 0: Smart Garbage Collector (Cleanup of legacy parsing errors)
+    console.log('[SEEDER] Phase 0: Running Smart Garbage Collector...');
+    const suspects = await strapi.documents('api::ingredient.ingredient' as any).findMany({
+        filters: {
+            kcal: 0 // Only placeholders created by previous seeder runs
+        },
+        limit: -1
+    });
+
+    if (suspects.length > 0) {
+        let deletedCount = 0;
+        for (const s of suspects as any[]) {
+            const name = s.name || '';
+            const isGarbage = 
+                name.length > 50 || 
+                name.includes(';') || 
+                name.includes(':') || 
+                (name.includes(',') && name.length > 30) ||
+                name.startsWith('(') || 
+                name.endsWith('-') ||
+                name.toLowerCase().includes('blaszkę');
+
+            if (isGarbage) {
+                try {
+                    console.log(`[SEEDER] Deleting garbage: "${name}"`);
+                    await strapi.documents('api::ingredient.ingredient' as any).delete({
+                        documentId: s.documentId
+                    });
+                    // Also delete from Firebase if it exists
+                    await db.collection('ingredients').doc(s.slug || s.documentId).delete().catch(() => {});
+                    deletedCount++;
+                } catch (err: any) {
+                    console.warn(`[SEEDER] Could not delete "${name}":`, err.message);
+                }
+            }
+        }
+        console.log(`[SEEDER] Smart Garbage Collector finished. Deleted ${deletedCount} entries.`);
     }
 
     // 3. Import
