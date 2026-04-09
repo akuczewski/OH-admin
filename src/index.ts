@@ -454,9 +454,10 @@ export default {
       if (existingIngredients.length === 0) {
         console.log('[SEED] No ingredients found in Strapi. Starting migration from Firebase...');
         const snapshot = await db.collection('ingredients').get();
-        const ingredients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const ingredients = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
         
-        for (const ing of ingredients) {
+        for (const rawIng of ingredients) {
+          const ing = rawIng as any;
           const docId = ing.id; // slug
           const name = ing.name || docId;
           

@@ -12,7 +12,7 @@ const UNIT_CONVERSIONS: Record<string, number> = {
     'plaster': 20,
 };
 
-export default factories.createCoreController('api::ingredient.ingredient', ({ strapi }) => ({
+export default factories.createCoreController('api::ingredient.ingredient' as any, ({ strapi }) => ({
     async search(ctx) {
         const { q } = ctx.query;
         console.log(`[INGREDIENT SEARCH] Query: "${q}"`);
