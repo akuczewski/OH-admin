@@ -178,14 +178,22 @@ export default {
         // 2. Resolve Full Data (Strapi 5 Document Service)
 
         const POPULATE_MAP: Record<string, string[]> = {
-          'api::habit.habit': ['profiles', 'image', 'media'],
+          'api::habit.habit': ['assignedProfiles', 'image', 'media'],
           'api::skin-care.skin-care': ['image', 'media'],
           'api::training.training': ['thumbnail', 'media'],
-          'api::recipe.recipe': ['image', 'profiles'],
+          'api::recipe.recipe': ['image', 'assignedProfiles'],
           'api::profile.profile': ['image']
         };
 
-        const populateFields = POPULATE_MAP[uid] || ['image'];
+        const defaultPopulate = ['image'];
+        let populateFields = POPULATE_MAP[uid];
+
+        if (!populateFields) {
+          // Robust check: does this content type even have an 'image' field?
+          const schema = strapi.contentTypes[uid];
+          const hasImage = schema?.attributes?.image;
+          populateFields = hasImage ? ['image'] : [];
+        }
 
         let dataToSync: any = null;
         let attempts = 0;
@@ -491,7 +499,18 @@ export default {
       console.error('[SEED] Error during ingredients migration:', error);
     }
 
-    // --- 5. Final Re-Sync Trigger (Optional) ---
+    // --- 5. Clean & Seed Recipes from JSON (Background) ---
+    const recipesDataPath = path.join(__dirname, '../../data/recipes.json');
+    if (fs.existsSync(recipesDataPath)) {
+      console.log('[SEED] recipes.json found! Starting migration in the background...');
+      // Run seeder without awaiting to prevent gateway timeout
+      import('../scripts/seed-recipes').then(({ default: runSeeder }) => {
+        // @ts-ignore
+        runSeeder(strapi).catch(err => console.error('[SEED] Background seeder failed:', err));
+      }).catch(err => console.error('[SEED] Failed to load seeder script:', err));
+    }
+
+    // --- 6. Final Re-Sync Trigger (Optional) ---
     console.log('[FIREBASE] Triggering manual re-sync for quotes...');
     try {
       const existingQuotes = await strapi.documents('api::motivation-quote.motivation-quote').findMany({
@@ -504,6 +523,6 @@ export default {
       console.warn('[FIREBASE] Manual re-sync failed:', err);
     }
 
-    console.log('[SEED] Seeding completed.');
+    console.log('[SEED] Bootstrap sequence finished. Background tasks may continue.');
   },
 };
