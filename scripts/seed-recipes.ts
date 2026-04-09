@@ -43,21 +43,18 @@ async function runSeeder(strapi: Core.Strapi) {
         console.log(`[SEEDER] Deleted ${snapshot.size} Firebase recipes.`);
     }
 
-    // Phase 0: Cleanup of faulty ingredients (kcal: 0 ones created by seeder)
-    console.log('[SEEDER] Phase 0: Cleanup of ingredients created by seeder (kcal: 0)...');
+    // Phase 0: Aggressive Cleanup (Delete ALL ingredients created today)
+    console.log('[SEEDER] Phase 0: Aggressive cleanup of all ingredients created today (>= 2026-04-09)...');
+    const today = '2026-04-09T00:00:00.000Z';
     const badIngredients = await strapi.documents('api::ingredient.ingredient' as any).findMany({
         filters: {
-            $or: [
-                { kcal: 0 },
-                { name: { $contains: ',' } },
-                { name: { $contains: ':' } }
-            ]
+            createdAt: { $gte: today }
         },
         limit: -1
     });
 
     if (badIngredients.length > 0) {
-        console.log(`[SEEDER] Found ${badIngredients.length} ingredients to clean. Deleting...`);
+        console.log(`[SEEDER] Found ${badIngredients.length} ingredients created today. Deleting...`);
         for (const bad of badIngredients) {
             try {
                 await strapi.documents('api::ingredient.ingredient' as any).delete({
@@ -65,10 +62,12 @@ async function runSeeder(strapi: Core.Strapi) {
                 });
                 await db.collection('ingredients').doc((bad as any).slug || (bad as any).documentId).delete();
             } catch (err: any) {
-                console.warn(`[SEEDER] Failed to delete garbage ingredient ${(bad as any).name}:`, err.message);
+                console.warn(`[SEEDER] Failed to delete ingredient ${(bad as any).name}:`, err.message);
             }
         }
         console.log('[SEEDER] Cleanup completed.');
+    } else {
+        console.log('[SEEDER] No ingredients created today found.');
     }
 
     // 3. Import
