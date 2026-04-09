@@ -21,7 +21,7 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 async function runSeeder(strapi: Core.Strapi) {
-    const recipesDataPath = path.join(__dirname, '../data/recipes.json');
+    const recipesDataPath = path.resolve(process.cwd(), 'data/recipes.json');
     
     if (!fs.existsSync(recipesDataPath)) {
         console.log('No recipes.json found in data folder.');

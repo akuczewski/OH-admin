@@ -500,7 +500,7 @@ export default {
     }
 
     // --- 5. Clean & Seed Recipes from JSON (Background) ---
-    const recipesDataPath = path.join(__dirname, '../../data/recipes.json');
+    const recipesDataPath = path.resolve(process.cwd(), 'data/recipes.json');
     if (fs.existsSync(recipesDataPath)) {
       console.log('[SEED] recipes.json found! Starting migration in the background...');
       // Run seeder without awaiting to prevent gateway timeout
