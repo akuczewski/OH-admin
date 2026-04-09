@@ -126,91 +126,10 @@ export default {
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     console.log('##################################################');
-    console.log('###  OH-ADMIN FIREBASE SYNC BOOTSTRAP STARTING ###');
+    console.log('###  LOCAL CMS FIREBASE SYNC BOOTSTRAP STARTING ###');
     console.log('##################################################');
 
-    // --- 1. Seed Profiles ---
-    const profiles = [
-      { name: 'Opanuj Cukier', slug: 'opanuj-cukier', description: 'Program skupiony na stabilizacji poziomu glukozy i insuliny.', mainColor: '#E9D5CA' },
-      { name: 'Opanuj Skórę', slug: 'opanuj-skore', description: 'Program celowany w redukcję trądziku dorosłych i stanów zapalnych.', mainColor: '#FFFFFF' },
-      { name: 'Opanuj Stres', slug: 'opanuj-stres', description: 'Techniki i suplementacja obniżająca poziom kortyzolu.', mainColor: '#F6F1EB' },
-      { name: 'Glow-up', slug: 'glow-up', description: 'Kompleksowe wsparcie urody i energii przez optymalizację hormonalną.', mainColor: '#A3B18A' },
-    ];
-
-    console.log('[SEED] Starting profile seeding...');
-
-    for (const data of profiles) {
-      // @ts-ignore
-      const existing = await strapi.documents('api::profile.profile').findMany({
-        filters: { slug: data.slug },
-      });
-
-      if (existing.length === 0) {
-        // @ts-ignore
-        await strapi.documents('api::profile.profile').create({
-          data: {
-            ...data,
-            publishedAt: new Date(),
-          },
-          status: 'published',
-        });
-        console.log(`[SEED] Created profile: ${data.name}`);
-      }
-    }
-
-    // --- 2. Seed Expert Tutorial ---
-    try {
-      const tutorialPath = path.join(process.cwd(), 'TUTORIAL_EKSPERT.md');
-      if (fs.existsSync(tutorialPath)) {
-        const content = fs.readFileSync(tutorialPath, 'utf8');
-
-        // @ts-ignore
-        const existingInstruction = await strapi.documents('api::instruction.instruction').findFirst();
-
-        if (!existingInstruction) {
-          // @ts-ignore
-          await strapi.documents('api::instruction.instruction').create({
-            data: {
-              content,
-              publishedAt: new Date(),
-            },
-            status: 'published',
-          });
-          console.log('[SEED] Expert Tutorial seeded successfully.');
-        }
-      }
-    } catch (error) {
-      console.error('[SEED] Failed to seed tutorial:', error);
-    }
-
-    // --- 3. Seed Motivation Quotes ---
-    const quotes: any[] = [
-      { text: "Nowa energia! Faza folikularna to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
-      { text: "Zwolnij. Twoje ciało jest w fazie lutealnej. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
-      { text: "To czas na zasłużony odpoczynek. Bądź łagodna dla swojego ciała.", author: "Czuła Ja", assignedPhase: "menstruation" },
-    ];
-
-    for (const data of quotes) {
-      // @ts-ignore
-      const existing = await strapi.documents('api::motivation-quote.motivation-quote').findMany({
-        filters: { text: data.text },
-      });
-
-      if (existing.length === 0) {
-        // @ts-ignore
-        await strapi.documents('api::motivation-quote.motivation-quote').create({
-          data: {
-            ...data,
-            publishedAt: new Date(),
-          },
-          status: 'published',
-        });
-      }
-    }
-
-    console.log('[SEED] Seeding completed.');
-
-    // --- 3. Firestore Sync Lifecycles ---
+    // --- 0. Firestore Sync Definitions ---
     const collectionsToSync = {
       'api::article.article': 'articles',
       'api::habit.habit': 'habits',
@@ -220,6 +139,7 @@ export default {
       'api::skin-care.skin-care': 'skincare',
       'api::training.training': 'training',
       'api::instruction.instruction': 'instructions',
+      'api::ingredient.ingredient': 'ingredients',
     };
 
     const syncToFirestore = async (uid: string, result: any, action: string) => {
@@ -443,5 +363,146 @@ export default {
     });
 
     console.log('[FIREBASE] Document Service Middleware registered.');
+
+    // --- 1. Seed Profiles ---
+    const profiles = [
+      { name: 'Opanuj Cukier', slug: 'opanuj-cukier', description: 'Program skupiony na stabilizacji poziomu glukozy i insuliny.', mainColor: '#E9D5CA' },
+      { name: 'Opanuj Skórę', slug: 'opanuj-skore', description: 'Program celowany w redukcję trądziku dorosłych i stanów zapalnych.', mainColor: '#FFFFFF' },
+      { name: 'Opanuj Stres', slug: 'opanuj-stres', description: 'Techniki i suplementacja obniżająca poziom kortyzolu.', mainColor: '#F6F1EB' },
+      { name: 'Glow-up', slug: 'glow-up', description: 'Kompleksowe wsparcie urody i energii przez optymalizację hormonalną.', mainColor: '#A3B18A' },
+    ];
+
+    console.log('[SEED] Starting profile seeding...');
+
+    for (const data of profiles) {
+      // @ts-ignore
+      const existing = await strapi.documents('api::profile.profile').findMany({
+        filters: { slug: data.slug },
+      });
+
+      if (existing.length === 0) {
+        // @ts-ignore
+        await strapi.documents('api::profile.profile').create({
+          data: {
+            ...data,
+            publishedAt: new Date(),
+          },
+          status: 'published',
+        });
+        console.log(`[SEED] Created profile: ${data.name}`);
+      }
+    }
+
+    // --- 2. Seed Expert Tutorial ---
+    try {
+      const tutorialPath = path.join(process.cwd(), 'TUTORIAL_EKSPERT.md');
+      if (fs.existsSync(tutorialPath)) {
+        const content = fs.readFileSync(tutorialPath, 'utf8');
+
+        // @ts-ignore
+        const existingInstruction = await strapi.documents('api::instruction.instruction').findFirst();
+
+        if (!existingInstruction) {
+          // @ts-ignore
+          await strapi.documents('api::instruction.instruction').create({
+            data: {
+              content,
+              publishedAt: new Date(),
+            },
+            status: 'published',
+          });
+          console.log('[SEED] Expert Tutorial seeded successfully.');
+        }
+      }
+    } catch (error) {
+      console.error('[SEED] Failed to seed tutorial:', error);
+    }
+
+    // --- 3. Seed Motivation Quotes ---
+    const quotes: any[] = [
+      { text: "Nowa energia! Faza folikularna to idealny moment na planowanie i nowe projekty.", author: "Hormonalny Balans", assignedPhase: "follicular" },
+      { text: "Zwolnij. Twoje ciało jest w fazie lutealnej. Bądź dla siebie wyrozumiała.", author: "Czuła Lutealna", assignedPhase: "luteal" },
+      { text: "To czas na zasłużony odpoczynek. Bądź łagodna dla swojego ciała.", author: "Czuła Ja", assignedPhase: "menstruation" },
+    ];
+
+    for (const data of quotes) {
+      // @ts-ignore
+      const existing = await strapi.documents('api::motivation-quote.motivation-quote').findMany({
+        filters: { text: data.text },
+      });
+
+      if (existing.length === 0) {
+        // @ts-ignore
+        await strapi.documents('api::motivation-quote.motivation-quote').create({
+          data: {
+            ...data,
+            publishedAt: new Date(),
+          },
+          status: 'published',
+        });
+      }
+    }
+
+    console.log('[SEED] Seeding completed.');
+
+    // --- 4. Seed Ingredients from Firebase (Migration) ---
+    console.log('[SEED] Checking if ingredients need migration from Firebase...');
+    try {
+      // @ts-ignore
+      const existingIngredients = await strapi.documents('api::ingredient.ingredient').findMany({ limit: 1 });
+      
+      if (existingIngredients.length === 0) {
+        console.log('[SEED] No ingredients found in Strapi. Starting migration from Firebase...');
+        const snapshot = await db.collection('ingredients').get();
+        const ingredients = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        
+        for (const ing of ingredients) {
+          const docId = ing.id; // slug
+          const name = ing.name || docId;
+          
+          try {
+            // @ts-ignore
+            await strapi.documents('api::ingredient.ingredient').create({
+              documentId: docId, // explicitly set documentId to match Firebase slug
+              data: {
+                name: name,
+                slug: docId,
+                kcal: ing.kcal || 0,
+                protein: ing.protein || 0,
+                carbs: ing.carbs || 0,
+                fat: ing.fat || 0,
+                fiber: ing.fiber || 0,
+                category: ing.category || 'inne',
+                unitType: ing.unitType || 'weight',
+                averagePieceWeight: ing.averagePieceWeight || null,
+                publishedAt: new Date(),
+              },
+              status: 'published',
+            });
+            console.log(`[SEED] Migrated ingredient: ${name}`);
+          } catch (e: any) {
+            console.error(`[SEED] Failed to migrate ingredient ${name}:`, e.message);
+          }
+        }
+        console.log('[SEED] Ingredients migration completed.');
+      }
+    } catch (error) {
+      console.error('[SEED] Error during ingredients migration:', error);
+    }
+
+    // --- 5. Final Re-Sync Trigger (Optional: force sync all quotes on start) ---
+    console.log('[FIREBASE] Triggering manual re-sync for quotes...');
+    try {
+      const existingQuotes = await strapi.documents('api::motivation-quote.motivation-quote').findMany({
+        status: 'published'
+      });
+      for (const q of existingQuotes) {
+        await syncToFirestore('api::motivation-quote.motivation-quote', q, 'publish');
+      }
+    } catch (err) {
+      console.warn('[FIREBASE] Manual re-sync failed:', err);
+    }
+
+    console.log('[SEED] Seeding completed.');
   },
 };

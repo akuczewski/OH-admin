@@ -1,4 +1,4 @@
-
+import { factories } from '@strapi/strapi';
 import { db } from '../../../lib/firebase';
 
 const UNIT_CONVERSIONS: Record<string, number> = {
@@ -12,12 +12,12 @@ const UNIT_CONVERSIONS: Record<string, number> = {
     'plaster': 20,
 };
 
-export default {
+export default factories.createCoreController('api::ingredient.ingredient', ({ strapi }) => ({
     async search(ctx) {
         const { q } = ctx.query;
         console.log(`[INGREDIENT SEARCH] Query: "${q}"`);
 
-        if (!q || q.length < 2) {
+        if (!q || typeof q !== 'string' || q.length < 2) {
             return ctx.badRequest('Query string "q" is required and must be at least 2 characters long');
         }
 
@@ -62,7 +62,7 @@ export default {
             try {
                 // Try direct lookup by slug/name as ID
                 let doc = await db.collection('ingredients').doc(searchId).get();
-                let nutrition = doc.data();
+                let nutrition: any = doc.data();
 
                 // Fallback: search by 'name' field
                 if (!doc.exists) {
@@ -133,5 +133,5 @@ export default {
                 fiber: Math.round(totalFiber),
             }
         };
-    },
-};
+    }
+}));
