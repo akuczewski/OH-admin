@@ -24,6 +24,7 @@ let db: admin.firestore.Firestore | undefined;
 try {
     if (admin.apps.length > 0) {
         db = admin.firestore();
+        db.settings({ ignoreUndefinedProperties: true });
     }
 } catch (e) {
     console.warn('[FIREBASE] Firestore access disabled.');

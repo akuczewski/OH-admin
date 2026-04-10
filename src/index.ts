@@ -133,8 +133,10 @@ export default {
               const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
                 documentId: docId,
                 populate: uid === 'api::recipe.recipe' ? { 
-                  ingredients: { populate: { ingredient: true } } 
-                } : []
+                  ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
+                  image: true,
+                  macros: true
+                } : '*'
               });
 
               let dataToSync: any = { ...fullDoc };
@@ -142,7 +144,7 @@ export default {
               if (uid === 'api::recipe.recipe' && dataToSync.ingredients) {
                 dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
                   ...ing,
-                  id: ing.ingredient?.documentId || ing.ingredient
+                  id: ing.ingredient?.documentId || ing.ingredient || ""
                 }));
               }
               
@@ -323,7 +325,11 @@ export default {
       // B. Sync Recipes with Deep Populate & Image Mapping
       // @ts-ignore
       const allRecipes = await strapi.documents('api::recipe.recipe').findMany({ 
-        populate: '*', // Pobieramy wszystko (komponenty, relacje, media)
+        populate: { 
+          ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
+          image: true,
+          macros: true
+        },
         limit: -1 
       });
       
@@ -347,7 +353,7 @@ export default {
         if (dataToSync.ingredients) {
           dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
             ...ing,
-            id: ing.ingredient?.documentId || ing.ingredient
+            id: ing.ingredient?.documentId || ing.ingredient || ""
           }));
         }
 
