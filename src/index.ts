@@ -312,14 +312,19 @@ export default {
       // @ts-ignore
       const allSkladniki = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
       const ingCache = new Map<string, any>();
-      const ingBatch = db.batch();
       
-      for (const ing of (allSkladniki as any)) {
-        ingCache.set(ing.documentId, ing);
-        const ref = db.collection('ingredients').doc(ing.documentId);
-        ingBatch.set(ref, { ...ing, id: ing.documentId }, { merge: true });
+      const CHUNK_SIZE = 400;
+      for (let i = 0; i < (allSkladniki as any).length; i += CHUNK_SIZE) {
+        const chunk = (allSkladniki as any).slice(i, i + CHUNK_SIZE);
+        const batch = db.batch();
+        for (const ing of chunk) {
+          ingCache.set(ing.documentId, ing);
+          const ref = db.collection('ingredients').doc(ing.documentId);
+          batch.set(ref, { ...ing, id: ing.documentId }, { merge: true });
+        }
+        await batch.commit();
+        console.log(`--- [MASTER SEEDER] Committed batch for ingredients ${i} to ${i + chunk.length} ---`);
       }
-      await ingBatch.commit();
       console.log(`--- [MASTER SEEDER] Pushed ${allSkladniki.length} ingredients to Firebase. ---`);
 
       // B. Sync Recipes with Deep Populate & Image Mapping
