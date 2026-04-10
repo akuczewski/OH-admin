@@ -21,6 +21,7 @@
     "@strapi/strapi": "5.36.0",
     "@tunghtml/strapi-plugin-export-import-clsx": "^1.2.0",
     "better-sqlite3": "12.4.1",
+    "csv-parse": "^6.2.1",
     "firebase": "^12.10.0",
     "firebase-admin": "^13.6.1",
     "html-to-text": "^9.0.5",

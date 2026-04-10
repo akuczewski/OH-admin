@@ -14,7 +14,7 @@ const UNIT_CONVERSIONS: Record<string, number> = {
   'plaster': 20, /* Default estimate if averagePieceWeight is missing */
 };
 
-async function calculateRecipeMacros(data: any) {
+async function calculateRecipeMacros(strapi: Core.Strapi, data: any) {
   if (!data.ingredients || !Array.isArray(data.ingredients)) {
     return null;
   }
@@ -25,38 +25,28 @@ async function calculateRecipeMacros(data: any) {
   let totalFat = 0;
   let totalFiber = 0;
 
-  console.log(`[MACRO-CALC-V5] Starting calculation for: ${data.name || 'Recipe'}.`);
+  console.log(`[MACRO-CALC-V5] Starting calculation for: ${data.name || 'Recipe'}. Reading from Strapi DB.`);
 
   for (const ing of data.ingredients) {
     if (!ing.name || !ing.amount) continue;
 
     try {
-      const searchId = ing.slug || ing.name;
+      // Find ingredient in Strapi Document Service instead of Firebase
+      // This avoids race conditions during bulk imports
+      const found = await strapi.documents('api::ingredient.ingredient' as any).findMany({
+        filters: {
+          $or: [
+            { name: ing.name },
+            { slug: ing.slug || '' }
+          ]
+        },
+        limit: 1
+      });
 
-      // Try direct lookup by slug/name as ID
-      let doc = await db.collection('ingredients').doc(searchId).get();
-      let nutrition = doc.data();
+      const nutrition: any = found[0];
 
-      // Fallback: search by 'name' field
-      if (!doc.exists) {
-        const snapshot = await db.collection('ingredients').where('name', '==', ing.name).limit(1).get();
-        if (!snapshot.empty) {
-          doc = snapshot.docs[0];
-          nutrition = doc.data() as any;
-        }
-      }
-
-      // Secondary fallback: search by 'slug' field
-      if (!doc.exists && ing.slug) {
-        const snapshot = await db.collection('ingredients').where('slug', '==', ing.slug).limit(1).get();
-        if (!snapshot.empty) {
-          doc = snapshot.docs[0];
-          nutrition = doc.data() as any;
-        }
-      }
-
-      if (!doc.exists || !nutrition) {
-        console.warn(`[MACRO-CALC-V5] NOT FOUND: "${ing.name}"`);
+      if (!nutrition) {
+        console.warn(`[MACRO-CALC-V5] NOT FOUND in Strapi: "${ing.name}"`);
         continue;
       }
 
@@ -75,7 +65,10 @@ async function calculateRecipeMacros(data: any) {
         }
       } else {
         let weightInGrams = 0;
-        if (UNIT_CONVERSIONS[unit]) {
+        // Handle explicit weight field if present in component
+        if (ing.weight && Number(ing.weight) > 0) {
+          weightInGrams = Number(ing.weight);
+        } else if (UNIT_CONVERSIONS[unit]) {
           weightInGrams = amount * UNIT_CONVERSIONS[unit];
         } else if (unit === 'szt' || unit === 'opakowanie') {
           weightInGrams = amount * (nutrition.averagePieceWeight || 100);
@@ -181,7 +174,7 @@ export default {
           'api::habit.habit': ['profiles', 'image', 'media'],
           'api::skin-care.skin-care': ['image', 'media'],
           'api::training.training': ['thumbnail', 'media'],
-          'api::recipe.recipe': ['image', 'profiles'],
+          'api::recipe.recipe': ['image', 'profiles', 'ingredients', 'macros'],
           'api::profile.profile': ['image']
         };
 
@@ -333,10 +326,21 @@ export default {
       if (uid === 'api::recipe.recipe' && (action === 'create' || action === 'update')) {
         try {
           if (params.data?.ingredients) {
-            const calculated = await calculateRecipeMacros(params.data);
+            const calculated = await calculateRecipeMacros(strapi, params.data);
             if (calculated) {
               params.data.kcal = calculated.kcal;
               params.data.macros = calculated.macros;
+            }
+
+            // Sync used_ingredients relation for tracking
+            if (params.data.ingredients && Array.isArray(params.data.ingredients)) {
+              const ingredientIds = params.data.ingredients
+                .map((ing: any) => ing.ingredient || ing.documentId)
+                .filter(Boolean);
+              
+              if (ingredientIds.length > 0) {
+                params.data.used_ingredients = ingredientIds;
+              }
             }
           }
         } catch (err) { console.error('[FIREBASE-DEBUG] Macro calc error:', err); }
@@ -505,7 +509,7 @@ export default {
     if (fs.existsSync(recipesDataPath)) {
       console.log('[SEED] recipes.json found! Starting migration in the background...');
       // Run seeder without awaiting to prevent gateway timeout
-      import('../scripts/seed-recipes').then(({ default: runSeeder }) => {
+      import('../scripts/seed-recipes').then(({ runSeeder }) => {
         // @ts-ignore
         runSeeder(strapi).catch(err => console.error('[SEED] Background seeder failed:', err));
       }).catch(err => console.error('[SEED] Failed to load seeder script:', err));

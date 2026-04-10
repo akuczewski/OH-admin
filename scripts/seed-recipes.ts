@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import type { Core } from '@strapi/strapi';
 import fs from 'fs';
 import path from 'path';
@@ -10,17 +11,54 @@ import admin from 'firebase-admin';
  * Run with: npx tsx scripts/seed-recipes.ts
  */
 
-const serviceAccountPath = path.join(__dirname, '../config/firebase-service-account.json');
-
-// Initialize Firebase Admin
+// Initialize Firebase Admin using environment variables
 if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(require(serviceAccountPath)),
-    });
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n').trim();
+
+    if (projectId && clientEmail && privateKey) {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId,
+                clientEmail,
+                privateKey,
+            }),
+        });
+        console.log('[SEEDER] Firebase initialized from Env.');
+    } else {
+        console.warn('[SEEDER] Firebase credentials missing in Env. Skipping Firebase sync.');
+    }
 }
 const db = admin.firestore();
 
+const UNIT_CONVERSIONS: Record<string, number> = {
+    'g': 1,
+    'ml': 1,
+    'lyzka': 15,
+    'lyzeczka': 5,
+    'szklanka': 250,
+    'szczypta': 1,
+    'garstka': 30,
+    'plaster': 20,
+};
+
 import runRecovery from './restore-core-ingredients';
+
+function isGarbageIngredient(name: string): boolean {
+    const n = name.toLowerCase();
+    return (
+        name.length > 50 || 
+        name.includes(';') || 
+        name.includes(':') || 
+        (name.includes(',') && name.length > 30) ||
+        name.startsWith('(') || 
+        name.endsWith('-') ||
+        n.includes('blaszkę') ||
+        n.includes('łyżek') || n.includes('sztuk') || n.includes('opakow') || 
+        (n.length < 3) 
+    );
+}
 
 async function runSeeder(strapi: Core.Strapi) {
     // Phase -1: Recovery of core ingredients with correct macros
@@ -52,16 +90,7 @@ async function runSeeder(strapi: Core.Strapi) {
         let deletedCount = 0;
         for (const s of suspects as any[]) {
             const name = s.name || '';
-            const isGarbage = 
-                name.length > 50 || 
-                name.includes(';') || 
-                name.includes(':') || 
-                (name.includes(',') && name.length > 30) ||
-                name.startsWith('(') || 
-                name.endsWith('-') ||
-                name.toLowerCase().includes('blaszkę');
-
-            if (isGarbage) {
+            if (isGarbageIngredient(name)) {
                 try {
                     console.log(`[SEEDER] Deleting garbage: "${name}"`);
                     await strapi.documents('api::ingredient.ingredient' as any).delete({
@@ -77,6 +106,7 @@ async function runSeeder(strapi: Core.Strapi) {
         }
         console.log(`[SEEDER] Smart Garbage Collector finished. Deleted ${deletedCount} entries.`);
     }
+
 
     // 3. Import
     console.log('[SEEDER] Starting import phase...');
@@ -106,7 +136,14 @@ async function runSeeder(strapi: Core.Strapi) {
         const slug = normalizedName.replace(/\s+/g, '-').replace(/[^\w-]/g, '').substring(0, 255);
         
         if (!ingMap.has(normalizedName) && !ingMap.has(slug)) {
+            // SKIP IF GARBAGE
+            if (isGarbageIngredient(ingName)) {
+                console.log(`[SEEDER] Skipping garbage ingredient creation: ${ingName}`);
+                continue;
+            }
+
             console.log(`[SEEDER] Creating missing ingredient: ${ingName}`);
+
             try {
                 const targetIng = await strapi.documents('api::ingredient.ingredient' as any).create({
                     data: {
@@ -130,7 +167,53 @@ async function runSeeder(strapi: Core.Strapi) {
     // Phase 2: Parallel Recipe Import in chunks
     console.log('[SEEDER] Phase 2: Creating recipes in parallel batches...');
     let addedCount = 0;
-    const CHUNK_SIZE = 5; // Smaller chunks for reliability with new fields
+    const CHUNK_SIZE = 5;
+
+    async function calculateMacros(recipeIngredients: any[]) {
+        let totalKcal = 0;
+        let protein = 0, carbs = 0, fat = 0, fiber = 0;
+
+        for (const rip of recipeIngredients) {
+            const ing = ingMap.get(rip.name.toLowerCase()) || ingMap.get(rip.ingredient);
+            if (!ing) continue;
+
+            const amount = parseFloat(rip.amount) || 0;
+            const unit = rip.unit || 'g';
+            let factor = 0;
+
+            if (ing.unitType === 'piece') {
+                if (unit === 'szt' || unit === 'opakowanie') {
+                    factor = amount;
+                } else if (UNIT_CONVERSIONS[unit]) {
+                    factor = (amount * UNIT_CONVERSIONS[unit]) / (ing.averagePieceWeight || 100);
+                } else {
+                    factor = amount;
+                }
+            } else {
+                let weightInGrams = (rip.weight && Number(rip.weight) > 0) ? Number(rip.weight) : (amount * (UNIT_CONVERSIONS[unit] || 1));
+                if (!rip.weight && (unit === 'szt' || unit === 'opakowanie')) {
+                    weightInGrams = amount * (ing.averagePieceWeight || 100);
+                }
+                factor = weightInGrams / 100;
+            }
+
+            totalKcal += (ing.kcal || 0) * factor;
+            protein += (ing.protein || 0) * factor;
+            carbs += (ing.carbs || 0) * factor;
+            fat += (ing.fat || 0) * factor;
+            fiber += (ing.fiber || 0) * factor;
+        }
+
+        return {
+            kcal: Math.round(totalKcal),
+            macros: {
+                protein: Math.round(protein),
+                carbs: Math.round(carbs),
+                fat: Math.round(fat),
+                fiber: Math.round(fiber),
+            }
+        };
+    }
 
     for (let i = 0; i < recipesJson.length; i += CHUNK_SIZE) {
         const chunk = recipesJson.slice(i, i + CHUNK_SIZE);
@@ -151,8 +234,10 @@ async function runSeeder(strapi: Core.Strapi) {
             }).filter((ing: any) => ing.ingredient);
 
             try {
+                const nutrition = await calculateMacros(processedIngredients);
+                
                 // @ts-ignore
-                await strapi.documents('api::recipe.recipe' as any).create({
+                const created = await strapi.documents('api::recipe.recipe' as any).create({
                     data: {
                         name: recipeData.name.substring(0, 255),
                         description: recipeData.description,
@@ -161,11 +246,38 @@ async function runSeeder(strapi: Core.Strapi) {
                         servings: recipeData.servings,
                         mealSlots: recipeData.mealSlot,
                         ingredients: processedIngredients,
+                        kcal: nutrition.kcal,
+                        macros: nutrition.macros,
                         tags: (recipeData.tags || []).join(', ').substring(0, 255),
                         publishedAt: new Date(),
                     },
                     status: 'published'
                 });
+
+                // DIRECT SYNC TO FIREBASE
+                if (db) {
+                    const docId = created.documentId;
+                    const firebaseData = {
+                        name: recipeData.name,
+                        description: recipeData.description,
+                        preparation: recipeData.preparation,
+                        prepTime: recipeData.prepTime,
+                        kcal: nutrition.kcal,
+                        macros: nutrition.macros,
+                        mealSlots: recipeData.mealSlot,
+                        ingredients: processedIngredients.map(ip => ({
+                            name: ip.name,
+                            amount: ip.amount,
+                            unit: ip.unit,
+                            weight: ip.weight,
+                            slug: ip.ingredient ? (ingMap.get(ip.ingredient)?.slug || ip.ingredient) : ''
+                        })),
+                        updatedAt: new Date().toISOString(),
+                        source: 'seeder'
+                    };
+                    await db.collection('recipes').doc(docId).set(firebaseData);
+                }
+
                 addedCount++;
             } catch (e: any) {
                 console.error(`[SEEDER] Failed for ${recipeData.name}:`, e.message);
@@ -179,4 +291,30 @@ async function runSeeder(strapi: Core.Strapi) {
 }
 
 // Wrapper to run via Strapi boot if needed or standalone
-export default runSeeder;
+export { runSeeder };
+
+// Standalone execution block
+console.log('[DEBUG] Script path:', __filename);
+if (require.main === module || require.main?.filename === __filename || process.argv[1].includes('seed-recipes')) {
+    const { createStrapi } = require('@strapi/strapi');
+    console.log('[SEEDER] Standalone execution detected.');
+    
+    async function main() {
+        console.log('[SEEDER] Initializing Strapi instance...');
+        const strapi = await createStrapi().load();
+        
+        try {
+            await runSeeder(strapi);
+        } catch (error) {
+            console.error('[SEEDER] Critical error during run:', error);
+        } finally {
+            // Give it a moment to finish any log writes
+            setTimeout(() => process.exit(0), 1000);
+        }
+    }
+    
+    main().catch(err => {
+        console.error('[SEEDER] Startup error:', err);
+        process.exit(1);
+    });
+}

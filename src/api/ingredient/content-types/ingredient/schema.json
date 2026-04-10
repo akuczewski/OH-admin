@@ -56,6 +56,12 @@
     },
     "averagePieceWeight": {
       "type": "integer"
+    },
+    "recipes": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::recipe.recipe",
+      "mappedBy": "used_ingredients"
     }
   }
 }

@@ -8,6 +8,10 @@ export interface SharedIngredient extends Struct.ComponentSchema {
   };
   attributes: {
     amount: Schema.Attribute.Decimal;
+    ingredient: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::ingredient.ingredient'
+    >;
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<'plugin::ingredient-lookup.ingredient'>;
@@ -27,6 +31,7 @@ export interface SharedIngredient extends Struct.ComponentSchema {
       ]
     > &
       Schema.Attribute.Required;
+    weight: Schema.Attribute.Decimal;
   };
 }
 

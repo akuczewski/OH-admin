@@ -44,6 +44,9 @@ def normalize_ingredient_name(name):
     name = name.strip()
     if not name: return name
     
+    # Strip trailing colons or partial punctuation often left by "headers"
+    name = re.sub(r'[:;.-]$', '', name).strip()
+
     # Try to normalize words
     words = name.split()
     normalized_words = []
@@ -52,7 +55,6 @@ def normalize_ingredient_name(name):
         if w_low in NORMALIZE_MAP:
             normalized_words.append(NORMALIZE_MAP[w_low])
         else:
-            # If word is lowercase and doesn't have a special form, keep it but maybe capitalize later
             normalized_words.append(w)
     
     result = " ".join(normalized_words)
@@ -191,8 +193,24 @@ def clean_ingredient(raw_line):
     # Fallback: Just the name but strip grammage and parenthetical comments
     clean_name = re.sub(r'\s*\(\s*.*?\s*\)', '', raw_line).strip()
     clean_name = re.sub(r'\s*-?\s*[\d,./]+\s*[gml]+$', '', clean_name, flags=re.I).strip()
+    
+    # -- FINAL SAFETY: Reject names that are just units or fragments --
+    # Examples: "(5 łyżek)", "łyżka", "1 sztuka", "60 g,"
+    norm_name = normalize_ingredient_name(clean_name)
+    if not norm_name or len(norm_name) < 2:
+        return None
+    
+    # regex matches things like "60 g", "10 ml", "1 szt", etc.
+    is_pure_grammage = re.match(r'^[\d,./\s]+[a-zA-Ząćęłńóśźż]+,?\s*$', norm_name, re.I)
+
+    # If the name itself is just a known unit type or a pure grammage, it's garbage
+    if norm_name.lower() in UNIT_MAP or is_pure_grammage:
+        # But allow it if it's a "real" food name (longer than 15 chars)
+        if len(norm_name) < 15:
+            return None
+
     return {
-        'name': normalize_ingredient_name(clean_name),
+        'name': norm_name,
         'amount': amount,
         'unit': unit,
         'weight': weight,
@@ -201,7 +219,10 @@ def clean_ingredient(raw_line):
 
 def split_ingredients(raw_text):
     # 0. The "Blob Buster" - split before grammages in parentheses if they are followed by anything
+    # Handles "...blaszkę)(100 g)" edge case by splitting between closed and open parens with grammage
+    raw_text = re.sub(r'\)\s*(\(\s*[\d,./]+\s*[gml]+\s*\))', r')\n\1', raw_text, flags=re.I)
     raw_text = re.sub(r'(\([\d,./]+\s*[gml]+\))\s*', r'\1\n', raw_text)
+    
     # Split before digits that look like new ingredient lines (e.g. "1 szklanka", "2 opakowania")
     # but NOT before "1." or "2." (steps) - we use positive lookahead
     raw_text = re.sub(r'(?<!\.)\s+(\d+\s+(?:szklanka|opakowanie|łyżka|łyżeczka|sztuka|g|ml))', r'\n\1', raw_text)

@@ -14,6 +14,11 @@
         "slug": {
             "type": "string"
         },
+        "ingredient": {
+            "type": "relation",
+            "relation": "oneToOne",
+            "target": "api::ingredient.ingredient"
+        },
         "amount": {
             "type": "decimal"
         },

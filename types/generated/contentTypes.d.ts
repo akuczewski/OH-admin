@@ -490,6 +490,10 @@ export interface ApiHabitHabit extends Struct.CollectionTypeSchema {
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<'oneToMany', 'api::habit.habit'> &
       Schema.Attribute.Private;
+    media: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phases: Schema.Attribute.Enumeration<
       ['menstruation', 'follicular', 'luteal']
@@ -508,6 +512,46 @@ export interface ApiHabitHabit extends Struct.CollectionTypeSchema {
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     videoUrl: Schema.Attribute.String;
+  };
+}
+
+export interface ApiIngredientIngredient extends Struct.CollectionTypeSchema {
+  collectionName: 'ingredients';
+  info: {
+    description: 'Baza sk\u0142adnik\u00F3w wykorzystywana przez przepisy';
+    displayName: 'Sk\u0142adnik / Ingredient';
+    pluralName: 'ingredients';
+    singularName: 'ingredient';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    averagePieceWeight: Schema.Attribute.Integer;
+    carbs: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    category: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fat: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    fiber: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    kcal: Schema.Attribute.Integer & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ingredient.ingredient'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    protein: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    recipes: Schema.Attribute.Relation<'manyToMany', 'api::recipe.recipe'>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    unitType: Schema.Attribute.Enumeration<['weight', 'volume', 'piece']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
   };
 }
 
@@ -633,9 +677,7 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     macros: Schema.Attribute.Component<'shared.macros', false>;
-    mealSlot: Schema.Attribute.Enumeration<
-      ['sniadanie', 'sniadanie-2', 'obiad', 'przekaska', 'kolacja']
-    >;
+    mealSlots: Schema.Attribute.JSON;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     preparation: Schema.Attribute.RichText;
     prepTime: Schema.Attribute.Integer;
@@ -654,6 +696,10 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+    used_ingredients: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::ingredient.ingredient'
+    >;
   };
 }
 
@@ -680,6 +726,10 @@ export interface ApiSkinCareSkinCare extends Struct.CollectionTypeSchema {
       'api::skin-care.skin-care'
     > &
       Schema.Attribute.Private;
+    media: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     phases: Schema.Attribute.Enumeration<
       ['menstruation', 'follicular', 'luteal']
@@ -752,6 +802,10 @@ export interface ApiTrainingTraining extends Struct.CollectionTypeSchema {
       'api::training.training'
     > &
       Schema.Attribute.Private;
+    media: Schema.Attribute.Media<
+      'images' | 'files' | 'videos' | 'audios',
+      true
+    >;
     phases: Schema.Attribute.Enumeration<
       ['menstruation', 'follicular', 'luteal']
     > &
@@ -1279,6 +1333,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
       'api::habit.habit': ApiHabitHabit;
+      'api::ingredient.ingredient': ApiIngredientIngredient;
       'api::instruction.instruction': ApiInstructionInstruction;
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
       'api::profile.profile': ApiProfileProfile;
