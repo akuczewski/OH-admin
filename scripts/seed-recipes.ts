@@ -32,6 +32,27 @@ if (!admin.apps.length) {
 }
 const db = admin.firestore();
 
+// CLI Configuration
+const args = process.argv.slice(2);
+const FLAGS = {
+    clean: args.includes('--clean'),
+    sync: args.includes('--sync'),
+    noFirebase: args.includes('--no-firebase'),
+    help: args.includes('--help') || args.includes('-h')
+};
+
+if (FLAGS.help) {
+    console.log(`
+[SEEDER] Usage: npx tsx scripts/seed-recipes.ts [FLAGS]
+Flags:
+  --clean       Enable Smart Garbage Collector (Phase 0) to delete invalid ingredients.
+  --sync        Force relationship synchronization for all recipes.
+  --no-firebase Skip synchronization to Firestore.
+  --help, -h    Show this help message.
+`);
+    process.exit(0);
+}
+
 const UNIT_CONVERSIONS: Record<string, number> = {
     'g': 1,
     'ml': 1,
@@ -42,8 +63,6 @@ const UNIT_CONVERSIONS: Record<string, number> = {
     'garstka': 30,
     'plaster': 20,
 };
-
-import runRecovery from './restore-core-ingredients';
 
 function isGarbageIngredient(name: string): boolean {
     const n = name.toLowerCase();
@@ -61,9 +80,6 @@ function isGarbageIngredient(name: string): boolean {
 }
 
 async function runSeeder(strapi: Core.Strapi) {
-    // Phase -1: Recovery of core ingredients with correct macros
-    await runRecovery(strapi);
-
     const recipesDataPath = path.resolve(process.cwd(), 'data/recipes.json');
     
     if (!fs.existsSync(recipesDataPath)) {
@@ -71,41 +87,44 @@ async function runSeeder(strapi: Core.Strapi) {
         return;
     }
 
-    console.log('[SEEDER] Starting cleaning phase...');
-    
-    // 1. Clear Strapi
-    await strapi.db.query('api::recipe.recipe').deleteMany({});
-    console.log('[SEEDER] Strapi recipes cleared.');
+    if (FLAGS.clean) {
+        console.log('[SEEDER] Phase 0: Running Smart Garbage Collector (DISABLED BY DEFAULT)...');
+        const suspects = await strapi.documents('api::ingredient.ingredient' as any).findMany({
+            filters: {
+                kcal: 0
+            },
+            limit: -1
+        });
 
-    // Phase 0: Smart Garbage Collector (Cleanup of legacy parsing errors)
-    console.log('[SEEDER] Phase 0: Running Smart Garbage Collector...');
-    const suspects = await strapi.documents('api::ingredient.ingredient' as any).findMany({
-        filters: {
-            kcal: 0 // Only placeholders created by previous seeder runs
-        },
-        limit: -1
-    });
-
-    if (suspects.length > 0) {
-        let deletedCount = 0;
-        for (const s of suspects as any[]) {
-            const name = s.name || '';
-            if (isGarbageIngredient(name)) {
-                try {
-                    console.log(`[SEEDER] Deleting garbage: "${name}"`);
-                    await strapi.documents('api::ingredient.ingredient' as any).delete({
-                        documentId: s.documentId
-                    });
-                    // Also delete from Firebase if it exists
-                    await db.collection('ingredients').doc(s.slug || s.documentId).delete().catch(() => {});
-                    deletedCount++;
-                } catch (err: any) {
-                    console.warn(`[SEEDER] Could not delete "${name}":`, err.message);
+        if (suspects.length > 0) {
+            let deletedCount = 0;
+            for (const s of suspects as any[]) {
+                const name = s.name || '';
+                if (isGarbageIngredient(name)) {
+                    try {
+                        console.log(`[SEEDER] Deleting garbage: "${name}"`);
+                        await strapi.documents('api::ingredient.ingredient' as any).delete({
+                            documentId: s.documentId
+                        });
+                        // Also delete from Firebase if it exists
+                        if (!FLAGS.noFirebase && db) {
+                            await db.collection('ingredients').doc(s.slug || s.documentId).delete().catch(() => {});
+                        }
+                        deletedCount++;
+                    } catch (err: any) {
+                        console.warn(`[SEEDER] Could not delete "${name}":`, err.message);
+                    }
                 }
             }
+            console.log(`[SEEDER] Smart Garbage Collector finished. Deleted ${deletedCount} entries.`);
         }
-        console.log(`[SEEDER] Smart Garbage Collector finished. Deleted ${deletedCount} entries.`);
+    } else {
+        console.log('[SEEDER] Skipping Garbage Collector (use --clean to enable).');
     }
+
+    // 1. Clear Strapi recipes if importing fresh
+    await strapi.db.query('api::recipe.recipe').deleteMany({});
+    console.log('[SEEDER] Strapi recipes cleared.');
 
 
     // 3. Import
@@ -235,6 +254,7 @@ async function runSeeder(strapi: Core.Strapi) {
 
             try {
                 const nutrition = await calculateMacros(processedIngredients);
+                const ingredientIds = processedIngredients.map((ip: any) => ip.ingredient).filter(Boolean);
                 
                 // @ts-ignore
                 const created = await strapi.documents('api::recipe.recipe' as any).create({
@@ -246,6 +266,7 @@ async function runSeeder(strapi: Core.Strapi) {
                         servings: recipeData.servings,
                         mealSlots: recipeData.mealSlot,
                         ingredients: processedIngredients,
+                        used_ingredients: ingredientIds,
                         kcal: nutrition.kcal,
                         macros: nutrition.macros,
                         tags: (recipeData.tags || []).join(', ').substring(0, 255),
@@ -255,7 +276,7 @@ async function runSeeder(strapi: Core.Strapi) {
                 });
 
                 // DIRECT SYNC TO FIREBASE
-                if (db) {
+                if (!FLAGS.noFirebase && db) {
                     const docId = created.documentId;
                     const firebaseData = {
                         name: recipeData.name,
