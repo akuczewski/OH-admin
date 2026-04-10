@@ -64,6 +64,11 @@
         },
         "author": {
             "type": "string"
+        },
+        "used_ingredients": {
+            "type": "relation",
+            "relation": "manyToMany",
+            "target": "api::skladnik.skladnik"
         }
     }
 }

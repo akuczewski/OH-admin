@@ -4,7 +4,7 @@ import { db } from './lib/firebase';
 
 const collectionsToSync = {
   'api::recipe.recipe': 'recipes',
-  'api::food-item.food-item': 'ingredients',
+  'api::skladnik.skladnik': 'ingredients',
   'api::motivation-quote.motivation-quote': 'quotes',
   'api::profile.profile': 'profiles',
 };
@@ -23,7 +23,7 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
     
     try {
       // @ts-ignore
-      const ingDoc = await strapi.documents('api::food-item.food-item').findOne({
+      const ingDoc = await strapi.documents('api::skladnik.skladnik').findOne({
         documentId: ingComponent.ingredient.documentId || ingComponent.ingredient,
       });
 
@@ -110,6 +110,6 @@ export default {
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
-    console.log('--- RECOVERY BOOTSTRAP: Ingredient Catalog Instance ---');
+    console.log('--- RECOVERY BOOTSTRAP: Skladnik Instance ---');
   },
 };

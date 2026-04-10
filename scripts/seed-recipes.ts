@@ -111,13 +111,13 @@ async function runSeeder() {
     console.log(`[SEEDER] Loaded ${recipesJson.length} recipes from JSON.`);
 
     // ---- Phase 1: Load existing ingredients from Strapi ----
-    console.log('[SEEDER] Phase 1: Loading existing ingredients from /api/food-items...');
+    console.log('[SEEDER] Phase 1: Loading existing ingredients from /api/skladniks...');
     const ingByNorm = new Map<string, any>(); // normalized name -> strapi object
     const ingBySlug = new Map<string, any>(); // slug -> strapi object
 
     let page = 1;
     while (true) {
-        const res = await fetch(`${STRAPI_URL}/api/food-items?pagination[page]=${page}&pagination[pageSize]=100`, { headers });
+        const res = await fetch(`${STRAPI_URL}/api/skladniks?pagination[page]=${page}&pagination[pageSize]=100`, { headers });
         const json: any = await res.json();
         if (!json.data || json.data.length === 0) break;
         for (const item of json.data) {
@@ -151,7 +151,7 @@ async function runSeeder() {
 
             // Create new ingredient
             console.log(`[SEEDER] Creating: "${cleanName}"`);
-            const createRes = await fetch(`${STRAPI_URL}/api/food-items`, {
+            const createRes = await fetch(`${STRAPI_URL}/api/skladniks`, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({

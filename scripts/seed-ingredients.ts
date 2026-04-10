@@ -299,7 +299,7 @@ async function seed() {
             
             // 2. Sync to Strapi (Active)
             if (STRAPI_URL && STRAPI_TOKEN) {
-                const createRes = await fetch(`${STRAPI_URL}/api/food-items`, {
+                const createRes = await fetch(`${STRAPI_URL}/api/skladniks`, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({

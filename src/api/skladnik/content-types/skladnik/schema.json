@@ -1,9 +1,9 @@
 {
   "kind": "collectionType",
-  "collectionName": "food_items",
+  "collectionName": "skladniks",
   "info": {
-    "singularName": "food-item",
-    "pluralName": "food-items",
+    "singularName": "skladnik",
+    "pluralName": "skladniks",
     "displayName": "Składnik",
     "description": "Baza składników do przepisów"
   },
