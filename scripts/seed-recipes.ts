@@ -97,7 +97,7 @@ async function runSeeder() {
     
     let page = 1;
     while (true) {
-        const res = await fetch(`${STRAPI_URL}/api/ingredients?pagination[page]=${page}&pagination[pageSize]=100`, { headers });
+        const res = await fetch(`${STRAPI_URL}/api/ingredient-catalogs?pagination[page]=${page}&pagination[pageSize]=100`, { headers });
         const json: any = await res.json();
         if (!json.data || json.data.length === 0) break;
         json.data.forEach((i: any) => {
@@ -117,7 +117,7 @@ async function runSeeder() {
             if (!ingMap.has(normalizedName) && !slugMap.has(slug)) {
                 if (isGarbageIngredient(ing.name) || /\d/.test(ing.name)) continue;
                 console.log(`[SEEDER] Creating ingredient: ${ing.name}`);
-                const res = await fetch(`${STRAPI_URL}/api/ingredients`, {
+                const res = await fetch(`${STRAPI_URL}/api/ingredient-catalogs`, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({

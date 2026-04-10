@@ -2,10 +2,10 @@
   "kind": "collectionType",
   "collectionName": "ingredients_v2",
   "info": {
-    "singularName": "ingredient",
-    "pluralName": "ingredients",
-    "displayName": "Składnik / Ingredient",
-    "description": "Baza składników wykorzystywana przez przepisy"
+    "singularName": "ingredient-catalog",
+    "pluralName": "ingredient-catalogs",
+    "displayName": "Składnik (Katalog)",
+    "description": "Baza składników (Nowa instancja)"
   },
   "options": {
     "draftAndPublish": false
