@@ -28,14 +28,15 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
       });
 
       if (ingDoc) {
+        const doc = ingDoc as any;
         const amount = ingComponent.amount || 0;
         const multiplier = amount / 100; // Assuming kcal/100g
 
-        totalKcal += (ingDoc.kcal || 0) * multiplier;
-        totalProtein += (ingDoc.protein || 0) * multiplier;
-        totalCarbs += (ingDoc.carbs || 0) * multiplier;
-        totalFat += (ingDoc.fat || 0) * multiplier;
-        totalFiber += (ingDoc.fiber || 0) * multiplier;
+        totalKcal += (doc.kcal || 0) * multiplier;
+        totalProtein += (doc.protein || 0) * multiplier;
+        totalCarbs += (doc.carbs || 0) * multiplier;
+        totalFat += (doc.fat || 0) * multiplier;
+        totalFiber += (doc.fiber || 0) * multiplier;
       }
     } catch (err) {
       console.error('[MACROS] Failed to fetch ingredient for calculation:', err);
@@ -68,11 +69,12 @@ export default {
 
       // 1. Intercept Recipe Create/Update to calculate macros
       if (uid === 'api::recipe.recipe' && ['create', 'update'].includes(action)) {
-        console.log(`[MACROS] Calculating for recipe: ${params.data?.name}`);
-        const macros = await calculateRecipeMacros(params.data, strapi);
+        const data = (params as any).data;
+        console.log(`[MACROS] Calculating for recipe: ${data?.name}`);
+        const macros = await calculateRecipeMacros(data, strapi);
         if (macros) {
-          params.data.kcal = macros.kcal;
-          params.data.macros = {
+          data.kcal = macros.kcal;
+          data.macros = {
             protein: macros.protein,
             carbs: macros.carbs,
             fat: macros.fat,
@@ -88,7 +90,7 @@ export default {
         (async () => {
           try {
             console.log(`[FIREBASE] Syncing ${uid} to ${collectionName}...`);
-            const docId = result.documentId;
+            const docId = (result as any).documentId;
             if (action === 'delete') {
               await db.collection(collectionName).doc(docId).delete();
             } else {
