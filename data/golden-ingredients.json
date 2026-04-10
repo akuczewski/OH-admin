@@ -110,7 +110,7 @@
     { "name": "Krewetki gotowane", "kcal": 99, "protein": 24, "carbs": 0, "fat": 0.3, "fiber": 0, "category": "ryby", "unitType": "weight" },
     { "name": "Jajko kurze m rozmiar", "kcal": 143, "protein": 13, "carbs": 0.7, "fat": 9.5, "fiber": 0, "category": "jaja", "unitType": "piece", "averagePieceWeight": 50 },
     { "name": "Białko jaja kurzego", "kcal": 52, "protein": 11, "carbs": 0.7, "fat": 0.2, "fiber": 0, "category": "jaja", "unitType": "weight" },
-    { "name": "Żółtko jaja kurzego", "kcal": 322, "protein": 16, "carbs": 3.6, "fat": 27, fiber: 0, "category": "jaja", "unitType": "weight" },
+    { "name": "Żółtko jaja kurzego", "kcal": 322, "protein": 16, "carbs": 3.6, "fat": 27, "fiber": 0, "category": "jaja", "unitType": "weight" },
     { "name": "Jogurt naturalny", "kcal": 60, "protein": 3.5, "carbs": 4.7, "fat": 3, "fiber": 0, "category": "nabiał", "unitType": "weight" },
     { "name": "Jogurt grecki", "kcal": 115, "protein": 9, "carbs": 4, "fat": 7, "fiber": 0, "category": "nabiał", "unitType": "weight" },
     { "name": "Skyr naturalny", "kcal": 66, "protein": 12, "carbs": 4, "fat": 0.2, "fiber": 0, "category": "nabiał", "unitType": "weight" },
