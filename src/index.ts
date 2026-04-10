@@ -136,26 +136,35 @@ export default {
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
     console.log('--- [MASTER SEEDER] Initializing internal recovery... ---');
 
+    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
     try {
-      // 1. Check if we need to seed
+      // 1. Ingredients Check
       // @ts-ignore
-      const count = await strapi.documents('api::skladnik.skladnik').count();
-      if (count > 0) {
-        console.log(`--- [MASTER SEEDER] Database already contains ${count} ingredients. Skipping auto-seed. ---`);
-        return;
+      const ingCount = await strapi.documents('api::skladnik.skladnik').count();
+      if (ingCount === 0) {
+        console.log('--- [MASTER SEEDER] Step 1: Loading Golden Ingredients ---');
+        const goldenPath = path.join(process.cwd(), 'data/golden-ingredients.json');
+        if (fs.existsSync(goldenPath)) {
+          const golden = JSON.parse(fs.readFileSync(goldenPath, 'utf8'));
+          for (const ing of golden) {
+            // @ts-ignore
+            await strapi.documents('api::skladnik.skladnik').create({
+              data: { ...ing, slug: makeSlug(ing.name) } as any
+            });
+          }
+          console.log(`--- [MASTER SEEDER] Created ${golden.length} golden ingredients. ---`);
+        }
+      } else {
+        console.log(`--- [MASTER SEEDER] Found ${ingCount} ingredients, skipping Step 1. ---`);
       }
 
-      console.log('--- [MASTER SEEDER] Step 1: Loading Golden Ingredients ---');
-      const goldenPath = path.join(process.cwd(), 'data/golden-ingredients.json');
-      if (fs.existsSync(goldenPath)) {
-        const golden = JSON.parse(fs.readFileSync(goldenPath, 'utf8'));
-        for (const ing of golden) {
-          // @ts-ignore
-          await strapi.documents('api::skladnik.skladnik').create({
-            data: { ...ing, slug: makeSlug(ing.name) } as any
-          });
-        }
-        console.log(`--- [MASTER SEEDER] Created ${golden.length} golden ingredients. ---`);
+      // 2. Recipes Check
+      // @ts-ignore
+      const recipeCount = await strapi.documents('api::recipe.recipe').count();
+      if (recipeCount > 0) {
+        console.log(`--- [MASTER SEEDER] Database already contains ${recipeCount} recipes. Skipping Step 2. ---`);
+        return;
       }
 
       console.log('--- [MASTER SEEDER] Step 2: Processing Recipes & Missing Ingredients ---');
@@ -163,10 +172,7 @@ export default {
       if (fs.existsSync(recipesPath)) {
         const recipes = JSON.parse(fs.readFileSync(recipesPath, 'utf8'));
         
-        // Cache ingredients to avoid repetitive lookups
-        const ingMap = new Map<string, string>(); // normName -> documentId
-        
-        // Populate map with golden ingredients
+        const ingMap = new Map<string, string>();
         // @ts-ignore
         const currentIngs = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
         for (const i of (currentIngs as any)) {
@@ -175,6 +181,7 @@ export default {
 
         for (const recipeData of recipes) {
           const recipeName = (recipeData.name || '').replace(/\n/g, '').trim();
+          await sleep(20); // Small breath for Postgres
           
           const components = [];
           for (const ing of recipeData.ingredients) {
@@ -224,8 +231,8 @@ export default {
               });
               // @ts-ignore
               await strapi.documents('api::recipe.recipe').publish({ documentId: (newRecipe as any).documentId });
-            } catch (e) {
-              console.warn(`--- [MASTER SEEDER] Failed to create recipe: ${recipeName} ---`);
+            } catch (e: any) {
+              console.warn(`--- [MASTER SEEDER] Failed to create recipe [${recipeName}]: ${e.message} ---`);
             }
           }
         }
