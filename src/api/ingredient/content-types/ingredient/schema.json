@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ingredients",
+  "info": {
+    "singularName": "ingredient",
+    "pluralName": "ingredients",
+    "displayName": "LEGACY_INGREDIENT (DO NOT USE)",
+    "description": "Legacy table kept to prevent Strapi boot loop due to Postgres dependencies."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  }
+}
