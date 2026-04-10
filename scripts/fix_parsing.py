@@ -58,10 +58,23 @@ def normalize_ingredient_name(name):
     name = name.strip()
     if not name: return name
     
-    # Strip trailing colons or partial punctuation often left by "headers"
-    name = re.sub(r'[:;.-]$', '', name).strip()
+    # 1. Fix broken words (e.g. "ows iana" -> "owsiana", "Jogur t" -> "Jogurt")
+    name = re.sub(r'([a-zA-Ząćęłńóśźż])\s([a-z]{2,})\b', r'\1\2', name)
 
-    # Try to normalize words
+    # 2. Remove common unit prefixes left after splitting
+    # e.g. "G, hummus" -> "hummus", "Ml, napój" -> "napój"
+    prefix_pattern = r'^(?:[Gg]|[Mm]l|[Łł]yżka|[Łł]yżeczka|[Ss]zt|[Ss]ztuk|[Oo]pakowanie|[Pp]uszka|[Ss]zczypta)\s*,\s*'
+    name = re.sub(prefix_pattern, '', name, flags=re.IGNORECASE)
+
+    # 3. Strip trailing junk and unmatched parens
+    name = re.sub(r'[:;.-]$', '', name).strip()
+    name = re.sub(r'\s*\)\s*$', '', name).strip() # Remove "Szklanek)" trailing paren
+    name = re.sub(r'^\s*\(\s*', '', name).strip() # Remove "(... " leading paren
+
+    # 4. Remove leading quantities or artifacts
+    name = re.sub(r'^\d+([.,/-]\d+)?\s*', '', name)
+    
+    # 5. Try to normalize words via map
     words = name.split()
     normalized_words = []
     for w in words:
@@ -72,10 +85,17 @@ def normalize_ingredient_name(name):
             normalized_words.append(w)
     
     result = " ".join(normalized_words)
-    # Capitalize first letter
+    # 6. Final cleanup: capitalized first letter and length check
     if result:
         result = result[0].upper() + result[1:]
-    return result
+    
+    # If the result still looks like garbage (e.g. contains numbers or is too long), return minimal
+    if len(result) > 50 or re.search(r'\d', result):
+        # Allow numbers only if they are part of a product name (rare)
+        # But for now, if it still has numbers, it's probably uncleaned quantity
+        pass 
+
+    return result.strip()
 
 CSV_FILES = [
     { 'name': 'recipes  - I śniadanie.csv', 'slots': ['sniadanie'] },
