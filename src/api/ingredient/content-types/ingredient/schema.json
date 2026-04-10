@@ -1,6 +1,6 @@
 {
   "kind": "collectionType",
-  "collectionName": "ingredients",
+  "collectionName": "ingredients_v2",
   "info": {
     "singularName": "ingredient",
     "pluralName": "ingredients",
