@@ -123,10 +123,25 @@ export default {
               await db.collection(collectionName).doc(docId).delete();
             } else {
               // @ts-ignore
-              const fullDoc = await strapi.documents(uid).findOne({ documentId: docId });
-              await db.collection(collectionName).doc(docId).set(fullDoc, { merge: true });
+              const fullDoc = await strapi.documents(uid).findOne({ 
+                documentId: docId,
+                populate: uid === 'api::recipe.recipe' ? ['ingredients'] : []
+              });
+
+              let dataToSync = { ...fullDoc };
+              // Jeśli to przepis, mapujemy składniki na format czytelny dla aplikacji (ingredient -> id)
+              if (uid === 'api::recipe.recipe' && dataToSync.ingredients) {
+                dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
+                  ...ing,
+                  id: ing.ingredient?.documentId || ing.ingredient
+                }));
+              }
+              
+              await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
             }
-          } catch (error) {}
+          } catch (error) {
+            console.error(`[FIREBASE SYNC ERROR] ${uid}:`, error.message);
+          }
         })();
       }
       return result;
@@ -278,6 +293,46 @@ export default {
         }
       }
       console.log(`--- [MASTER SEEDER] Synced relations for ${fixCount} recipes. ---`);
+      
+      // 4. FULL FIREBASE SYNC (To ensure everything is in Firestore)
+      console.log('--- [MASTER SEEDER] Step 4: Full Firebase Synchronization... ---');
+      
+      // A. Sync Ingredients
+      // @ts-ignore
+      const allSkladniki = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
+      const ingBatch = db.batch();
+      for (const ing of (allSkladniki as any)) {
+        const ref = db.collection('ingredients').doc(ing.documentId);
+        ingBatch.set(ref, { ...ing, id: ing.documentId }, { merge: true });
+      }
+      await ingBatch.commit();
+      console.log(`--- [MASTER SEEDER] Pushed ${allSkladniki.length} ingredients to Firebase. ---`);
+
+      // B. Sync Recipes
+      // @ts-ignore
+      const allRecipes = await strapi.documents('api::recipe.recipe').findMany({ 
+        populate: ['ingredients'],
+        limit: -1 
+      });
+      
+      let recipeSyncCount = 0;
+      for (const r of (allRecipes as any)) {
+        const ref = db.collection('recipes').doc(r.documentId);
+        const dataToSync = { ...r, id: r.documentId };
+        
+        // Mapujemy komponenty składników na format Firebase (id zamiast ingredient)
+        if (dataToSync.ingredients) {
+          dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
+            ...ing,
+            id: ing.ingredient?.documentId || ing.ingredient
+          }));
+        }
+
+        await ref.set(dataToSync, { merge: true });
+        recipeSyncCount++;
+        if (recipeSyncCount % 50 === 0) await sleep(100); // Małe przerwy dla stabilności
+      }
+      console.log(`--- [MASTER SEEDER] Pushed ${allRecipes.length} recipes to Firebase. ---`);
 
     } catch (error: any) {
       console.error('--- [MASTER SEEDER] CRITICAL ERROR:', error.message);
