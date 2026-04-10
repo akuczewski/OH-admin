@@ -224,11 +224,16 @@ export default {
           if (components.length > 0) {
             try {
               // @ts-ignore
+              const usedIngIds = components.map(c => c.ingredient).filter(Boolean);
+
+              // @ts-ignore
               const newRecipe = await strapi.documents('api::recipe.recipe').create({
                 data: {
                   name: recipeName, description: recipeData.description || '', preparation: recipeData.preparation || '',
                   prepTime: recipeData.prepTime || 0, servings: recipeData.servings || 1, mealSlots: recipeData.mealSlot || [],
-                  ingredients: components, kcal: 0, macros: { protein: 0, carbs: 0, fat: 0, fiber: 0 },
+                  ingredients: components, 
+                  used_ingredients: usedIngIds, // <--- Link relations
+                  kcal: 0, macros: { protein: 0, carbs: 0, fat: 0, fiber: 0 },
                   tags: Array.isArray(recipeData.tags) ? recipeData.tags.join(', ') : '',
                 } as any
               });
@@ -241,6 +246,31 @@ export default {
         }
         console.log(`--- [MASTER SEEDER] Finished importing recipes. ---`);
       }
+
+      // 3. Sync relations for existing recipes (One-time fix)
+      console.log('--- [MASTER SEEDER] Step 3: Syncing relations for existing recipes... ---');
+      // @ts-ignore
+      const recipesToFix = await strapi.documents('api::recipe.recipe').findMany({
+        populate: ['ingredients', 'used_ingredients'],
+        limit: -1
+      });
+
+      let fixCount = 0;
+      for (const r of (recipesToFix as any)) {
+        const componentIngIds = r.ingredients?.map((i: any) => i.ingredient?.documentId).filter(Boolean) || [];
+        const currentRelIds = r.used_ingredients?.map((i: any) => i.documentId) || [];
+        
+        if (componentIngIds.length > 0 && currentRelIds.length === 0) {
+          // @ts-ignore
+          await strapi.documents('api::recipe.recipe').update({
+            documentId: r.documentId,
+            data: { used_ingredients: componentIngIds } as any
+          });
+          fixCount++;
+          await sleep(20);
+        }
+      }
+      console.log(`--- [MASTER SEEDER] Synced relations for ${fixCount} recipes. ---`);
 
     } catch (error: any) {
       console.error('--- [MASTER SEEDER] CRITICAL ERROR:', error.message);
