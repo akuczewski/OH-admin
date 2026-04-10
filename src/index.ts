@@ -152,7 +152,7 @@ export default {
         for (const ing of golden) {
           // @ts-ignore
           await strapi.documents('api::skladnik.skladnik').create({
-            data: { ...ing, slug: makeSlug(ing.name) }
+            data: { ...ing, slug: makeSlug(ing.name) } as any
           });
         }
         console.log(`--- [MASTER SEEDER] Created ${golden.length} golden ingredients. ---`);
@@ -169,7 +169,7 @@ export default {
         // Populate map with golden ingredients
         // @ts-ignore
         const currentIngs = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
-        for (const i of currentIngs) {
+        for (const i of (currentIngs as any)) {
           ingMap.set(normalizeForMatch(i.name), i.documentId);
         }
 
@@ -193,7 +193,7 @@ export default {
                   data: {
                     name: cleanName, slug, category: 'inne', kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
                     unitType: (ing.unit === 'szt' || ing.unit === 'opakowanie') ? 'piece' : 'weight'
-                  }
+                  } as any
                 });
                 docId = (newIng as any).documentId;
                 ingMap.set(norm, docId!);
@@ -220,7 +220,7 @@ export default {
                   prepTime: recipeData.prepTime || 0, servings: recipeData.servings || 1, mealSlots: recipeData.mealSlot || [],
                   ingredients: components, kcal: 0, macros: { protein: 0, carbs: 0, fat: 0, fiber: 0 },
                   tags: Array.isArray(recipeData.tags) ? recipeData.tags.join(', ') : '',
-                }
+                } as any
               });
               // @ts-ignore
               await strapi.documents('api::recipe.recipe').publish({ documentId: (newRecipe as any).documentId });
