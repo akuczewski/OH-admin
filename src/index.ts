@@ -123,12 +123,14 @@ export default {
               await db.collection(collectionName).doc(docId).delete();
             } else {
               // @ts-ignore
-              const fullDoc = await strapi.documents(uid).findOne({ 
+              const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
                 documentId: docId,
-                populate: uid === 'api::recipe.recipe' ? ['ingredients'] : []
+                populate: uid === 'api::recipe.recipe' ? { 
+                  ingredients: { populate: { ingredient: true } } 
+                } : []
               });
 
-              let dataToSync = { ...fullDoc };
+              let dataToSync: any = { ...fullDoc };
               // Jeśli to przepis, mapujemy składniki na format czytelny dla aplikacji (ingredient -> id)
               if (uid === 'api::recipe.recipe' && dataToSync.ingredients) {
                 dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
@@ -139,7 +141,7 @@ export default {
               
               await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error(`[FIREBASE SYNC ERROR] ${uid}:`, error.message);
           }
         })();
@@ -311,14 +313,24 @@ export default {
       // B. Sync Recipes
       // @ts-ignore
       const allRecipes = await strapi.documents('api::recipe.recipe').findMany({ 
-        populate: ['ingredients'],
+        populate: { 
+          ingredients: { populate: { ingredient: true } } 
+        },
         limit: -1 
       });
       
       let recipeSyncCount = 0;
       for (const r of (allRecipes as any)) {
         const ref = db.collection('recipes').doc(r.documentId);
-        const dataToSync = { ...r, id: r.documentId };
+        
+        // Ponowne przeliczenie makr przed syncem, aby uniknąć 0 kcal w Firebase
+        const macros = await calculateRecipeMacros(r, strapi);
+        const dataToSync: any = { 
+          ...r, 
+          id: r.documentId,
+          kcal: macros?.kcal || r.kcal || 0,
+          macros: macros || r.macros || { protein: 0, carbs: 0, fat: 0, fiber: 0 }
+        };
         
         // Mapujemy komponenty składników na format Firebase (id zamiast ingredient)
         if (dataToSync.ingredients) {
@@ -330,7 +342,7 @@ export default {
 
         await ref.set(dataToSync, { merge: true });
         recipeSyncCount++;
-        if (recipeSyncCount % 50 === 0) await sleep(100); // Małe przerwy dla stabilności
+        if (recipeSyncCount % 50 === 0) await sleep(100);
       }
       console.log(`--- [MASTER SEEDER] Pushed ${allRecipes.length} recipes to Firebase. ---`);
 
