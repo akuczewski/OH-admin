@@ -51,7 +51,7 @@ function isGarbage(name: string): boolean {
 
 // ==================== MACRO CALCULATOR ====================
 
-async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
+async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredientMap?: Map<string, any>) {
   if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) return null;
 
   let totalKcal = 0;
@@ -62,22 +62,29 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
 
   for (const ingComponent of recipe.ingredients) {
     if (!ingComponent.ingredient) continue;
-    try {
-      // @ts-ignore
-      const ingDoc: any = await strapi.documents('api::skladnik.skladnik').findOne({
-        documentId: ingComponent.ingredient.documentId || ingComponent.ingredient,
-      });
+    
+    let ingDoc: any = null;
+    const docId = ingComponent.ingredient.documentId || ingComponent.ingredient;
 
-      if (ingDoc) {
-        const amount = ingComponent.amount || 0;
-        const multiplier = amount / 100;
-        totalKcal += (ingDoc.kcal || 0) * multiplier;
-        totalProtein += (ingDoc.protein || 0) * multiplier;
-        totalCarbs += (ingDoc.carbs || 0) * multiplier;
-        totalFat += (ingDoc.fat || 0) * multiplier;
-        totalFiber += (ingDoc.fiber || 0) * multiplier;
-      }
-    } catch (err) {}
+    if (ingredientMap && ingredientMap.has(docId)) {
+      ingDoc = ingredientMap.get(docId);
+    } else {
+      try {
+        // Fallback do bazy jeśli mapa nie jest gotowa
+        // @ts-ignore
+        ingDoc = await strapi.documents('api::skladnik.skladnik').findOne({ documentId: docId });
+      } catch (err) {}
+    }
+
+    if (ingDoc) {
+      const amount = ingComponent.amount || 0;
+      const multiplier = amount / 100;
+      totalKcal += (ingDoc.kcal || 0) * multiplier;
+      totalProtein += (ingDoc.protein || 0) * multiplier;
+      totalCarbs += (ingDoc.carbs || 0) * multiplier;
+      totalFat += (ingDoc.fat || 0) * multiplier;
+      totalFiber += (ingDoc.fiber || 0) * multiplier;
+    }
   }
 
   return {
@@ -299,23 +306,24 @@ export default {
       // 4. FULL FIREBASE SYNC (To ensure everything is in Firestore)
       console.log('--- [MASTER SEEDER] Step 4: Full Firebase Synchronization... ---');
       
-      // A. Sync Ingredients
+      // A. Fetch All Ingredients & Build RAM Map
       // @ts-ignore
       const allSkladniki = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
+      const ingCache = new Map<string, any>();
       const ingBatch = db.batch();
+      
       for (const ing of (allSkladniki as any)) {
+        ingCache.set(ing.documentId, ing);
         const ref = db.collection('ingredients').doc(ing.documentId);
         ingBatch.set(ref, { ...ing, id: ing.documentId }, { merge: true });
       }
       await ingBatch.commit();
       console.log(`--- [MASTER SEEDER] Pushed ${allSkladniki.length} ingredients to Firebase. ---`);
 
-      // B. Sync Recipes
+      // B. Sync Recipes with Deep Populate & Image Mapping
       // @ts-ignore
       const allRecipes = await strapi.documents('api::recipe.recipe').findMany({ 
-        populate: { 
-          ingredients: { populate: { ingredient: true } } 
-        },
+        populate: '*', // Pobieramy wszystko (komponenty, relacje, media)
         limit: -1 
       });
       
@@ -323,16 +331,19 @@ export default {
       for (const r of (allRecipes as any)) {
         const ref = db.collection('recipes').doc(r.documentId);
         
-        // Ponowne przeliczenie makr przed syncem, aby uniknąć 0 kcal w Firebase
-        const macros = await calculateRecipeMacros(r, strapi);
+        // Ponowne przeliczenie makr z użyciem Cache (RAM)
+        const macros = await calculateRecipeMacros(r, strapi, ingCache);
+        
         const dataToSync: any = { 
           ...r, 
           id: r.documentId,
           kcal: macros?.kcal || r.kcal || 0,
-          macros: macros || r.macros || { protein: 0, carbs: 0, fat: 0, fiber: 0 }
+          macros: macros || r.macros || { protein: 0, carbs: 0, fat: 0, fiber: 0 },
+          // Obsługa obrazka (wyciągamy sam URL)
+          image: r.image?.url || r.image || ""
         };
         
-        // Mapujemy komponenty składników na format Firebase (id zamiast ingredient)
+        // Mapujemy komponenty składników (id zamiast ingredient)
         if (dataToSync.ingredients) {
           dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
             ...ing,
@@ -342,9 +353,12 @@ export default {
 
         await ref.set(dataToSync, { merge: true });
         recipeSyncCount++;
-        if (recipeSyncCount % 50 === 0) await sleep(100);
+        
+        if (recipeSyncCount % 20 === 0) {
+          console.log(`--- [MASTER SEEDER] Synced ${recipeSyncCount} recipes... ---`);
+        }
       }
-      console.log(`--- [MASTER SEEDER] Pushed ${allRecipes.length} recipes to Firebase. ---`);
+      console.log(`--- [MASTER SEEDER] Successfully pushed ${allRecipes.length} recipes to Firebase. ---`);
 
     } catch (error: any) {
       console.error('--- [MASTER SEEDER] CRITICAL ERROR:', error.message);
