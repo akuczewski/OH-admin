@@ -26,8 +26,10 @@ NORMALIZE_MAP = {
     'mięsa': 'Mięso',
     'pomidora': 'Pomidor',
     'pomidorów': 'Pomidor',
+    'pomidory': 'Pomidor',
     'ogórka': 'Ogórek',
     'ogórków': 'Ogórek',
+    'ogórki': 'Ogórek',
     'cebuli': 'Cebula',
     'czosnku': 'Czosnek',
     'makaronu': 'Makaron',
@@ -38,6 +40,18 @@ NORMALIZE_MAP = {
     'orzechów': 'Orzechy',
     'owoców': 'Owoce',
     'warzyw': 'Warzywa',
+    'ziemniaka': 'Ziemniak',
+    'ziemniaków': 'Ziemniak',
+    'ziemniaki': 'Ziemniak',
+    'truskawki': 'Truskawka',
+    'truskawek': 'Truskawka',
+    'maliny': 'Malina',
+    'malin': 'Malina',
+    'borówki': 'Borówka',
+    'borówek': 'Borówka',
+    'orzechy': 'Orzechy',
+    'pestki': 'Pestki',
+    'nasiona': 'Nasiona',
 }
 
 def normalize_ingredient_name(name):
@@ -124,96 +138,82 @@ def parse_float(s):
         return 1.0
 
 def clean_ingredient(raw_line):
-    # Normalize dash types
+    # Normalize dash types and strip
     raw_line = raw_line.replace('–', '-').replace('—', '-').strip()
     
     if not raw_line or len(raw_line) < 2:
         return None
 
     # Strip trailing junk
-    raw_line = re.sub(r'\s*-?\s*$', '', raw_line)
-
-    # If the whole line is in parentheses, strip them
-    if raw_line.startswith('(') and raw_line.endswith(')'):
-        raw_line = raw_line[1:-1].strip()
+    raw_line = re.sub(r'[:;.\s-]$', '', raw_line).strip()
 
     name = raw_line
     amount = 1.0
     unit = 'szt'
     weight = 0.0
 
-    # -- PRE-CLEAN: Handle double parentheses or comments --
-    # "24 sztuki biszkoptów (ilość zależy od tego, jaką masz blaszkę)(100 g)"
-    # Extract the weight if it's the last thing in parentheses
-    match_weight = re.search(r'\(\s*([\d,./]+)\s*([gml]+)\s*\)$', raw_line, re.I)
+    # 1. EXTRACT WEIGHT FROM LAST PARENTHESES: "(100 g)"
+    match_weight = re.search(r'\(\s*([\d,./]+)\s*([gml]+)\s*\)$', name, re.I)
     if match_weight:
         weight = parse_float(match_weight.group(1))
-        raw_line = re.sub(r'\s*\(\s*[\d,./]+\s*[gml]+\s*\)$', '', raw_line, flags=re.I).strip()
+        name = name[:match_weight.start()].strip()
 
-    # -- RULE A: Name (Amount [Unit]) - Weight --
-    match_a = re.search(r'^(.*?)\s*\(\s*([\d,./]+)\s*(?:.+?\s*)?([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\s*\)\s*-\s*([\d,./]+)\s*([gml]+)', raw_line, re.I)
+    # 2. EXTRACT COMPLEX QUANTITY: "(0.5 puszka)", "(2 łyżki)", "(garść)"
+    # We look for (amount unit) or (unit)
+    match_quantity = re.search(r'\(\s*(?:([\d,./]+)\s*)?([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\s*\)$', name, re.I)
+    if match_quantity:
+        u_candidate = match_quantity.group(2).lower()
+        if u_candidate in UNIT_MAP:
+            amount = parse_float(match_quantity.group(1)) if match_quantity.group(1) else 1.0
+            unit = UNIT_MAP[u_candidate]
+            name = name[:match_quantity.start()].strip()
+
+    # 3. RULE A: Name (Amount [Unit]) - Weight
+    # This is a common complex format
+    match_a = re.search(r'^(.*?)\s*\(\s*([\d,./]+)\s*(?:.+?\s*)?([a-zA-Ząćęłńóśźż]+)\s*\)\s*-\s*([\d,./]+)\s*([gml]+)', name, re.I)
     if match_a:
         name = match_a.group(1).strip()
         amount = parse_float(match_a.group(2))
         unit = UNIT_MAP.get(match_a.group(3).lower(), 'szt')
         weight = parse_float(match_a.group(4))
-        return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
-
-    # -- RULE B: [Count] [Unit] [Name] [Weight] [Unit2] [Multiplier] --
-    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]+)\s+(.+?)\s+([\d,./]+)\s+([gml]+)(?:\s+([\d,./]+))?$', raw_line, re.I)
-    if match_b:
-        amount = parse_float(match_b.group(6)) if match_b.group(6) else parse_float(match_b.group(1)) or 1.0
-        name = match_b.group(3).strip()
-        unit = UNIT_MAP.get(match_b.group(2).lower(), 'szt')
-        weight = parse_float(match_b.group(4))
-        return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
-
-    # -- RULE C: Simple Dash with Weight --
-    if ' - ' in raw_line or raw_line.endswith('g') or raw_line.endswith('ml'):
-        parts = raw_line.split(' - ')
-        name_part = parts[0].strip()
-        amount_part = parts[1].strip() if len(parts) > 1 else name_part
-        
-        match_c = re.search(r'([\d,./]+)\s*([gml]+)', amount_part, re.I)
-        if match_c:
-            weight = parse_float(match_c.group(1))
-            name = re.sub(r'\s*-?\s*[\d,./]+\s*[gml]+$', '', name_part, flags=re.I).strip()
-            return { 'name': normalize_ingredient_name(name), 'amount': weight, 'unit': 'g', 'weight': weight, 'originalName': raw_line }
-
-    # -- RULE D: Colon Style --
-    if ':' in raw_line:
-        parts = raw_line.split(':')
-        name = parts[0].strip()
-        amt_match = re.search(r'([\d,./]+)\s*([a-zA-Ząćęłńóśźż]+)', parts[1], re.I)
-        if amt_match:
-            amount = parse_float(amt_match.group(1))
-            unit = UNIT_MAP.get(amt_match.group(2).lower(), 'szt')
-            return { 'name': normalize_ingredient_name(name), 'amount': amount, 'unit': unit, 'weight': weight, 'originalName': raw_line }
-
-    # Fallback: Just the name but strip grammage and parenthetical comments
-    clean_name = re.sub(r'\s*\(\s*.*?\s*\)', '', raw_line).strip()
-    clean_name = re.sub(r'\s*-?\s*[\d,./]+\s*[gml]+$', '', clean_name, flags=re.I).strip()
     
-    # -- FINAL SAFETY: Reject names that are just units or fragments --
-    # Examples: "(5 łyżek)", "łyżka", "1 sztuka", "60 g,"
-    norm_name = normalize_ingredient_name(clean_name)
+    # 4. RULE B: [Count] [Unit] [Name] [Weight]
+    # "2 łyżki masła orzechowego 100g"
+    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]{2,})\s+(.+?)\s+([\d,./]+)\s*([gml]+)', name, re.I)
+    if match_b and match_b.group(2).lower() in UNIT_MAP:
+        amount = parse_float(match_b.group(1)) or 1.0
+        unit = UNIT_MAP[match_b.group(2).lower()]
+        name = match_b.group(3).strip()
+        weight = parse_float(match_b.group(4))
+
+    # 5. AGGRESSIVE FALLBACK: Strip any remaining parentheses and grammar markers
+    # This prevents "Fasola (2 łyżki)" from becoming a name
+    name = re.sub(r'\s*\(\s*.*?\s*\)', '', name).strip()
+    name = re.sub(r'[:;.-]$', '', name).strip()
+    
+    # Strip leading numbers if they look like quantities
+    # "2 jajka" -> "jajka"
+    match_leading = re.match(r'^([\d,./]+)\s+(.+)$', name)
+    if match_leading:
+        # Check if the next word is a unit
+        words = match_leading.group(2).split()
+        if words and words[0].lower() in UNIT_MAP:
+            amount = parse_float(match_leading.group(1))
+            unit = UNIT_MAP[words[0].lower()]
+            name = " ".join(words[1:])
+        elif len(match_leading.group(1)) < 5: # Just a stray number
+            amount = parse_float(match_leading.group(1))
+            name = match_leading.group(2)
+
+    norm_name = normalize_ingredient_name(name)
     if not norm_name or len(norm_name) < 2:
         return None
-    
-    # regex matches things like "60 g", "10 ml", "1 szt", etc.
-    is_pure_grammage = re.match(r'^[\d,./\s]+[a-zA-Ząćęłńóśźż]+,?\s*$', norm_name, re.I)
-
-    # If the name itself is just a known unit type or a pure grammage, it's garbage
-    if norm_name.lower() in UNIT_MAP or is_pure_grammage:
-        # But allow it if it's a "real" food name (longer than 15 chars)
-        if len(norm_name) < 15:
-            return None
 
     return {
         'name': norm_name,
         'amount': amount,
         'unit': unit,
-        'weight': weight,
+        'weight': weight if weight > 0 else (amount * 1.0 if unit in ['g', 'ml'] else 0.0),
         'originalName': raw_line
     }
 

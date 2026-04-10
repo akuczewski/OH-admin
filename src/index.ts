@@ -459,61 +459,18 @@ export default {
     console.log('[SEED] Seeding completed.');
 
     // --- 4. Seed Ingredients from Firebase (Migration) ---
+    // DISABLED: Migration should be handled via manual scripts to avoid race conditions.
+    /*
     console.log('[SEED] Checking if ingredients need migration from Firebase...');
-    try {
-      // @ts-ignore
-      const existingIngredients = await strapi.documents('api::ingredient.ingredient').findMany({ limit: 1 });
-      
-      if (existingIngredients.length === 0) {
-        console.log('[SEED] No ingredients found in Strapi. Starting migration from Firebase...');
-        const snapshot = await db.collection('ingredients').get();
-        const ingredients = snapshot.docs.map(doc => ({ id: doc.id, ...(doc.data() as any) }));
-        
-        for (const rawIng of ingredients) {
-          const ing = rawIng as any;
-          const docId = ing.id; // slug
-          const name = ing.name || docId;
-          
-          try {
-            // @ts-ignore
-            await strapi.documents('api::ingredient.ingredient').create({
-              documentId: docId, // explicitly set documentId to match Firebase slug
-              data: {
-                name: name,
-                slug: docId,
-                kcal: ing.kcal || 0,
-                protein: ing.protein || 0,
-                carbs: ing.carbs || 0,
-                fat: ing.fat || 0,
-                fiber: ing.fiber || 0,
-                category: ing.category || 'inne',
-                unitType: ing.unitType || 'weight',
-                averagePieceWeight: ing.averagePieceWeight || null,
-                publishedAt: new Date(),
-              },
-              status: 'published',
-            });
-            console.log(`[SEED] Migrated ingredient: ${name}`);
-          } catch (e: any) {
-            console.error(`[SEED] Failed to migrate ingredient ${name}:`, e.message);
-          }
-        }
-        console.log('[SEED] Ingredients migration completed.');
-      }
-    } catch (error) {
-      console.error('[SEED] Error during ingredients migration:', error);
-    }
+    ...
+    */
 
     // --- 5. Clean & Seed Recipes from JSON (Background) ---
+    // DISABLED: Seeding is now handled by standalone scripts.
+    /*
     const recipesDataPath = path.resolve(process.cwd(), 'data/recipes.json');
-    if (fs.existsSync(recipesDataPath)) {
-      console.log('[SEED] recipes.json found! Starting migration in the background...');
-      // Run seeder without awaiting to prevent gateway timeout
-      import('../scripts/seed-recipes').then(({ runSeeder }) => {
-        // @ts-ignore
-        runSeeder(strapi).catch(err => console.error('[SEED] Background seeder failed:', err));
-      }).catch(err => console.error('[SEED] Failed to load seeder script:', err));
-    }
+    ...
+    */
 
     // --- 6. Final Re-Sync Trigger (Optional) ---
     console.log('[FIREBASE] Triggering manual re-sync for quotes...');

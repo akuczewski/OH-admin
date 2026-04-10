@@ -2,16 +2,17 @@ import admin from 'firebase-admin';
 
 if (!admin.apps.length) {
     try {
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY
-            ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n').trim()
-            : undefined;
+        let privateKey = process.env.FIREBASE_PRIVATE_KEY;
+        if (privateKey) {
+            privateKey = privateKey.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+        }
 
         admin.initializeApp({
             credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-                privateKey: privateKey,
-            }),
+                project_id: process.env.FIREBASE_PROJECT_ID,
+                client_email: process.env.FIREBASE_CLIENT_EMAIL,
+                private_key: privateKey,
+            } as any),
         });
         console.log('[FIREBASE] Admin SDK initialized successfully.');
     } catch (error) {
@@ -19,5 +20,14 @@ if (!admin.apps.length) {
     }
 }
 
-export const db = admin.firestore();
+let db: admin.firestore.Firestore | undefined;
+try {
+    if (admin.apps.length > 0) {
+        db = admin.firestore();
+    }
+} catch (e) {
+    console.warn('[FIREBASE] Firestore access disabled.');
+}
+
+export { db };
 export default admin;

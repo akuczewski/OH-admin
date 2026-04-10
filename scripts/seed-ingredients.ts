@@ -280,12 +280,55 @@ async function seed() {
     const itemsToProcess = Array.from(uniqueIngredients.values());
     console.log(`[SEED] Processing ${itemsToProcess.length} unique ingredients...`);
 
+    const STRAPI_URL = process.env.STRAPI_URL;
+    const STRAPI_TOKEN = process.env.STRAPI_API_TOKEN;
+    const headers = {
+        'Authorization': `Bearer ${STRAPI_TOKEN}`,
+        'Content-Type': 'application/json'
+    };
+
     for (let i = 0; i < itemsToProcess.length; i++) {
         const ingredient = itemsToProcess[i];
         try {
-            await db.collection('ingredients').doc(ingredient.slug).set(ingredient, { merge: true });
-            count++;
+            // 1. Sync to Firebase (Optional)
+            if (db) {
+                await db.collection('ingredients').doc(ingredient.slug).set(ingredient, { merge: true }).catch(err => {
+                    console.warn(`[SEED] Firebase sync failed for ${ingredient.name}:`, err.message);
+                });
+            }
+            
+            // 2. Sync to Strapi (Active)
+            if (STRAPI_URL && STRAPI_TOKEN) {
+                const createRes = await fetch(`${STRAPI_URL}/api/ingredients`, {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({
+                        data: {
+                            name: ingredient.name,
+                            slug: ingredient.slug,
+                            kcal: ingredient.kcal,
+                            protein: ingredient.protein,
+                            carbs: ingredient.carbs,
+                            fat: ingredient.fat,
+                            fiber: ingredient.fiber,
+                            category: ingredient.category,
+                            unitType: ingredient.unitType,
+                            averagePieceWeight: ingredient.averagePieceWeight,
+                        }
+                    })
+                });
+                
+                const createJson: any = await createRes.json();
+                if (createJson.data && createJson.data.documentId) {
+                    // 3. PUBLISH
+                    await fetch(`${STRAPI_URL}/api/ingredients/${createJson.data.documentId}/actions/publish`, {
+                        method: 'POST',
+                        headers
+                    });
+                }
+            }
 
+            count++;
             if (count % batchSize === 0) {
                 console.log(`[SEED] Progress: ${count}/${itemsToProcess.length}...`);
             }
@@ -296,7 +339,6 @@ async function seed() {
 
     console.log('[SEED] Finished seeding.');
     console.log(`[SEED] Total successfully processed: ${count}`);
-    console.log(`[SEED] Errors: ${itemsToProcess.length - count}`);
 }
 
 seed().catch(console.error);
