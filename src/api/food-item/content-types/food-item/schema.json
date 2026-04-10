@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "food_items",
+  "info": {
+    "singularName": "food-item",
+    "pluralName": "food-items",
+    "displayName": "LEGACY_FOOD_ITEM (DO NOT USE)",
+    "description": "Tombstone - kept to prevent Postgres DROP TABLE crash"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  }
+}
