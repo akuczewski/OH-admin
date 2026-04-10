@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "ingredients_v2",
+  "info": {
+    "singularName": "ingredient-catalog",
+    "pluralName": "ingredient-catalogs",
+    "displayName": "LEGACY_CATALOG (DO NOT USE)",
+    "description": "Tombstone - kept to prevent Postgres DROP TABLE crash"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "attributes": {
+    "name": {
+      "type": "string"
+    }
+  }
+}
