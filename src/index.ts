@@ -251,7 +251,14 @@ export default {
       console.log('--- [MASTER SEEDER] Step 3: Syncing relations for existing recipes... ---');
       // @ts-ignore
       const recipesToFix = await strapi.documents('api::recipe.recipe').findMany({
-        populate: ['ingredients', 'used_ingredients'],
+        populate: {
+          ingredients: {
+            populate: { ingredient: true }
+          },
+          used_ingredients: {
+            fields: ['documentId']
+          }
+        },
         limit: -1
       });
 
