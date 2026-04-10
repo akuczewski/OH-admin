@@ -64,11 +64,6 @@
         },
         "author": {
             "type": "string"
-        },
-        "used_ingredients": {
-            "type": "relation",
-            "relation": "manyToMany",
-            "target": "api::ingredient-catalog.ingredient-catalog"
         }
     }
 }

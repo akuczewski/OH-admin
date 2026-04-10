@@ -17,7 +17,7 @@
         "ingredient": {
             "type": "relation",
             "relation": "oneToOne",
-            "target": "api::ingredient-catalog.ingredient-catalog"
+            "target": "api::food-item.food-item"
         },
         "amount": {
             "type": "decimal"

@@ -299,7 +299,7 @@ async function seed() {
             
             // 2. Sync to Strapi (Active)
             if (STRAPI_URL && STRAPI_TOKEN) {
-                const createRes = await fetch(`${STRAPI_URL}/api/ingredient-catalogs`, {
+                const createRes = await fetch(`${STRAPI_URL}/api/food-items`, {
                     method: 'POST',
                     headers,
                     body: JSON.stringify({
@@ -319,12 +319,8 @@ async function seed() {
                 });
                 
                 const createJson: any = await createRes.json();
-                if (createJson.data && createJson.data.documentId) {
-                    // 3. PUBLISH
-                    await fetch(`${STRAPI_URL}/api/ingredients/${createJson.data.documentId}/actions/publish`, {
-                        method: 'POST',
-                        headers
-                    });
+                if (createJson.error) {
+                    console.error(`[SEED] Strapi error for ${ingredient.name}: ${createJson.error.message}`);
                 }
             }
 

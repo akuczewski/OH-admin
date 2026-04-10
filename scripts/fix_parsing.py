@@ -58,8 +58,8 @@ def normalize_ingredient_name(name):
     name = name.strip()
     if not name: return name
     
-    # 1. Fix broken words (e.g. "ows iana" -> "owsiana", "Jogur t" -> "Jogurt")
-    name = re.sub(r'([a-zA-Ząćęłńóśźż])\s([a-z]{2,})\b', r'\1\2', name)
+    # 1. Fix broken words safely
+    # No more space removal for 1-letter words, it breaks prepositions like 'z', 'w'
 
     # 2. Remove common unit prefixes left after splitting
     # e.g. "G, hummus" -> "hummus", "Ml, napój" -> "napój"
@@ -97,14 +97,20 @@ def normalize_ingredient_name(name):
 
     return result.strip()
 
+def get_actual_filename(directory, substring):
+    for f in os.listdir(directory):
+        if substring in f:
+            return f
+    return None
+
 CSV_FILES = [
-    { 'name': 'recipes  - I śniadanie.csv', 'slots': ['sniadanie'] },
-    { 'name': 'recipes  - przekąska.csv', 'slots': ['przekaska-1', 'przekaska-2'] },
-    { 'name': 'recipes  - Obiad.csv', 'slots': ['obiad'] },
-    { 'name': 'recipes  - Kolacja.csv', 'slots': ['kolacja'] }
+    { 'substring': 'I s', 'slots': ['sniadanie'] },
+    { 'substring': 'przeka', 'slots': ['przekaska-1', 'przekaska-2'] },
+    { 'substring': 'Obiad.csv', 'slots': ['obiad'] },
+    { 'substring': 'Kolacja.csv', 'slots': ['kolacja'] }
 ]
 
-INPUT_DIR = '../OH'
+INPUT_DIR = '../../OH'
 OUTPUT_PATH = 'data/recipes.json'
 
 UNIT_MAP = {
@@ -164,67 +170,43 @@ def clean_ingredient(raw_line):
     if not raw_line or len(raw_line) < 2:
         return None
 
-    # Strip trailing junk
-    raw_line = re.sub(r'[:;.\s-]$', '', raw_line).strip()
-
     name = raw_line
     amount = 1.0
     unit = 'szt'
     weight = 0.0
 
-    # 1. EXTRACT WEIGHT FROM LAST PARENTHESES: "(100 g)"
-    match_weight = re.search(r'\(\s*([\d,./]+)\s*([gml]+)\s*\)$', name, re.I)
-    if match_weight:
-        weight = parse_float(match_weight.group(1))
-        name = name[:match_weight.start()].strip()
-
-    # 2. EXTRACT COMPLEX QUANTITY: "(0.5 puszka)", "(2 łyżki)", "(garść)"
-    # We look for (amount unit) or (unit)
-    match_quantity = re.search(r'\(\s*(?:([\d,./]+)\s*)?([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)\s*\)$', name, re.I)
-    if match_quantity:
-        u_candidate = match_quantity.group(2).lower()
-        if u_candidate in UNIT_MAP:
-            amount = parse_float(match_quantity.group(1)) if match_quantity.group(1) else 1.0
-            unit = UNIT_MAP[u_candidate]
-            name = name[:match_quantity.start()].strip()
-
-    # 3. RULE A: Name (Amount [Unit]) - Weight
-    # This is a common complex format
-    match_a = re.search(r'^(.*?)\s*\(\s*([\d,./]+)\s*(?:.+?\s*)?([a-zA-Ząćęłńóśźż]+)\s*\)\s*-\s*([\d,./]+)\s*([gml]+)', name, re.I)
-    if match_a:
-        name = match_a.group(1).strip()
-        amount = parse_float(match_a.group(2))
-        unit = UNIT_MAP.get(match_a.group(3).lower(), 'szt')
-        weight = parse_float(match_a.group(4))
+    # General cleanup of trailing junk
+    name = re.sub(r'[:;.\s-]$', '', name).strip()
     
-    # 4. RULE B: [Count] [Unit] [Name] [Weight]
-    # "2 łyżki masła orzechowego 100g"
-    match_b = re.search(r'^(?:([\d,./]+)\s+)?([a-zA-Ząćęłńóśźż]{2,})\s+(.+?)\s+([\d,./]+)\s*([gml]+)', name, re.I)
-    if match_b and match_b.group(2).lower() in UNIT_MAP:
-        amount = parse_float(match_b.group(1)) or 1.0
-        unit = UNIT_MAP[match_b.group(2).lower()]
-        name = match_b.group(3).strip()
-        weight = parse_float(match_b.group(4))
+    # Very often we have format: Name (amount unit) weight unit
+    # Ex: Płatki owsiane błyskawiczne (6 łyżka) 60g
+    # Let's extract weight at the end 
+    end_weight_match = re.search(r'\s+([\d.,/]+)\s*(g|ml)$', name, re.I)
+    if end_weight_match:
+        weight = parse_float(end_weight_match.group(1))
+        unit = 'g' if end_weight_match.group(2).lower() == 'g' else 'ml'
+        name = name[:end_weight_match.start()]
 
-    # 5. AGGRESSIVE FALLBACK: Strip any remaining parentheses and grammar markers
-    # This prevents "Fasola (2 łyżki)" from becoming a name
-    name = re.sub(r'\s*\(\s*.*?\s*\)', '', name).strip()
-    name = re.sub(r'[:;.-]$', '', name).strip()
-    
-    # Strip leading numbers if they look like quantities
-    # "2 jajka" -> "jajka"
-    match_leading = re.match(r'^([\d,./]+)\s+(.+)$', name)
-    if match_leading:
-        # Check if the next word is a unit
-        words = match_leading.group(2).split()
-        if words and words[0].lower() in UNIT_MAP:
-            amount = parse_float(match_leading.group(1))
-            unit = UNIT_MAP[words[0].lower()]
-            name = " ".join(words[1:])
-        elif len(match_leading.group(1)) < 5: # Just a stray number
-            amount = parse_float(match_leading.group(1))
-            name = match_leading.group(2)
+    # Extract anything in parenthesis and use it to define amounts
+    paren_match = re.search(r'\(\s*(.*?)\s*\)', name)
+    if paren_match:
+        paren_content = paren_match.group(1)
+        # Parse amount/unit from parenthesis
+        match_quant = re.search(r'([\d.,/]+)\s*([a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]+)', paren_content, re.I)
+        if match_quant:
+            amount = parse_float(match_quant.group(1))
+            candidate_unit = match_quant.group(2).lower()
+            if candidate_unit in UNIT_MAP:
+                unit = UNIT_MAP[candidate_unit]
+        else:
+            # Maybe just a unit inside parenthesis (e.g. "(garść)")
+            candidate_unit = paren_content.lower().strip()
+            if candidate_unit in UNIT_MAP:
+                unit = UNIT_MAP[candidate_unit]
+        
+        name = name[:paren_match.start()] + name[paren_match.end():]
 
+    # Clean the name completely
     norm_name = normalize_ingredient_name(name)
     if not norm_name or len(norm_name) < 2:
         return None
@@ -289,11 +271,12 @@ def main():
     all_recipes = []
     
     for file_def in CSV_FILES:
-        path = os.path.join(INPUT_DIR, file_def['name'])
-        if not os.path.exists(path):
-            print(f"Warning: {path} not found.")
+        actual_name = get_actual_filename(INPUT_DIR, file_def['substring'])
+        if not actual_name:
+            print(f"Warning: {file_def['substring']} not found in {INPUT_DIR}.")
             continue
             
+        path = os.path.join(INPUT_DIR, actual_name)
         print(f"Parsing {path}...")
         with open(path, mode='r', encoding='utf-8') as f:
             reader = csv.DictReader(f)

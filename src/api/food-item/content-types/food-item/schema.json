@@ -1,11 +1,11 @@
 {
   "kind": "collectionType",
-  "collectionName": "ingredients_v2",
+  "collectionName": "food_items",
   "info": {
-    "singularName": "ingredient-catalog",
-    "pluralName": "ingredient-catalogs",
-    "displayName": "Składnik (Katalog)",
-    "description": "Baza składników (Nowa instancja)"
+    "singularName": "food-item",
+    "pluralName": "food-items",
+    "displayName": "Składnik",
+    "description": "Baza składników do przepisów"
   },
   "options": {
     "draftAndPublish": false

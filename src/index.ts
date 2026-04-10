@@ -4,7 +4,7 @@ import { db } from './lib/firebase';
 
 const collectionsToSync = {
   'api::recipe.recipe': 'recipes',
-  'api::ingredient-catalog.ingredient-catalog': 'ingredients',
+  'api::food-item.food-item': 'ingredients',
   'api::motivation-quote.motivation-quote': 'quotes',
   'api::profile.profile': 'profiles',
 };
@@ -23,7 +23,7 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
     
     try {
       // @ts-ignore
-      const ingDoc = await strapi.documents('api::ingredient-catalog.ingredient-catalog').findOne({
+      const ingDoc = await strapi.documents('api::food-item.food-item').findOne({
         documentId: ingComponent.ingredient.documentId || ingComponent.ingredient,
       });
 
