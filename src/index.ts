@@ -159,14 +159,7 @@ export default {
         console.log(`--- [MASTER SEEDER] Found ${ingCount} ingredients, skipping Step 1. ---`);
       }
 
-      // 2. Recipes Check
-      // @ts-ignore
-      const recipeCount = await strapi.documents('api::recipe.recipe').count();
-      if (recipeCount > 0) {
-        console.log(`--- [MASTER SEEDER] Database already contains ${recipeCount} recipes. Skipping Step 2. ---`);
-        return;
-      }
-
+      // 2. Ingredients Check (Continued)
       console.log('--- [MASTER SEEDER] Step 2: Processing Recipes & Missing Ingredients ---');
       const recipesPath = path.join(process.cwd(), 'data/recipes.json');
       if (fs.existsSync(recipesPath)) {
@@ -179,9 +172,19 @@ export default {
           ingMap.set(normalizeForMatch(i.name), i.documentId);
         }
 
+        // Cache existing recipes to avoid duplicates
+        // @ts-ignore
+        const existingRecipes = await strapi.documents('api::recipe.recipe').findMany({ fields: ['name'], limit: -1 });
+        const existingRecipeNames = new Set((existingRecipes as any).map((r: any) => r.name));
+
         for (const recipeData of recipes) {
           const recipeName = (recipeData.name || '').replace(/\n/g, '').trim();
-          await sleep(20); // Small breath for Postgres
+          
+          if (existingRecipeNames.has(recipeName)) {
+            continue; // Skip already imported
+          }
+
+          await sleep(30); // Even more breath for Postgres
           
           const components = [];
           for (const ing of recipeData.ingredients) {
