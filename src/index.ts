@@ -82,10 +82,10 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi) {
 
   return {
     kcal: Math.round(totalKcal),
-    protein: Math.round(totalProtein * 10) / 10,
-    carbs: Math.round(totalCarbs * 10) / 10,
-    fat: Math.round(totalFat * 10) / 10,
-    fiber: Math.round(totalFiber * 10) / 10,
+    protein: Math.round(totalProtein),
+    carbs: Math.round(totalCarbs),
+    fat: Math.round(totalFat),
+    fiber: Math.round(totalFiber),
   };
 }
 
