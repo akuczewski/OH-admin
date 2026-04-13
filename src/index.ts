@@ -355,8 +355,40 @@ export default {
       }
       console.log(`--- [MASTER SEEDER] Synced relations for ${fixCount} recipes. ---`);
       
-      // 4. FULL FIREBASE SYNC (To ensure everything is in Firestore)
-      console.log('--- [MASTER SEEDER] Step 4: Full Firebase Synchronization... ---');
+      // 4. AI ENRICHMENT AGENT
+      console.log('--- [MASTER SEEDER] Step 4: AI Enrichment Agent (Batch Mode) ---');
+      const apiKey = process.env.OPENAI_API_KEY;
+      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
+      
+      if (apiKey) {
+        const openai = new OpenAI({ apiKey });
+        // @ts-ignore
+        const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
+          filters: { 
+            $or: [{ kcal: 0 }, { kcal: { $null: true } }]
+          } as any,
+          limit: 300 // Increased limit to process more at once
+        });
+
+        // Filter out already enriched in JS if the DB filter is picky
+        const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
+
+        if (toEnrich.length > 0) {
+          console.log(`--- [MASTER SEEDER] Found ${toEnrich.length} ingredients to enrich. Batch processing... ---`);
+          
+          const BATCH_SIZE = 5;
+          for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
+            const chunk = toEnrich.slice(i, i + BATCH_SIZE);
+            await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
+            console.log(`--- [MASTER SEEDER] Processed batch ${Math.floor(i / BATCH_SIZE) + 1} ---`);
+          }
+        } else {
+          console.log('--- [MASTER SEEDER] No ingredients found matching criteria (kcal=0 & !enriched) ---');
+        }
+      }
+
+      // 5. FULL FIREBASE SYNC (To ensure everything is in Firestore)
+      console.log('--- [MASTER SEEDER] Step 5: Full Firebase Synchronization... ---');
       
       // A. Fetch All Ingredients & Build RAM Map
       // @ts-ignore
@@ -420,38 +452,6 @@ export default {
         }
       }
       console.log(`--- [MASTER SEEDER] Successfully pushed ${allRecipes.length} recipes to Firebase. ---`);
-
-      // 5. AI ENRICHMENT AGENT
-      console.log('--- [MASTER SEEDER] Step 5: AI Enrichment Agent (Batch Mode) ---');
-      const apiKey = process.env.OPENAI_API_KEY;
-      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
-      
-      if (apiKey) {
-        const openai = new OpenAI({ apiKey });
-        // @ts-ignore
-        const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
-          filters: { 
-            $or: [{ kcal: 0 }, { kcal: { $null: true } }]
-          } as any,
-          limit: 100
-        });
-
-        // Filter out already enriched in JS if the DB filter is picky
-        const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
-
-        if (toEnrich.length > 0) {
-          console.log(`--- [MASTER SEEDER] Found ${toEnrich.length} ingredients to enrich. Batch processing... ---`);
-          
-          const BATCH_SIZE = 5;
-          for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
-            const chunk = toEnrich.slice(i, i + BATCH_SIZE);
-            await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
-            console.log(`--- [MASTER SEEDER] Processed batch ${Math.floor(i / BATCH_SIZE) + 1} ---`);
-          }
-        } else {
-          console.log('--- [MASTER SEEDER] No ingredients found matching criteria (kcal=0 & !enriched) ---');
-        }
-      }
 
       // 6. FULL ARTICLE SYNC
       console.log('--- [MASTER SEEDER] Step 6: Full Article Synchronization... ---');
