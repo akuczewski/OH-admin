@@ -376,16 +376,27 @@ export default {
       // 5. AI ENRICHMENT AGENT
       console.log('--- [MASTER SEEDER] Step 5: AI Enrichment Agent... ---');
       const apiKey = process.env.OPENAI_API_KEY;
+      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
+      
       if (apiKey) {
         const openai = new OpenAI({ apiKey });
+        
+        // Search for kcal: 0 OR kcal: null
         // @ts-ignore
         const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
-          filters: { kcal: 0, isAiEnriched: { $ne: true } } as any,
+          filters: { 
+            $or: [
+              { kcal: 0 },
+              { kcal: { $null: true } }
+            ],
+            isAiEnriched: { $ne: true } 
+          } as any,
           limit: 20
         });
 
+        console.log(`[DEBUG] Found ${(missingIngs as any).length} ingredients matching filter.`);
+
         if ((missingIngs as any).length > 0) {
-          console.log(`--- [MASTER SEEDER] Found ${(missingIngs as any).length} ingredients to enrich via AI. ---`);
           for (const ing of (missingIngs as any)) {
             try {
               const prompt = `You are a nutrition expert. For the ingredient "${ing.name}" (${ing.unitType}), provide: kcal, protein, carbs, fat, fiber per 100g/ml AND averagePieceWeight (only if piece type). Return JSON only.`;
