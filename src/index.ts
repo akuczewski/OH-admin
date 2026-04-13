@@ -158,7 +158,7 @@ export default {
       const result = await next();
 
       // LIVE AI ENRICHMENT
-      if (uid === 'api::skladnik.skladnik' && ['create', 'update'].includes(action)) {
+      if ((uid as any) === 'api::skladnik.skladnik' && ['create', 'update'].includes(action)) {
         const doc = (result as any);
         if (doc && (doc.kcal === 0 || doc.kcal === null) && !doc.isAiEnriched) {
           const apiKey = process.env.OPENAI_API_KEY;
@@ -422,13 +422,9 @@ export default {
       console.log(`--- [MASTER SEEDER] Successfully pushed ${allRecipes.length} recipes to Firebase. ---`);
 
       // 5. AI ENRICHMENT AGENT
-      console.log('--- [MASTER SEEDER] Step 5: AI Enrichment Agent... ---');
-      const apiKey = process.env.OPENAI_API_KEY;
-      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
-      
-      // 5. AI ENRICHMENT AGENT
       console.log('--- [MASTER SEEDER] Step 5: AI Enrichment Agent (Batch Mode) ---');
       const apiKey = process.env.OPENAI_API_KEY;
+      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
       
       if (apiKey) {
         const openai = new OpenAI({ apiKey });
