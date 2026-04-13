@@ -387,14 +387,19 @@ export default {
           filters: { 
             $or: [
               { kcal: 0 },
+              { kcal: { $eq: 0 } },
               { kcal: { $null: true } }
-            ],
-            isAiEnriched: { $ne: true } 
+            ]
           } as any,
           limit: 20
         });
 
-        console.log(`[DEBUG] Found ${(missingIngs as any).length} ingredients matching filter.`);
+        // DEEP DEBUG: Log first 3 ingredients from the whole DB to see their structure
+        // @ts-ignore
+        const rawSample = await strapi.documents('api::skladnik.skladnik').findMany({ limit: 3 });
+        console.log(`[DEBUG] Raw sample data from DB: ${JSON.stringify(rawSample.map((i:any) => ({ name: i.name, kcal: i.kcal, ai: i.isAiEnriched, type: typeof i.kcal })))}`);
+        
+        console.log(`[DEBUG] Ingredients found with simple kcal filter: ${(missingIngs as any).length}`);
 
         if ((missingIngs as any).length > 0) {
           for (const ing of (missingIngs as any)) {
