@@ -57,6 +57,10 @@
     "averagePieceWeight": {
       "type": "integer"
     },
+    "isAiEnriched": {
+      "type": "boolean",
+      "default": false
+    },
     "recipes": {
       "type": "relation",
       "relation": "manyToMany",

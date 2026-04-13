@@ -2,12 +2,14 @@ import type { Core } from '@strapi/strapi';
 import fs from 'fs';
 import path from 'path';
 import { db } from './lib/firebase';
+import OpenAI from 'openai';
 
 const collectionsToSync = {
   'api::recipe.recipe': 'recipes',
   'api::skladnik.skladnik': 'ingredients',
   'api::motivation-quote.motivation-quote': 'quotes',
   'api::profile.profile': 'profiles',
+  'api::article.article': 'articles',
 };
 
 // ==================== SEEDER UTILS ====================
@@ -370,6 +372,76 @@ export default {
         }
       }
       console.log(`--- [MASTER SEEDER] Successfully pushed ${allRecipes.length} recipes to Firebase. ---`);
+
+      // 5. AI ENRICHMENT AGENT
+      console.log('--- [MASTER SEEDER] Step 5: AI Enrichment Agent... ---');
+      const apiKey = process.env.OPENAI_API_KEY;
+      if (apiKey) {
+        const openai = new OpenAI({ apiKey });
+        // @ts-ignore
+        const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
+          filters: { kcal: 0, isAiEnriched: { $ne: true } },
+          limit: 20
+        });
+
+        if ((missingIngs as any).length > 0) {
+          console.log(`--- [MASTER SEEDER] Found ${(missingIngs as any).length} ingredients to enrich via AI. ---`);
+          for (const ing of (missingIngs as any)) {
+            try {
+              const prompt = `You are a nutrition expert. For the ingredient "${ing.name}" (${ing.unitType}), provide: kcal, protein, carbs, fat, fiber per 100g/ml AND averagePieceWeight (only if piece type). Return JSON only.`;
+              const completion = await openai.chat.completions.create({
+                model: "gpt-4o-mini",
+                messages: [{ role: "user", content: prompt }],
+                response_format: { type: "json_object" }
+              });
+              const aiData = JSON.parse(completion.choices[0].message.content || '{}');
+              
+              if (aiData.kcal !== undefined) {
+                // @ts-ignore
+                await strapi.documents('api::skladnik.skladnik').update({
+                  documentId: ing.documentId,
+                  data: {
+                    kcal: aiData.kcal,
+                    protein: aiData.protein,
+                    carbs: aiData.carbs,
+                    fat: aiData.fat,
+                    fiber: aiData.fiber,
+                    averagePieceWeight: aiData.averagePieceWeight || ing.averagePieceWeight,
+                    isAiEnriched: true
+                  }
+                });
+                console.log(`--- [MASTER SEEDER] AI enriched: ${ing.name} ---`);
+              }
+            } catch (e: any) {
+              console.warn(`--- [MASTER SEEDER] AI failed for ${ing.name}: ${e.message} ---`);
+            }
+          }
+        }
+      }
+
+      // 6. FULL ARTICLE SYNC
+      console.log('--- [MASTER SEEDER] Step 6: Full Article Synchronization... ---');
+      // @ts-ignore
+      const allArticles = await strapi.documents('api::article.article').findMany({
+        status: 'published',
+        populate: ['thumbnail', 'profiles'],
+        limit: -1
+      });
+
+      const articleBatch = db.batch();
+      for (const article of (allArticles as any)) {
+        const ref = db.collection('articles').doc(article.documentId);
+        const data = {
+          ...article,
+          id: article.documentId,
+          thumbnail: article.thumbnail?.url || article.thumbnail || ""
+        };
+        articleBatch.set(ref, data, { merge: true });
+      }
+      if ((allArticles as any).length > 0) {
+        await articleBatch.commit();
+        console.log(`--- [MASTER SEEDER] Successfully pushed ${allArticles.length} articles to Firebase. ---`);
+      }
 
     } catch (error: any) {
       console.error('--- [MASTER SEEDER] CRITICAL ERROR:', error.message);
