@@ -380,7 +380,7 @@ export default {
         const openai = new OpenAI({ apiKey });
         // @ts-ignore
         const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
-          filters: { kcal: 0, isAiEnriched: { $ne: true } },
+          filters: { kcal: 0, isAiEnriched: { $ne: true } } as any,
           limit: 20
         });
 
@@ -408,7 +408,7 @@ export default {
                     fiber: aiData.fiber,
                     averagePieceWeight: aiData.averagePieceWeight || ing.averagePieceWeight,
                     isAiEnriched: true
-                  }
+                  } as any
                 });
                 console.log(`--- [MASTER SEEDER] AI enriched: ${ing.name} ---`);
               }
