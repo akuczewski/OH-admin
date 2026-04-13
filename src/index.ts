@@ -431,21 +431,25 @@ export default {
         // @ts-ignore
         const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
           filters: { 
-            $or: [{ kcal: 0 }, { kcal: { $null: true } }],
-            isAiEnriched: { $ne: true } 
+            $or: [{ kcal: 0 }, { kcal: { $null: true } }]
           } as any,
-          limit: 100 // Process more ingredients per boot
+          limit: 100
         });
 
-        if ((missingIngs as any).length > 0) {
-          console.log(`--- [MASTER SEEDER] Found ${(missingIngs as any).length} ingredients. Batch processing... ---`);
+        // Filter out already enriched in JS if the DB filter is picky
+        const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
+
+        if (toEnrich.length > 0) {
+          console.log(`--- [MASTER SEEDER] Found ${toEnrich.length} ingredients to enrich. Batch processing... ---`);
           
           const BATCH_SIZE = 5;
-          for (let i = 0; i < (missingIngs as any).length; i += BATCH_SIZE) {
-            const chunk = (missingIngs as any).slice(i, i + BATCH_SIZE);
+          for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
+            const chunk = toEnrich.slice(i, i + BATCH_SIZE);
             await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
             console.log(`--- [MASTER SEEDER] Processed batch ${Math.floor(i / BATCH_SIZE) + 1} ---`);
           }
+        } else {
+          console.log('--- [MASTER SEEDER] No ingredients found matching criteria (kcal=0 & !enriched) ---');
         }
       }
 
