@@ -179,13 +179,35 @@ export const Input = ({
         
         if (currentIng?.ingredient && !currentIng?.name) {
             console.log('[SMART-SYNC] Detected relation without name for row:', index);
-            const match = options.find((opt: any) => opt.documentId === currentIng.ingredient || opt.id === currentIng.ingredient);
+            
+            // Unify docId extraction since Strapi might store it as a string or an object
+            const docId = typeof currentIng.ingredient === 'string' 
+                ? currentIng.ingredient 
+                : currentIng.ingredient.documentId || currentIng.ingredient.id;
+                
+            const match = options.find((opt: any) => opt.documentId === docId || opt.id === docId);
+            
             if (match) {
                 console.log('[SMART-SYNC] Auto-filling name from match:', (match as any).name);
                 onChange({ target: { name, value: (match as any).name, type: 'string' } });
-                
                 const slugPath = name.replace('.name', '.slug');
                 setFormValue(slugPath, (match as any).slug);
+            } else if (docId) {
+                // If it's not in the currently loaded options, fetch it explicitly
+                console.log('[SMART-SYNC] Fetching explicitly for relation docId:', docId);
+                get(`/content-manager/collection-types/api::skladnik.skladnik/${docId}`)
+                    .then((resp: any) => {
+                        let fetchedOpt = resp?.data?.data || resp?.data || resp?.results || resp;
+                        if (fetchedOpt && fetchedOpt.name) {
+                            console.log('[SMART-SYNC] Explicit fetch success:', fetchedOpt.name);
+                            onChange({ target: { name, value: fetchedOpt.name, type: 'string' } });
+                            const slugPath = name.replace('.name', '.slug');
+                            setFormValue(slugPath, fetchedOpt.slug);
+                        }
+                    })
+                    .catch((err: any) => {
+                        console.error('[SMART-SYNC] Explicit fetch failed:', err);
+                    });
             }
         }
     }, [JSON.stringify(values.ingredients)]);
