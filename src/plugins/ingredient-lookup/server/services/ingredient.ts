@@ -4,30 +4,30 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     async search(query: string) {
         console.log('[INGREDIENT-SERVICE] Searching for:', query);
         
-        // Use document service for Strapi 5
-        const results = await strapi.documents('api::skladnik.skladnik').findMany({
+        // Use document service for Strapi 5 - cast to any to bypass strict plugin type check
+        const results = await (strapi as any).documents('api::skladnik.skladnik').findMany({
             filters: {
                 $or: [
                     { name: { $containsi: query } },
                     { slug: { $containsi: query } },
-                ],
+                ] as any,
             },
             limit: 20,
         });
 
         // Map results to the format expected by the frontend
-        return results.map(item => ({
+        return results.map((item: any) => ({
             id: item.id,
             documentId: item.documentId,
             name: item.name,
             slug: item.slug,
-            category: (item as any).category || 'inne',
+            category: item.category || 'inne',
             macros: {
-                kcal: (item as any).kcal,
-                protein: (item as any).protein,
-                carbs: (item as any).carbs,
-                fat: (item as any).fat,
-                fiber: (item as any).fiber,
+                kcal: item.kcal,
+                protein: item.protein,
+                carbs: item.carbs,
+                fat: item.fat,
+                fiber: item.fiber,
             }
         }));
     },
@@ -46,15 +46,15 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
             let item: any = null;
             if (ing.slug) {
                 // @ts-ignore
-                const results = await strapi.documents('api::skladnik.skladnik').findMany({
-                    filters: { slug: ing.slug },
+                const results = await (strapi as any).documents('api::skladnik.skladnik').findMany({
+                    filters: { slug: ing.slug } as any,
                     limit: 1
                 });
                 item = results[0];
             } else if (ing.name) {
                 // @ts-ignore
-                const results = await strapi.documents('api::skladnik.skladnik').findMany({
-                    filters: { name: ing.name },
+                const results = await (strapi as any).documents('api::skladnik.skladnik').findMany({
+                    filters: { name: ing.name } as any,
                     limit: 1
                 });
                 item = results[0];
