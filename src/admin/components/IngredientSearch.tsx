@@ -6,7 +6,7 @@ import {
     Field,
     Flex
 } from '@strapi/design-system';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
 
 export const Input = ({
@@ -20,7 +20,7 @@ export const Input = ({
     required,
 }) => {
     const { formatMessage } = useIntl();
-    const [options, setOptions] = useState([]);
+    const [options, setOptions] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(value || '');
     const { get, post } = useFetchClient();
@@ -59,7 +59,7 @@ export const Input = ({
         setIsCalculating(true);
         try {
             // Use the stored slugs instead of names if possible for better accuracy
-            const ingredientsToCalculate = values.ingredients.map(ing => ({
+            const ingredientsToCalculate = values.ingredients.map((ing: any) => ({
                 name: ing.slug || ing.name,
                 amount: ing.amount,
                 unit: ing.unit
@@ -130,15 +130,14 @@ export const Input = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Use admin Content Manager API — authenticated via admin JWT (useFetchClient),
-                // no dependency on public-role permissions. Returns { results: [...], pagination: {...} }.
-                const { data: res } = await get(
-                    `/content-manager/collection-types/api::skladnik.skladnik?filters[name][$containsi]=${encodeURIComponent(searchValue)}&pagination[pageSize]=20`
+                // Use the plugin's own admin search route — authenticated via admin JWT,
+                // returns a pre-mapped array: [{ id, documentId, name, slug, category, macros }]
+                const { data: items } = await get(
+                    `/ingredient-lookup/search?q=${encodeURIComponent(searchValue)}`
                 );
-                // Strapi 5 Content Manager API returns { results: [...], pagination: {...} }
-                const items = res?.results || res?.data || [];
-                console.log(`[INGREDIENT-SEARCH] Found ${items.length} items for "${searchValue}"`);
-                setOptions(items);
+                const results = Array.isArray(items) ? items : [];
+                console.log(`[INGREDIENT-SEARCH] Found ${results.length} items for "${searchValue}"`);
+                setOptions(results);
             } catch (err) {
                 console.error('Search error', err);
             } finally {
@@ -173,18 +172,17 @@ export const Input = ({
                 onChange({ target: { name, value: (match as any).name, type: 'string' } });
                 
                 const slugPath = name.replace('.name', '.slug');
-                const relPath = name.replace('.name', '.ingredient');
                 setFormValue(slugPath, (match as any).slug);
-                // We don't set relPath here as it's already set
+                // relation is already set, no need to update relPath here
             }
         }
     }, [JSON.stringify(values.ingredients)]);
 
-    const handleInputChange = (e) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchValue(e.target.value);
     };
 
-    const handleSelect = (selectedValue) => {
+    const handleSelect = (selectedValue: string) => {
         // Update the primary name field
         onChange({ target: { name, value: selectedValue, type: 'string' } });
 
@@ -234,6 +232,7 @@ export const Input = ({
                 onChange={handleSelect}
                 onInputChange={handleInputChange}
                 loading={isLoading}
+                filterValue=""
             >
                 {options.map((opt: any) => (
                     <ComboboxOption key={opt.documentId || opt.id} value={opt.name}>
