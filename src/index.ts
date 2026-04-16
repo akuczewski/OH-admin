@@ -131,6 +131,16 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
   };
 }
 
+// ==================== IMAGE URL UTILS ====================
+
+function normalizeImageUrl(image: any): string {
+  const url = image?.url || (typeof image === 'string' ? image : '');
+  if (!url) return '';
+  if (url.startsWith('http')) return url;
+  const strapiUrl = (process.env.STRAPI_URL || process.env.URL || 'http://localhost:1337').replace(/\/$/, '');
+  return `${strapiUrl}${url.startsWith('/') ? url : `/${url}`}`;
+}
+
 // ==================== STRAPI CONFIG ====================
 
 export default {
@@ -155,7 +165,13 @@ export default {
         }
       }
 
-      const result = await next();
+      let result;
+      try {
+        result = await next();
+      } catch (err: any) {
+        console.error(`[DOCUMENT MIDDLEWARE ERROR] ${uid} ${action}:`, err.message);
+        throw err; // Re-throw to let Strapi handle it, but we've logged it
+      }
 
       // LIVE AI ENRICHMENT
       if ((uid as any) === 'api::skladnik.skladnik' && ['create', 'update'].includes(action)) {
@@ -191,13 +207,16 @@ export default {
 
               let dataToSync: any = { ...fullDoc };
               // Jeśli to przepis, mapujemy składniki na format czytelny dla aplikacji (ingredient -> id)
-              if (uid === 'api::recipe.recipe' && dataToSync.ingredients) {
-                dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
-                  ...ing,
-                  id: ing.ingredient?.documentId || ing.ingredient || ""
-                }));
+              if (uid === 'api::recipe.recipe') {
+                dataToSync.image = normalizeImageUrl(fullDoc.image);
+                if (dataToSync.ingredients) {
+                  dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
+                    ...ing,
+                    id: ing.ingredient?.documentId || ing.ingredient || ""
+                  }));
+                }
               }
-              
+
               await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
             }
           } catch (error: any) {
@@ -432,8 +451,8 @@ export default {
           id: r.documentId,
           kcal: macros?.kcal || r.kcal || 0,
           macros: macros || r.macros || { protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          // Obsługa obrazka (wyciągamy sam URL)
-          image: r.image?.url || r.image || ""
+          // Obsługa obrazka (wyciągamy absolutny URL)
+          image: normalizeImageUrl(r.image)
         };
         
         // Mapujemy komponenty składników (id zamiast ingredient)

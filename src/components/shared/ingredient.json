@@ -31,10 +31,14 @@
                 "lyzka",
                 "lyzeczka",
                 "szklanka",
+                "łyżka",
+                "łyżeczka",
+                "szklanka",
                 "szczypta",
                 "plaster",
                 "garstka",
-                "opakowanie"
+                "opakowanie",
+                "sztuka"
             ],
             "required": true
         },

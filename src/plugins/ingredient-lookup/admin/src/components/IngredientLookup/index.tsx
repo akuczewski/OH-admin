@@ -145,11 +145,14 @@ const IngredientLookup = ({
         // Update the primary name field
         onChange({ target: { name, value: selectedValue, type: 'string' } });
 
-        // Update the hidden slug field if we find a match in the loaded options
+        // Update the hidden slug and relation fields if we find a match in the loaded options
         const match = options.find((opt: any) => opt.name === selectedValue);
         if (match && onFormChange && name.includes('.name')) {
             const slugPath = name.replace('.name', '.slug');
+            const relPath = name.replace('.name', '.ingredient');
+            
             onFormChange({ target: { name: slugPath, value: (match as any).slug, type: 'string' } });
+            onFormChange({ target: { name: relPath, value: (match as any).documentId, type: 'relation' } });
         }
     };
 

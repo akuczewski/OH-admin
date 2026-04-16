@@ -41,6 +41,16 @@ export const Input = ({
         console.log('-----------------------------------------');
     };
 
+    const setFormValue = (keys: string, val: any) => {
+        dispatch({
+            type: 'ContentManager/CrudReducer/ON_CHANGE',
+            keys,
+            value: val,
+        });
+        // Also try the hook as a backup fallback
+        if (onFormChange) onFormChange(keys, val);
+    };
+
     const handleCalculateMacros = async () => {
         console.log('[MACRO-CALC V5.0 - STABILITY] Calculate triggered. Ingredients:', values?.ingredients?.length);
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
@@ -70,20 +80,6 @@ export const Input = ({
             console.log('[MACRO-CALC V5.0 - STABILITY] Full API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
-                // Determine form prefix: if this component is inside a dynamic zone or repeater, 'name' has a prefix.
-                // Assuming name is 'ingredients.0.name', the top level form is at the root.
-                // We dispatch globally.
-
-                const setFormValue = (keys: string, val: any) => {
-                    dispatch({
-                        type: 'ContentManager/CrudReducer/ON_CHANGE',
-                        keys,
-                        value: val,
-                    });
-                    // Also try the hook as a backup fallback
-                    if (onFormChange) onFormChange(keys, val);
-                };
-
                 // Update kcal
                 console.log('[MACRO-CALC V5.4 - REDUX FIX] Setting kcal:', result.kcal);
                 setFormValue('kcal', result.kcal);
@@ -160,11 +156,15 @@ export const Input = ({
         // Update the primary name field
         onChange({ target: { name, value: selectedValue, type: 'string' } });
 
-        // Update the hidden slug field if we find a match in the loaded options
+        // Update the hidden slug and relation fields if we find a match in the loaded options
         const match = options.find((opt: any) => opt.name === selectedValue);
-        if (match && onFormChange && name.includes('.name')) {
+        if (match && name.includes('.name')) {
             const slugPath = name.replace('.name', '.slug');
-            onFormChange(slugPath, (match as any).slug);
+            const relPath = name.replace('.name', '.ingredient');
+            
+            console.log('[INGREDIENT-AUTO-REL] Setting slug:', (match as any).slug, 'and relation:', (match as any).documentId);
+            setFormValue(slugPath, (match as any).slug);
+            setFormValue(relPath, (match as any).documentId);
         }
     };
 
