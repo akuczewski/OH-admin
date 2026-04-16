@@ -508,11 +508,43 @@ export default {
       }
       if ((allArticles as any).length > 0) {
         await articleBatch.commit();
-        console.log(`--- [MASTER SEEDER] Successfully pushed ${allArticles.length} articles to Firebase. ---`);
+        console.log(`--- [MASTER SEEDER] Successfully pushed ${allArticles.length} articles. ---`);
       }
-
+      console.log('--- [MASTER SEEDER] Recovery complete. ---');
     } catch (error: any) {
-      console.error('--- [MASTER SEEDER] CRITICAL ERROR:', error.message);
+      console.error('--- [MASTER SEEDER ERROR] ---', error.message);
+    }
+
+    // ==================== PERMISSION GUARD ====================
+    try {
+      console.log('--- [PERMISSION GUARD] Ensuring public access to ingredients search... ---');
+      const publicRole = await strapi.query('plugin::users-permissions.role').findOne({
+        where: { type: 'public' }
+      });
+      
+      if (publicRole) {
+        const targetAction = 'api::skladnik.skladnik.find';
+        const existingPermission = await strapi.query('plugin::users-permissions.permission').findOne({
+          where: {
+            role: publicRole.id,
+            action: targetAction
+          }
+        });
+
+        if (!existingPermission) {
+          await strapi.query('plugin::users-permissions.permission').create({
+            data: {
+              action: targetAction,
+              role: publicRole.id
+            }
+          });
+          console.log(`[PERMISSION GUARD] Granted ${targetAction} permission to Public role.`);
+        } else {
+          console.log(`[PERMISSION GUARD] Permission ${targetAction} already exists.`);
+        }
+      }
+    } catch (err: any) {
+      console.error('[PERMISSION GUARD ERROR]', err.message);
     }
   },
 };
