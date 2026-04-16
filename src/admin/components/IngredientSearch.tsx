@@ -8,7 +8,6 @@ import {
 } from '@strapi/design-system';
 import { useEffect, useState } from 'react';
 import { useIntl } from 'react-intl';
-import { useDispatch } from 'react-redux';
 
 export const Input = ({
     name,
@@ -25,7 +24,6 @@ export const Input = ({
     const [isLoading, setIsLoading] = useState(false);
     const [searchValue, setSearchValue] = useState(value || '');
     const { get, post } = useFetchClient();
-    const dispatch = useDispatch();
 
     const [isCalculating, setIsCalculating] = useState(false);
 
@@ -41,14 +39,10 @@ export const Input = ({
         console.log('-----------------------------------------');
     };
 
-    const setFormValue = (keys: string, val: any) => {
-        dispatch({
-            type: 'ContentManager/CrudReducer/ON_CHANGE',
-            keys,
-            value: val,
-        });
-        // Also try the hook as a backup fallback
-        if (onFormChange) onFormChange(keys, val);
+    const setFormValue = (fieldName: string, val: any) => {
+        if (onFormChange) {
+            onFormChange({ target: { name: fieldName, value: val, type: 'string' } });
+        }
     };
 
     const handleCalculateMacros = async () => {
@@ -136,10 +130,13 @@ export const Input = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Use standard Content API with filtering - robust and stable across Strapi versions
-                const { data: res } = await get(`/api/skladniks?filters[name][$containsi]=${searchValue}&pagination[pageSize]=20`);
-                // Strapi 5 Content API returns { data: [...], meta: {...} }
-                const items = res?.data || [];
+                // Use admin Content Manager API — authenticated via admin JWT (useFetchClient),
+                // no dependency on public-role permissions. Returns { results: [...], pagination: {...} }.
+                const { data: res } = await get(
+                    `/content-manager/collection-types/api::skladnik.skladnik?filters[name][$containsi]=${encodeURIComponent(searchValue)}&pagination[pageSize]=20`
+                );
+                // Strapi 5 Content Manager API returns { results: [...], pagination: {...} }
+                const items = res?.results || res?.data || [];
                 console.log(`[INGREDIENT-SEARCH] Found ${items.length} items for "${searchValue}"`);
                 setOptions(items);
             } catch (err) {
