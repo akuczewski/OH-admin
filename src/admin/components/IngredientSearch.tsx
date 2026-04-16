@@ -130,20 +130,39 @@ export const Input = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                // Use the plugin's own admin search route — authenticated via admin JWT,
-                // returns a pre-mapped array: [{ id, documentId, name, slug, category, macros }]
-                const { data: items } = await get(
-                    `/ingredient-lookup/search?q=${encodeURIComponent(searchValue)}`
-                );
+                // Primary: Try Content Manager API (Admin authenticated, perfectly matches relation field)
+                const cmUrl = `/content-manager/collection-types/api::skladnik.skladnik?filters[name][$containsi]=${encodeURIComponent(searchValue)}&pagination[pageSize]=20`;
+                console.log(`[INGREDIENT-SEARCH] Fetching CM API: ${cmUrl}`);
+                let response: any;
+                
+                try {
+                    response = await get(cmUrl);
+                } catch (cmErr: any) {
+                    console.error('[INGREDIENT-SEARCH] CM API Failed, trying plugin API...', cmErr);
+                    // Fallback: Try plugin API
+                    const pluginUrl = `/ingredient-lookup/search?q=${encodeURIComponent(searchValue)}`;
+                    response = await get(pluginUrl);
+                }
+
+                console.log(`[INGREDIENT-SEARCH] API Raw Response:`, response);
+                
+                let items = response?.data?.results || response?.data?.data || response?.results || response?.data;
                 const results = Array.isArray(items) ? items : [];
-                console.log(`[INGREDIENT-SEARCH] Found ${results.length} items for "${searchValue}"`);
-                setOptions(results);
-            } catch (err) {
-                console.error('Search error', err);
+                
+                if (results.length === 0) {
+                     setOptions([{ id: 'debug1', documentId: 'debug1', name: `API ZWRÓCIŁO 0 WYNIKÓW DLA: ${searchValue}` }]);
+                } else {
+                     setOptions(results);
+                }
+                
+                console.log(`[INGREDIENT-SEARCH] Found ${results.length} items`);
+            } catch (err: any) {
+                console.error('[INGREDIENT-SEARCH] Search error:', err.response || err);
+                setOptions([{ id: 'err1', documentId: 'err1', name: `BŁĄD API: ${err.message}` }]);
             } finally {
                 setIsLoading(false);
             }
-        }, 300);
+        }, 400);
 
         return () => clearTimeout(timer);
     }, [searchValue, get]);
@@ -158,14 +177,8 @@ export const Input = ({
 
         const currentIng = values.ingredients[index];
         
-        // If the relation is set but the name is empty or doesn't match, we might want to sync.
-        // However, to avoid loops and unwanted overwrites, we only sync if name is EMPTY and relation is SELECTED.
-        // Unfortunately, the relation object in state usually only has the ID/documentId.
-        // But we can try to find a match in our already loaded 'options' if possible.
-        
         if (currentIng?.ingredient && !currentIng?.name) {
             console.log('[SMART-SYNC] Detected relation without name for row:', index);
-            // If we have options, maybe we can find it there
             const match = options.find((opt: any) => opt.documentId === currentIng.ingredient || opt.id === currentIng.ingredient);
             if (match) {
                 console.log('[SMART-SYNC] Auto-filling name from match:', (match as any).name);
@@ -173,13 +186,15 @@ export const Input = ({
                 
                 const slugPath = name.replace('.name', '.slug');
                 setFormValue(slugPath, (match as any).slug);
-                // relation is already set, no need to update relPath here
             }
         }
     }, [JSON.stringify(values.ingredients)]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchValue(e.target.value);
+    const handleInputChange = (e: any) => {
+        // In some Strapi Design System versions, 'e' is a string. In others, it's an event.
+        const val = typeof e === 'string' ? e : (e?.target?.value || '');
+        console.log('[INGREDIENT-SEARCH] Input changing to:', val);
+        setSearchValue(val);
     };
 
     const handleSelect = (selectedValue: string) => {
