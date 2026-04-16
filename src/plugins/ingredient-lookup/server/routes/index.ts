@@ -1,6 +1,6 @@
 export default {
-    admin: {
-        type: 'admin',
+    'content-api': {
+        type: 'content-api',
         routes: [
             {
                 method: 'GET',

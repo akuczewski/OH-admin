@@ -163,6 +163,21 @@ export default {
           data.kcal = macros.kcal;
           data.macros = { protein: macros.protein, carbs: macros.carbs, fat: macros.fat, fiber: macros.fiber };
         }
+
+        // AUTO RELATIONS SYNC: Populate used_ingredients from the ingredients component list
+        if (data.ingredients && Array.isArray(data.ingredients)) {
+          const ingredientIds = data.ingredients
+            .map((ing: any) => {
+                // Handle different potential formats of the documentId
+                return ing.ingredient?.documentId || (typeof ing.ingredient === 'string' ? ing.ingredient : null);
+            })
+            .filter(Boolean);
+          
+          if (ingredientIds.length > 0) {
+            data.used_ingredients = ingredientIds;
+            console.log(`[RELATION SYNC] Auto-populated used_ingredients with ${ingredientIds.length} relations for ${data.name || 'document'}`);
+          }
+        }
       }
 
       let result;
