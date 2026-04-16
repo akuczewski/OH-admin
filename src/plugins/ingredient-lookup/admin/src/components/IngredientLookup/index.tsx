@@ -125,7 +125,7 @@ const IngredientLookup = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                const { data } = await get(`/api/ingredients/search?q=${searchValue}`);
+                const { data } = await get(`/ingredient-lookup/search?q=${searchValue}`);
                 setOptions(data || []);
             } catch (err) {
                 console.error('Search error', err);
