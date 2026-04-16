@@ -1,6 +1,6 @@
 export default {
-    'content-api': {
-        type: 'content-api',
+    admin: {
+        type: 'admin',
         routes: [
             {
                 method: 'GET',
@@ -8,7 +8,6 @@ export default {
                 handler: 'ingredient.search',
                 config: {
                     policies: [],
-                    auth: false,
                 },
             },
             {
@@ -17,7 +16,6 @@ export default {
                 handler: 'ingredient.calculateMacros',
                 config: {
                     policies: [],
-                    auth: false,
                 },
             },
             {
@@ -26,7 +24,6 @@ export default {
                 handler: 'recipeImport.importUrl',
                 config: {
                     policies: [],
-                    auth: false,
                 },
             },
         ],

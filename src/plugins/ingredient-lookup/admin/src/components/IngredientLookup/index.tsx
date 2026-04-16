@@ -125,8 +125,9 @@ const IngredientLookup = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                const { data } = await get(`/api/ingredient-lookup/search?q=${searchValue}`);
-                setOptions(data || []);
+                const { data: res } = await get(`/admin/content-manager/collection-types/api::skladnik.skladnik?_q=${searchValue}&pageSize=20`);
+                // Standard Strapi 5 content-manager returns { results: [...], pagination: {...} }
+                setOptions(res?.results || res?.data || []);
             } catch (err) {
                 console.error('Search error', err);
             } finally {
