@@ -66,7 +66,7 @@ export const Input = ({
             }));
 
             console.log('[MACRO-CALC V5.0 - STABILITY] Sending request to API...');
-            const { data: res } = await post('/api/ingredients/calculate-macros', {
+            const { data: res } = await post('/ingredient-lookup/calculate-macros', {
                 ingredients: ingredientsToCalculate
             });
 
