@@ -180,16 +180,23 @@ export const Input = ({
         if (currentIng?.ingredient && !currentIng?.name) {
             console.log('[SMART-SYNC] Detected relation without name for row:', index);
             
-            // Unify docId extraction since Strapi might store it as a string or an object
-            const docId = typeof currentIng.ingredient === 'string' 
-                ? currentIng.ingredient 
-                : currentIng.ingredient.documentId || currentIng.ingredient.id;
+            // Bulletproof docId extraction for Strapi 5 (handles strings, objects, and arrays)
+            let docId = null;
+            if (typeof currentIng.ingredient === 'string') {
+                docId = currentIng.ingredient;
+            } else if (Array.isArray(currentIng.ingredient) && currentIng.ingredient.length > 0) {
+                docId = currentIng.ingredient[0].documentId || currentIng.ingredient[0].id;
+            } else if (typeof currentIng.ingredient === 'object' && currentIng.ingredient !== null) {
+                docId = currentIng.ingredient.documentId || currentIng.ingredient.id;
+            }
                 
+            console.log('[SMART-SYNC] Extracted docId:', docId);
             const match = options.find((opt: any) => opt.documentId === docId || opt.id === docId);
             
             if (match) {
                 console.log('[SMART-SYNC] Auto-filling name from match:', (match as any).name);
                 onChange({ target: { name, value: (match as any).name, type: 'string' } });
+                setSearchValue((match as any).name);
                 const slugPath = name.replace('.name', '.slug');
                 setFormValue(slugPath, (match as any).slug);
             } else if (docId) {
@@ -201,13 +208,18 @@ export const Input = ({
                         if (fetchedOpt && fetchedOpt.name) {
                             console.log('[SMART-SYNC] Explicit fetch success:', fetchedOpt.name);
                             onChange({ target: { name, value: fetchedOpt.name, type: 'string' } });
+                            setSearchValue(fetchedOpt.name);
                             const slugPath = name.replace('.name', '.slug');
                             setFormValue(slugPath, fetchedOpt.slug);
+                        } else {
+                            console.warn('[SMART-SYNC] Fetched structure was missing name:', fetchedOpt);
                         }
                     })
                     .catch((err: any) => {
                         console.error('[SMART-SYNC] Explicit fetch failed:', err);
                     });
+            } else {
+                console.warn('[SMART-SYNC] Could not extract docId from relation:', currentIng.ingredient);
             }
         }
     }, [JSON.stringify(values.ingredients)]);
