@@ -125,9 +125,11 @@ const IngredientLookup = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                const { data: res } = await get(`/admin/content-manager/collection-types/api::skladnik.skladnik?_q=${searchValue}&pageSize=20`);
-                // Standard Strapi 5 content-manager returns { results: [...], pagination: {...} }
-                setOptions(res?.results || res?.data || []);
+                // Use Strapi's built-in relation search API which is guaranteed to work and have correct permissions
+                const { data: res } = await get(`/admin/content-manager/relations/api::recipe.recipe/ingredient?q=${searchValue}&pageSize=20`);
+                // Relation API returns an array directly or a 'data' array
+                const items = Array.isArray(res) ? res : (res?.data || []);
+                setOptions(items);
             } catch (err) {
                 console.error('Search error', err);
             } finally {

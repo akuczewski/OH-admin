@@ -136,9 +136,11 @@ export const Input = ({
         const timer = setTimeout(async () => {
             setIsLoading(true);
             try {
-                const { data: res } = await get(`/admin/content-manager/collection-types/api::skladnik.skladnik?_q=${searchValue}&pageSize=20`);
-                // Standard Strapi 5 content-manager returns { results: [...], pagination: {...} }
-                setOptions(res?.results || res?.data || []);
+                // Use Strapi's built-in relation search API which is guaranteed to work and have correct permissions
+                const { data: res } = await get(`/admin/content-manager/relations/api::recipe.recipe/ingredient?q=${searchValue}&pageSize=20`);
+                // Relation API returns an array directly or a 'data' array
+                const items = Array.isArray(res) ? res : (res?.data || []);
+                setOptions(items);
             } catch (err) {
                 console.error('Search error', err);
             } finally {
@@ -148,6 +150,37 @@ export const Input = ({
 
         return () => clearTimeout(timer);
     }, [searchValue, get]);
+
+    // SMART SYNC: Detect if the relation field in this row was changed and update the name accordingly
+    useEffect(() => {
+        if (!values.ingredients || !Array.isArray(values.ingredients) || !name.includes('.')) return;
+        
+        const pathParts = name.split('.');
+        const index = parseInt(pathParts[1], 10);
+        if (isNaN(index)) return;
+
+        const currentIng = values.ingredients[index];
+        
+        // If the relation is set but the name is empty or doesn't match, we might want to sync.
+        // However, to avoid loops and unwanted overwrites, we only sync if name is EMPTY and relation is SELECTED.
+        // Unfortunately, the relation object in state usually only has the ID/documentId.
+        // But we can try to find a match in our already loaded 'options' if possible.
+        
+        if (currentIng?.ingredient && !currentIng?.name) {
+            console.log('[SMART-SYNC] Detected relation without name for row:', index);
+            // If we have options, maybe we can find it there
+            const match = options.find((opt: any) => opt.documentId === currentIng.ingredient || opt.id === currentIng.ingredient);
+            if (match) {
+                console.log('[SMART-SYNC] Auto-filling name from match:', (match as any).name);
+                onChange({ target: { name, value: (match as any).name, type: 'string' } });
+                
+                const slugPath = name.replace('.name', '.slug');
+                const relPath = name.replace('.name', '.ingredient');
+                setFormValue(slugPath, (match as any).slug);
+                // We don't set relPath here as it's already set
+            }
+        }
+    }, [JSON.stringify(values.ingredients)]);
 
     const handleInputChange = (e) => {
         setSearchValue(e.target.value);
@@ -205,8 +238,8 @@ export const Input = ({
                 loading={isLoading}
             >
                 {options.map((opt: any) => (
-                    <ComboboxOption key={opt.slug} value={opt.name}>
-                        {opt.name} ({opt.category})
+                    <ComboboxOption key={opt.documentId || opt.id} value={opt.name}>
+                        {opt.name} ({opt.category || 'składnik'})
                     </ComboboxOption>
                 ))}
             </Combobox>
