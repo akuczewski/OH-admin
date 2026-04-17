@@ -10,6 +10,8 @@ const collectionsToSync = {
   'api::motivation-quote.motivation-quote': 'quotes',
   'api::profile.profile': 'profiles',
   'api::article.article': 'articles',
+  'api::skin-care.skin-care': 'skincare',
+  'api::training.training': 'training',
 };
 
 // ==================== AI ENRICHMENT UTILS ====================

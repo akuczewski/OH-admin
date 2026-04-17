@@ -35,6 +35,9 @@
             ],
             "multiple": false
         },
+        "videoUrl": {
+            "type": "string"
+        },
         "media": {
             "type": "media",
             "multiple": true,
