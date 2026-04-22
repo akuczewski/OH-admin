@@ -333,7 +333,7 @@ export default {
       if (collectionName && ['create', 'update', 'delete', 'publish', 'unpublish'].includes(action)) {
         try {
           const docId = (result as any).documentId;
-          if (action === 'delete') {
+          if (action === 'delete' || action === 'unpublish') {
             await db.collection(collectionName).doc(docId).delete();
           } else {
             // @ts-ignore
