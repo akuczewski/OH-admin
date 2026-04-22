@@ -2,7 +2,7 @@ import type { Core } from '@strapi/strapi';
 import fs from 'fs';
 import path from 'path';
 import { db } from './lib/firebase';
-import OpenAI from 'openai';
+// import OpenAI from 'openai'; // Re-enable if AI enrichment is restored
 
 const collectionsToSync = {
   'api::recipe.recipe': 'recipes',
@@ -14,38 +14,32 @@ const collectionsToSync = {
   'api::training.training': 'training',
 };
 
-// ==================== AI ENRICHMENT UTILS ====================
+// ==================== AI ENRICHMENT UTILS — DISABLED ====================
+// Data manually curated in production. Re-enable only when intentionally re-enriching.
 
-async function enrichIngredientWithAI(ing: any, strapi: any, openai: OpenAI) {
-  try {
-    const prompt = `You are a nutrition expert. For the ingredient "${ing.name}" (unit: ${ing.unitType}), provide: kcal, protein, carbs, fat, fiber per 100g/ml AND averagePieceWeight (only if unitType is piece). Return JSON only: {kcal, protein, carbs, fat, fiber, averagePieceWeight}. Use realistic values for natural products.`;
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      response_format: { type: "json_object" }
-    });
-    const aiData = JSON.parse(completion.choices[0].message.content || '{}');
-    
-    if (aiData.kcal !== undefined) {
-      await strapi.documents('api::skladnik.skladnik').update({
-        documentId: ing.documentId,
-        data: {
-          kcal: aiData.kcal,
-          protein: aiData.protein,
-          carbs: aiData.carbs,
-          fat: aiData.fat,
-          fiber: aiData.fiber,
-          averagePieceWeight: aiData.averagePieceWeight || ing.averagePieceWeight,
-          isAiEnriched: true
-        } as any
-      });
-      return true;
-    }
-  } catch (e: any) {
-    console.warn(`[AI AGENT] Failed for ${ing.name}: ${e.message}`);
-  }
-  return false;
-}
+// async function enrichIngredientWithAI(ing: any, strapi: any, openai: OpenAI) {
+//   try {
+//     const prompt = `You are a nutrition expert. For the ingredient "${ing.name}" (unit: ${ing.unitType}), provide: kcal, protein, carbs, fat, fiber per 100g/ml AND averagePieceWeight (only if unitType is piece). Return JSON only: {kcal, protein, carbs, fat, fiber, averagePieceWeight}. Use realistic values for natural products.`;
+//     const completion = await openai.chat.completions.create({
+//       model: "gpt-4o-mini",
+//       messages: [{ role: "user", content: prompt }],
+//       response_format: { type: "json_object" }
+//     });
+//     const aiData = JSON.parse(completion.choices[0].message.content || '{}');
+//     if (aiData.kcal !== undefined) {
+//       await strapi.documents('api::skladnik.skladnik').update({
+//         documentId: ing.documentId,
+//         data: { kcal: aiData.kcal, protein: aiData.protein, carbs: aiData.carbs, fat: aiData.fat,
+//                 fiber: aiData.fiber, averagePieceWeight: aiData.averagePieceWeight || ing.averagePieceWeight,
+//                 isAiEnriched: true } as any
+//       });
+//       return true;
+//     }
+//   } catch (e: any) {
+//     console.warn(`[AI AGENT] Failed for ${ing.name}: ${e.message}`);
+//   }
+//   return false;
+// }
 
 // ==================== SEEDER UTILS ====================
 
@@ -160,10 +154,33 @@ export default {
 
       if (uid === 'api::recipe.recipe' && ['create', 'update'].includes(action)) {
         const data = (params as any).data;
-        const macros = await calculateRecipeMacros(data, strapi);
+
+        // Przy partial update (np. zmiana opisu) składniki mogą nie być w payloadzie —
+        // pobieramy je z bazy żeby zawsze przeliczyć makra poprawnie
+        let ingredientsForCalc = data.ingredients;
+        if (!ingredientsForCalc && action === 'update') {
+          const docId = (params as any).documentId;
+          if (docId) {
+            try {
+              const existing = await (strapi.documents('api::recipe.recipe' as any) as any).findOne({
+                documentId: docId,
+                populate: { ingredients: { populate: { ingredient: true } } }
+              });
+              if (existing) {
+                ingredientsForCalc = existing.ingredients;
+                console.log(`[MACRO CALC] Fetched ${ingredientsForCalc?.length || 0} ingredients from DB for recipe ${docId}`);
+              }
+            } catch (err: any) {
+              console.warn(`[MACRO CALC] Could not fetch existing recipe ingredients: ${err.message}`);
+            }
+          }
+        }
+
+        const macros = await calculateRecipeMacros({ ingredients: ingredientsForCalc }, strapi);
         if (macros) {
           data.kcal = macros.kcal;
           data.macros = { protein: macros.protein, carbs: macros.carbs, fat: macros.fat, fiber: macros.fiber };
+          console.log(`[MACRO CALC] Recipe macros: kcal=${macros.kcal} P=${macros.protein} C=${macros.carbs} F=${macros.fat} Fb=${macros.fiber}`);
         }
 
         // AUTO RELATIONS SYNC: Populate used_ingredients from the ingredients component list
@@ -190,20 +207,19 @@ export default {
         throw err; // Re-throw to let Strapi handle it, but we've logged it
       }
 
-      // LIVE AI ENRICHMENT
-      if ((uid as any) === 'api::skladnik.skladnik' && ['create', 'update'].includes(action)) {
-        const doc = (result as any);
-        if (doc && (doc.kcal === 0 || doc.kcal === null) && !doc.isAiEnriched) {
-          const apiKey = process.env.OPENAI_API_KEY;
-          if (apiKey) {
-            const openai = new OpenAI({ apiKey });
-            // Run in background to not block the response
-            enrichIngredientWithAI(doc, strapi, openai).then(success => {
-              if (success) console.log(`[AI AGENT] Live enrichment for: ${doc.name}`);
-            });
-          }
-        }
-      }
+      // LIVE AI ENRICHMENT — DISABLED (data manually curated in production, do not overwrite)
+      // if ((uid as any) === 'api::skladnik.skladnik' && ['create', 'update'].includes(action)) {
+      //   const doc = (result as any);
+      //   if (doc && (doc.kcal === 0 || doc.kcal === null) && !doc.isAiEnriched) {
+      //     const apiKey = process.env.OPENAI_API_KEY;
+      //     if (apiKey) {
+      //       const openai = new OpenAI({ apiKey });
+      //       enrichIngredientWithAI(doc, strapi, openai).then(success => {
+      //         if (success) console.log(`[AI AGENT] Live enrichment for: ${doc.name}`);
+      //       });
+      //     }
+      //   }
+      // }
 
       if (collectionName && ['create', 'update', 'delete', 'publish', 'unpublish'].includes(action)) {
         (async () => {
@@ -391,37 +407,24 @@ export default {
       }
       console.log(`--- [MASTER SEEDER] Synced relations for ${fixCount} recipes. ---`);
       
-      // 4. AI ENRICHMENT AGENT
-      console.log('--- [MASTER SEEDER] Step 4: AI Enrichment Agent (Batch Mode) ---');
-      const apiKey = process.env.OPENAI_API_KEY;
-      console.log(`[DEBUG] AI Agent check: apiKey ${apiKey ? 'PRESENT' : 'MISSING'} (Prefix: ${apiKey?.substring(0, 4)})`);
-      
-      if (apiKey) {
-        const openai = new OpenAI({ apiKey });
-        // @ts-ignore
-        const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
-          filters: { 
-            $or: [{ kcal: 0 }, { kcal: { $null: true } }]
-          } as any,
-          limit: 300 // Increased limit to process more at once
-        });
-
-        // Filter out already enriched in JS if the DB filter is picky
-        const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
-
-        if (toEnrich.length > 0) {
-          console.log(`--- [MASTER SEEDER] Found ${toEnrich.length} ingredients to enrich. Batch processing... ---`);
-          
-          const BATCH_SIZE = 5;
-          for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
-            const chunk = toEnrich.slice(i, i + BATCH_SIZE);
-            await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
-            console.log(`--- [MASTER SEEDER] Processed batch ${Math.floor(i / BATCH_SIZE) + 1} ---`);
-          }
-        } else {
-          console.log('--- [MASTER SEEDER] No ingredients found matching criteria (kcal=0 & !enriched) ---');
-        }
-      }
+      // 4. AI ENRICHMENT AGENT — DISABLED (data manually curated in production, do not overwrite)
+      console.log('--- [MASTER SEEDER] Step 4: AI Enrichment DISABLED (data manually curated) ---');
+      // const apiKey = process.env.OPENAI_API_KEY;
+      // if (apiKey) {
+      //   const openai = new OpenAI({ apiKey });
+      //   const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
+      //     filters: { $or: [{ kcal: 0 }, { kcal: { $null: true } }] } as any,
+      //     limit: 300
+      //   });
+      //   const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
+      //   if (toEnrich.length > 0) {
+      //     const BATCH_SIZE = 5;
+      //     for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
+      //       const chunk = toEnrich.slice(i, i + BATCH_SIZE);
+      //       await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
+      //     }
+      //   }
+      // }
 
       // 5. FULL FIREBASE SYNC (To ensure everything is in Firestore)
       console.log('--- [MASTER SEEDER] Step 5: Full Firebase Synchronization... ---');
