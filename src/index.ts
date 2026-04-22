@@ -95,26 +95,45 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
     if (!ingComponent.ingredient) continue;
     
     let ingDoc: any = null;
-    const docId = ingComponent.ingredient.documentId || ingComponent.ingredient;
+    let lookupParams: any = null;
 
-    if (ingredientMap && ingredientMap.has(docId)) {
-      ingDoc = ingredientMap.get(docId);
+    const rawIng = ingComponent.ingredient;
+    if (typeof rawIng === 'string') {
+      lookupParams = { documentId: rawIng };
+    } else if (typeof rawIng === 'number') {
+      lookupParams = { id: rawIng };
+    } else if (rawIng.documentId) {
+      lookupParams = { documentId: rawIng.documentId };
+    } else if (rawIng.id) {
+      lookupParams = { id: rawIng.id };
+    } else if (rawIng.connect && Array.isArray(rawIng.connect) && rawIng.connect.length > 0) {
+      const conn = rawIng.connect[0];
+      if (typeof conn === 'string') lookupParams = { documentId: conn };
+      else if (typeof conn === 'number') lookupParams = { id: conn };
+      else if (typeof conn === 'object') lookupParams = { documentId: conn.documentId || conn.id };
+    }
+
+    if (!lookupParams) continue;
+
+    const cacheKey = lookupParams.documentId || lookupParams.id?.toString();
+
+    if (ingredientMap && cacheKey && ingredientMap.has(cacheKey)) {
+      ingDoc = ingredientMap.get(cacheKey);
     } else {
       try {
-        // Fallback do bazy jeśli mapa nie jest gotowa
         // @ts-ignore
-        ingDoc = await strapi.documents('api::skladnik.skladnik').findOne({ documentId: docId });
+        ingDoc = await strapi.documents('api::skladnik.skladnik').findOne(lookupParams);
       } catch (err) {}
     }
 
     if (ingDoc) {
-      const amount = ingComponent.amount || 0;
+      const amount = Number(ingComponent.amount) || 0;
       const multiplier = amount / 100;
-      totalKcal += (ingDoc.kcal || 0) * multiplier;
-      totalProtein += (ingDoc.protein || 0) * multiplier;
-      totalCarbs += (ingDoc.carbs || 0) * multiplier;
-      totalFat += (ingDoc.fat || 0) * multiplier;
-      totalFiber += (ingDoc.fiber || 0) * multiplier;
+      totalKcal += (Number(ingDoc.kcal) || 0) * multiplier;
+      totalProtein += (Number(ingDoc.protein) || 0) * multiplier;
+      totalCarbs += (Number(ingDoc.carbs) || 0) * multiplier;
+      totalFat += (Number(ingDoc.fat) || 0) * multiplier;
+      totalFiber += (Number(ingDoc.fiber) || 0) * multiplier;
     }
   }
 
@@ -154,12 +173,14 @@ export default {
 
       if (uid === 'api::recipe.recipe' && ['create', 'update'].includes(action)) {
         const data = (params as any).data;
+        console.log(`[MACRO CALC] Triggered for ${action} on ${uid}. Data ingredients:`, !!data.ingredients);
 
         // Przy partial update (np. zmiana opisu) składniki mogą nie być w payloadzie —
         // pobieramy je z bazy żeby zawsze przeliczyć makra poprawnie
         let ingredientsForCalc = data.ingredients;
         if (!ingredientsForCalc && action === 'update') {
-          const docId = (params as any).documentId;
+          const docId = (params as any).documentId || (params as any).id;
+          console.log(`[MACRO CALC] No ingredients in payload, fetching from DB for docId: ${docId}`);
           if (docId) {
             try {
               const existing = await (strapi.documents('api::recipe.recipe' as any) as any).findOne({
@@ -168,7 +189,7 @@ export default {
               });
               if (existing) {
                 ingredientsForCalc = existing.ingredients;
-                console.log(`[MACRO CALC] Fetched ${ingredientsForCalc?.length || 0} ingredients from DB for recipe ${docId}`);
+                console.log(`[MACRO CALC] Fetched ${ingredientsForCalc?.length || 0} ingredients from DB`);
               }
             } catch (err: any) {
               console.warn(`[MACRO CALC] Could not fetch existing recipe ingredients: ${err.message}`);
@@ -176,25 +197,33 @@ export default {
           }
         }
 
-        const macros = await calculateRecipeMacros({ ingredients: ingredientsForCalc }, strapi);
-        if (macros) {
-          data.kcal = macros.kcal;
-          data.macros = { protein: macros.protein, carbs: macros.carbs, fat: macros.fat, fiber: macros.fiber };
-          console.log(`[MACRO CALC] Recipe macros: kcal=${macros.kcal} P=${macros.protein} C=${macros.carbs} F=${macros.fat} Fb=${macros.fiber}`);
+        if (ingredientsForCalc) {
+          const macros = await calculateRecipeMacros({ ingredients: ingredientsForCalc }, strapi);
+          if (macros) {
+            data.kcal = macros.kcal;
+            data.macros = { protein: macros.protein, carbs: macros.carbs, fat: macros.fat, fiber: macros.fiber };
+            console.log(`[MACRO CALC] Result for recipe: kcal=${macros.kcal} P=${macros.protein} C=${macros.carbs} F=${macros.fat} Fb=${macros.fiber}`);
+          }
+        } else {
+           console.log(`[MACRO CALC] Skipping calculation: no ingredients found.`);
         }
 
         // AUTO RELATIONS SYNC: Populate used_ingredients from the ingredients component list
         if (data.ingredients && Array.isArray(data.ingredients)) {
           const ingredientIds = data.ingredients
             .map((ing: any) => {
-                // Handle different potential formats of the documentId
-                return ing.ingredient?.documentId || (typeof ing.ingredient === 'string' ? ing.ingredient : null);
+                const raw = ing.ingredient;
+                if (typeof raw === 'string') return raw;
+                if (typeof raw === 'number') return raw.toString(); // used_ingredients relation might expect documentId
+                if (raw?.documentId) return raw.documentId;
+                if (raw?.id) return raw.id.toString();
+                return null;
             })
             .filter(Boolean);
           
           if (ingredientIds.length > 0) {
             data.used_ingredients = ingredientIds;
-            console.log(`[RELATION SYNC] Auto-populated used_ingredients with ${ingredientIds.length} relations for ${data.name || 'document'}`);
+            console.log(`[RELATION SYNC] Auto-populated used_ingredients with ${ingredientIds.length} relations`);
           }
         }
       }
