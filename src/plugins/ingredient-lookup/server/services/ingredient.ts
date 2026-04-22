@@ -35,6 +35,17 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
     async calculateMacros(ingredients: any[]) {
         if (!ingredients || !Array.isArray(ingredients)) return null;
 
+        const UNIT_CONVERSIONS: Record<string, number> = {
+            'g': 1,
+            'ml': 1,
+            'lyzka': 15,
+            'lyzeczka': 5,
+            'szklanka': 250,
+            'szczypta': 1,
+            'garstka': 30,
+            'plaster': 20,
+        };
+
         let totalKcal = 0;
         let totalProtein = 0;
         let totalCarbs = 0;
@@ -61,18 +72,38 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
             }
 
             if (item) {
-                const amount = parseFloat(ing.amount) || 0;
-                let multiplier = amount / 100;
+                const amount = parseFloat(String(ing.amount || '0').replace(',', '.')) || 0;
+                const unit = (ing.unit || 'g').toLowerCase();
+                let factor = 0;
 
-                if (item.unitType === 'piece' && item.averagePieceWeight) {
-                    multiplier = (amount * item.averagePieceWeight) / 100;
+                if (ing.weight && ing.weight > 0) {
+                    // Priorytet: pole weight wypełnione przez parser (bezpośrednia waga w gramach)
+                    factor = Number(ing.weight) / 100;
+                } else if (item.unitType === 'piece') {
+                    if (unit === 'szt' || unit === 'opakowanie') {
+                        factor = amount;
+                    } else if (UNIT_CONVERSIONS[unit]) {
+                        factor = (amount * UNIT_CONVERSIONS[unit]) / (Number(item.averagePieceWeight) || 100);
+                    } else {
+                        factor = amount;
+                    }
+                } else {
+                    let weightInGrams = 0;
+                    if (UNIT_CONVERSIONS[unit]) {
+                        weightInGrams = amount * UNIT_CONVERSIONS[unit];
+                    } else if (unit === 'szt' || unit === 'opakowanie') {
+                        weightInGrams = amount * (Number(item.averagePieceWeight) || 100);
+                    } else {
+                        weightInGrams = amount;
+                    }
+                    factor = weightInGrams / 100;
                 }
                 
-                totalKcal += (item.kcal || 0) * multiplier;
-                totalProtein += (item.protein || 0) * multiplier;
-                totalCarbs += (item.carbs || 0) * multiplier;
-                totalFat += (item.fat || 0) * multiplier;
-                totalFiber += (item.fiber || 0) * multiplier;
+                totalKcal += (Number(item.kcal) || 0) * factor;
+                totalProtein += (Number(item.protein) || 0) * factor;
+                totalCarbs += (Number(item.carbs) || 0) * factor;
+                totalFat += (Number(item.fat) || 0) * factor;
+                totalFiber += (Number(item.fiber) || 0) * factor;
             }
         }
 

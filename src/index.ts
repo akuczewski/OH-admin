@@ -82,6 +82,18 @@ function isGarbage(name: string): boolean {
 
 // ==================== MACRO CALCULATOR ====================
 
+// Mirrors src/lib/nutrition.ts UNIT_CONVERSIONS — must stay in sync with app
+const UNIT_CONVERSIONS: Record<string, number> = {
+  'g': 1,
+  'ml': 1,
+  'lyzka': 15,
+  'lyzeczka': 5,
+  'szklanka': 250,
+  'szczypta': 1,
+  'garstka': 30,
+  'plaster': 20,
+};
+
 async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredientMap?: Map<string, any>) {
   if (!recipe.ingredients || !Array.isArray(recipe.ingredients)) return null;
 
@@ -141,21 +153,39 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
     console.log(`[MACRO CALC] Ingredient lookup: ${cacheKey} -> ${ingDoc ? 'FOUND' : 'NOT FOUND'}`);
 
     if (ingDoc) {
-      const amount = Number(ingComponent.amount) || 0;
-      let multiplier = amount / 100; // Domyślnie dla wagi (g/ml)
-      
-      // Jeśli składnik jest na sztuki, przeliczamy na gramy używając averagePieceWeight
-      if (ingDoc.unitType === 'piece' && ingDoc.averagePieceWeight) {
-        multiplier = (amount * Number(ingDoc.averagePieceWeight)) / 100;
-        console.log(`[MACRO CALC] Item is piece-based. Multiplier adjusted: ${amount} pcs * ${ingDoc.averagePieceWeight}g / 100 = ${multiplier}`);
+      const amount = parseFloat(String(ingComponent.amount || '0').replace(',', '.')) || 0;
+      const unit = (ingComponent.unit || 'g').toLowerCase();
+      let factor = 0;
+
+      if (ingComponent.weight && ingComponent.weight > 0) {
+        // Priorytet: pole weight wypełnione przez parser (bezpośrednia waga w gramach)
+        factor = Number(ingComponent.weight) / 100;
+      } else if (ingDoc.unitType === 'piece') {
+        if (unit === 'szt' || unit === 'opakowanie') {
+          factor = amount;
+        } else if (UNIT_CONVERSIONS[unit]) {
+          factor = (amount * UNIT_CONVERSIONS[unit]) / (Number(ingDoc.averagePieceWeight) || 100);
+        } else {
+          factor = amount;
+        }
+      } else {
+        let weightInGrams = 0;
+        if (UNIT_CONVERSIONS[unit]) {
+          weightInGrams = amount * UNIT_CONVERSIONS[unit];
+        } else if (unit === 'szt' || unit === 'opakowanie') {
+          weightInGrams = amount * (Number(ingDoc.averagePieceWeight) || 100);
+        } else {
+          weightInGrams = amount;
+        }
+        factor = weightInGrams / 100;
       }
 
-      totalKcal += (Number(ingDoc.kcal) || 0) * multiplier;
-      totalProtein += (Number(ingDoc.protein) || 0) * multiplier;
-      totalCarbs += (Number(ingDoc.carbs) || 0) * multiplier;
-      totalFat += (Number(ingDoc.fat) || 0) * multiplier;
-      totalFiber += (Number(ingDoc.fiber) || 0) * multiplier;
-      console.log(`[MACRO CALC] Added: ${ingDoc.name} (amt: ${amount}, mult: ${multiplier.toFixed(3)}) -> kcal: ${Math.round((Number(ingDoc.kcal) || 0) * multiplier)}`);
+      totalKcal += (Number(ingDoc.kcal) || 0) * factor;
+      totalProtein += (Number(ingDoc.protein) || 0) * factor;
+      totalCarbs += (Number(ingDoc.carbs) || 0) * factor;
+      totalFat += (Number(ingDoc.fat) || 0) * factor;
+      totalFiber += (Number(ingDoc.fiber) || 0) * factor;
+      console.log(`[MACRO CALC] ${ingDoc.name} | unit=${unit} amt=${amount} weight=${ingComponent.weight || 0} factor=${factor.toFixed(3)} -> +${Math.round((Number(ingDoc.kcal) || 0) * factor)} kcal`);
     }
   }
 
