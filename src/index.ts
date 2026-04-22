@@ -195,28 +195,53 @@ export default {
 
       if (uid === 'api::recipe.recipe' && ['create', 'update'].includes(action)) {
         const data = (params as any).data;
-        console.log(`[MACRO CALC] Triggered for ${action} on ${uid}. Data ingredients:`, !!data.ingredients);
+        const isUpdate = action === 'update';
+        const docId = (params as any).documentId || (params as any).id;
+        
+        console.log(`[MACRO CALC] Triggered for ${action} on ${uid}. DocId: ${docId}`);
 
-        // Przy partial update (np. zmiana opisu) składniki mogą nie być w payloadzie —
-        // pobieramy je z bazy żeby zawsze przeliczyć makra poprawnie
         let ingredientsForCalc = data.ingredients;
-        if (!ingredientsForCalc && action === 'update') {
-          const docId = (params as any).documentId || (params as any).id;
-          console.log(`[MACRO CALC] No ingredients in payload, fetching from DB for docId: ${docId}`);
-          if (docId) {
-            try {
-              const existing = await (strapi.documents('api::recipe.recipe' as any) as any).findOne({
-                documentId: docId,
-                populate: { ingredients: { populate: { ingredient: true } } }
-              });
-              if (existing) {
-                ingredientsForCalc = existing.ingredients;
-                console.log(`[MACRO CALC] Fetched ${ingredientsForCalc?.length || 0} ingredients from DB`);
-              }
-            } catch (err: any) {
-              console.warn(`[MACRO CALC] Could not fetch existing recipe ingredients: ${err.message}`);
-            }
+        let existingRecipe: any = null;
+
+        // Pobieramy aktualny stan z bazy przy aktualizacji, aby uzupełnić brakujące relacje w komponentach
+        if (isUpdate && docId) {
+          try {
+            existingRecipe = await (strapi.documents('api::recipe.recipe' as any) as any).findOne({
+              documentId: docId,
+              populate: { ingredients: { populate: { ingredient: true } } }
+            });
+          } catch (err: any) {
+            console.warn(`[MACRO CALC] Could not fetch existing recipe: ${err.message}`);
           }
+        }
+
+        if (ingredientsForCalc && Array.isArray(ingredientsForCalc)) {
+          // Naprawiamy listę składników: jeśli w payloadzie brakuje relacji (bo panel admina wysłał pusty connect/disconnect),
+          // a komponent już istniał (ma id), to przywracamy relację z bazy danych.
+          ingredientsForCalc = ingredientsForCalc.map((ing: any) => {
+            const raw = ing.ingredient;
+            const hasRelation = raw && (
+              typeof raw === 'string' || 
+              typeof raw === 'number' || 
+              Array.isArray(raw) ||
+              raw.documentId || 
+              raw.id || 
+              (raw.connect && Array.isArray(raw.connect) && raw.connect.length > 0)
+            );
+
+            if (!hasRelation && ing.id && existingRecipe?.ingredients) {
+              const existingComp = existingRecipe.ingredients.find((ei: any) => ei.id === ing.id);
+              if (existingComp?.ingredient) {
+                console.log(`[MACRO CALC] Component ${ing.id}: Relation missing in payload, restored from DB (${existingComp.ingredient.name || existingComp.ingredient.documentId})`);
+                return { ...ing, ingredient: existingComp.ingredient };
+              }
+            }
+            return ing;
+          });
+        } else if (!ingredientsForCalc && isUpdate && existingRecipe) {
+          // Jeśli w ogóle nie ma składników w payloadzie (partial update), bierzemy wszystkie z bazy
+          ingredientsForCalc = existingRecipe.ingredients;
+          console.log(`[MACRO CALC] No ingredients in payload, using ${ingredientsForCalc?.length || 0} from DB`);
         }
 
         if (ingredientsForCalc) {
@@ -224,28 +249,31 @@ export default {
           if (macros) {
             data.kcal = macros.kcal;
             data.macros = { protein: macros.protein, carbs: macros.carbs, fat: macros.fat, fiber: macros.fiber };
-            console.log(`[MACRO CALC] Result for recipe: kcal=${macros.kcal} P=${macros.protein} C=${macros.carbs} F=${macros.fat} Fb=${macros.fiber}`);
+            console.log(`[MACRO CALC] Final result: kcal=${macros.kcal} P=${macros.protein} C=${macros.carbs} F=${macros.fat} Fb=${macros.fiber}`);
           }
-        } else {
-           console.log(`[MACRO CALC] Skipping calculation: no ingredients found.`);
         }
 
-        // AUTO RELATIONS SYNC: Populate used_ingredients from the ingredients component list
-        if (data.ingredients && Array.isArray(data.ingredients)) {
-          const ingredientIds = data.ingredients
+        // AUTO RELATIONS SYNC: Populate used_ingredients from the restored ingredients list
+        if (ingredientsForCalc && Array.isArray(ingredientsForCalc)) {
+          const ingredientIds = ingredientsForCalc
             .map((ing: any) => {
                 const raw = ing.ingredient;
+                if (!raw) return null;
                 if (typeof raw === 'string') return raw;
-                if (typeof raw === 'number') return raw.toString(); // used_ingredients relation might expect documentId
-                if (raw?.documentId) return raw.documentId;
-                if (raw?.id) return raw.id.toString();
+                if (typeof raw === 'number') return raw.toString();
+                if (raw.documentId) return raw.documentId;
+                if (raw.id) return raw.id.toString();
+                if (raw.connect && Array.isArray(raw.connect) && raw.connect.length > 0) {
+                   const conn = raw.connect[0];
+                   return typeof conn === 'object' ? (conn.documentId || conn.id?.toString()) : conn.toString();
+                }
                 return null;
             })
             .filter(Boolean);
           
           if (ingredientIds.length > 0) {
             data.used_ingredients = ingredientIds;
-            console.log(`[RELATION SYNC] Auto-populated used_ingredients with ${ingredientIds.length} relations`);
+            console.log(`[RELATION SYNC] Syncing used_ingredients with ${ingredientIds.length} relations`);
           }
         }
       }
