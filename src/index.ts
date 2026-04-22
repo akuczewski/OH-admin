@@ -98,7 +98,14 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
     let lookupParams: any = null;
 
     const rawIng = ingComponent.ingredient;
-    if (typeof rawIng === 'string') {
+    console.log(`[MACRO CALC] rawIng format: ${typeof rawIng}`, JSON.stringify(rawIng));
+
+    if (Array.isArray(rawIng) && rawIng.length > 0) {
+      const first = rawIng[0];
+      if (typeof first === 'string') lookupParams = { documentId: first };
+      else if (typeof first === 'number') lookupParams = { id: first };
+      else if (typeof first === 'object') lookupParams = { documentId: (first as any).documentId || (first as any).id };
+    } else if (typeof rawIng === 'string') {
       lookupParams = { documentId: rawIng };
     } else if (typeof rawIng === 'number') {
       lookupParams = { id: rawIng };
@@ -135,13 +142,20 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
 
     if (ingDoc) {
       const amount = Number(ingComponent.amount) || 0;
-      const multiplier = amount / 100;
+      let multiplier = amount / 100; // Domyślnie dla wagi (g/ml)
+      
+      // Jeśli składnik jest na sztuki, przeliczamy na gramy używając averagePieceWeight
+      if (ingDoc.unitType === 'piece' && ingDoc.averagePieceWeight) {
+        multiplier = (amount * Number(ingDoc.averagePieceWeight)) / 100;
+        console.log(`[MACRO CALC] Item is piece-based. Multiplier adjusted: ${amount} pcs * ${ingDoc.averagePieceWeight}g / 100 = ${multiplier}`);
+      }
+
       totalKcal += (Number(ingDoc.kcal) || 0) * multiplier;
       totalProtein += (Number(ingDoc.protein) || 0) * multiplier;
       totalCarbs += (Number(ingDoc.carbs) || 0) * multiplier;
       totalFat += (Number(ingDoc.fat) || 0) * multiplier;
       totalFiber += (Number(ingDoc.fiber) || 0) * multiplier;
-      console.log(`[MACRO CALC] Added: ${ingDoc.name} (${amount}g) -> kcal: ${Math.round((Number(ingDoc.kcal) || 0) * multiplier)}`);
+      console.log(`[MACRO CALC] Added: ${ingDoc.name} (amt: ${amount}, mult: ${multiplier.toFixed(3)}) -> kcal: ${Math.round((Number(ingDoc.kcal) || 0) * multiplier)}`);
     }
   }
 
