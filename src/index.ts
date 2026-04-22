@@ -113,18 +113,25 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
       else if (typeof conn === 'object') lookupParams = { documentId: conn.documentId || conn.id };
     }
 
-    if (!lookupParams) continue;
+    if (!lookupParams) {
+      console.log(`[MACRO CALC] Could not determine lookup params for:`, JSON.stringify(rawIng));
+      continue;
+    }
 
     const cacheKey = lookupParams.documentId || lookupParams.id?.toString();
 
     if (ingredientMap && cacheKey && ingredientMap.has(cacheKey)) {
       ingDoc = ingredientMap.get(cacheKey);
-    } else {
+    } else if (cacheKey) {
       try {
         // @ts-ignore
         ingDoc = await strapi.documents('api::skladnik.skladnik').findOne(lookupParams);
-      } catch (err) {}
+      } catch (err: any) {
+        console.error(`[MACRO CALC] Error finding ingredient ${cacheKey}:`, err.message);
+      }
     }
+
+    console.log(`[MACRO CALC] Ingredient lookup: ${cacheKey} -> ${ingDoc ? 'FOUND' : 'NOT FOUND'}`);
 
     if (ingDoc) {
       const amount = Number(ingComponent.amount) || 0;
@@ -134,6 +141,7 @@ async function calculateRecipeMacros(recipe: any, strapi: Core.Strapi, ingredien
       totalCarbs += (Number(ingDoc.carbs) || 0) * multiplier;
       totalFat += (Number(ingDoc.fat) || 0) * multiplier;
       totalFiber += (Number(ingDoc.fiber) || 0) * multiplier;
+      console.log(`[MACRO CALC] Added: ${ingDoc.name} (${amount}g) -> kcal: ${Math.round((Number(ingDoc.kcal) || 0) * multiplier)}`);
     }
   }
 
@@ -251,40 +259,39 @@ export default {
       // }
 
       if (collectionName && ['create', 'update', 'delete', 'publish', 'unpublish'].includes(action)) {
-        (async () => {
-          try {
-            const docId = (result as any).documentId;
-            if (action === 'delete') {
-              await db.collection(collectionName).doc(docId).delete();
-            } else {
-              // @ts-ignore
-              const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
-                documentId: docId,
-                populate: uid === 'api::recipe.recipe' ? { 
-                  ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
-                  image: true,
-                  macros: true
-                } : '*'
-              });
+        try {
+          const docId = (result as any).documentId;
+          if (action === 'delete') {
+            await db.collection(collectionName).doc(docId).delete();
+          } else {
+            // @ts-ignore
+            const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
+              documentId: docId,
+              populate: uid === 'api::recipe.recipe' ? { 
+                ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
+                image: true,
+                macros: true
+              } : '*'
+            });
 
-              let dataToSync: any = { ...fullDoc };
-              // Jeśli to przepis, mapujemy składniki na format czytelny dla aplikacji (ingredient -> id)
-              if (uid === 'api::recipe.recipe') {
-                dataToSync.image = normalizeImageUrl(fullDoc.image);
-                if (dataToSync.ingredients) {
-                  dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
-                    ...ing,
-                    id: ing.ingredient?.documentId || ing.ingredient || ""
-                  }));
-                }
+            let dataToSync: any = { ...fullDoc };
+            // Jeśli to przepis, mapujemy składniki na format czytelny dla aplikacji (ingredient -> id)
+            if (uid === 'api::recipe.recipe') {
+              dataToSync.image = normalizeImageUrl(fullDoc.image);
+              if (dataToSync.ingredients) {
+                dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
+                  ...ing,
+                  id: ing.ingredient?.documentId || ing.ingredient || ""
+                }));
               }
-
-              await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
             }
-          } catch (error: any) {
-            console.error(`[FIREBASE SYNC ERROR] ${uid}:`, error.message);
+
+            await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });
+            console.log(`[FIREBASE SYNC] Successfully synced ${uid} ${docId}`);
           }
-        })();
+        } catch (error: any) {
+          console.error(`[FIREBASE SYNC ERROR] ${uid}:`, error.message);
+        }
       }
       return result;
     });
