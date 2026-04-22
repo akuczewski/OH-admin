@@ -46,9 +46,9 @@ export const Input = ({
     };
 
     const handleCalculateMacros = async () => {
-        console.log('[MACRO-CALC V5.0 - STABILITY] Calculate triggered. Ingredients:', values?.ingredients?.length);
+        console.log('[MACRO-CALC V5.5] Calculate triggered. Ingredients:', values?.ingredients?.length);
         if (!values.ingredients || !Array.isArray(values.ingredients) || !onFormChange) {
-            console.error('[MACRO-CALC V5.0 - STABILITY] Cannot calculate: ', {
+            console.error('[MACRO-CALC V5.5] Cannot calculate: ', {
                 hasIngredients: !!values.ingredients,
                 isArray: Array.isArray(values.ingredients),
                 hasOnChange: !!onFormChange
@@ -58,51 +58,60 @@ export const Input = ({
 
         setIsCalculating(true);
         try {
-            // Use the stored slugs instead of names if possible for better accuracy
-            const ingredientsToCalculate = values.ingredients.map((ing: any) => ({
-                name: ing.slug || ing.name,
-                amount: ing.amount,
-                unit: ing.unit
-            }));
+            // Bulletproof ingredient mapping for the API
+            const ingredientsToCalculate = values.ingredients.map((ing: any) => {
+                let docId = null;
+                if (typeof ing.ingredient === 'string') docId = ing.ingredient;
+                else if (Array.isArray(ing.ingredient) && ing.ingredient.length > 0) docId = ing.ingredient[0].documentId || ing.ingredient[0].id;
+                else if (typeof ing.ingredient === 'object' && ing.ingredient !== null) docId = ing.ingredient.documentId || ing.ingredient.id;
 
-            console.log('[MACRO-CALC V5.0 - STABILITY] Sending request to API...');
-            const { data: res } = await post('/ingredient-lookup/calculate-macros', {
-                ingredients: ingredientsToCalculate
+                return {
+                    documentId: docId,
+                    name: ing.name,
+                    slug: ing.slug,
+                    amount: ing.amount,
+                    unit: ing.unit
+                };
             });
 
+            console.log('[MACRO-CALC V5.5] Sending request to API...');
+            let res: any;
+            try {
+                // Try admin plugin route first
+                const resp = await post('/ingredient-lookup/calculate-macros', { ingredients: ingredientsToCalculate });
+                res = resp.data;
+            } catch (err: any) {
+                console.error('[MACRO-CALC V5.5] Admin route failed, trying content-api...', err.response?.status);
+                // Fallback to content-api route
+                const resp = await post('/api/ingredient-lookup/calculate-macros', { ingredients: ingredientsToCalculate });
+                res = resp.data;
+            }
+
             const result = res?.data || res;
-            console.log('[MACRO-CALC V5.0 - STABILITY] Full API Response:', JSON.stringify(result));
+            console.log('[MACRO-CALC V5.5] API Response:', JSON.stringify(result));
 
             if (result && result.macros) {
-                // Update kcal
-                console.log('[MACRO-CALC V5.4 - REDUX FIX] Setting kcal:', result.kcal);
-                setFormValue('kcal', result.kcal);
+                // Update kcal - ensure it's a number
+                console.log('[MACRO-CALC V5.5] Setting kcal:', result.kcal);
+                onFormChange({ target: { name: 'kcal', value: Number(result.kcal), type: 'number' } });
 
-                // Ensure macros object exists in state
-                if (!values.macros) {
-                    console.log('[MACRO-CALC V5.4 - REDUX FIX] Initializing macros object in form state');
-                    setFormValue('macros', { protein: 0, carbs: 0, fat: 0, fiber: 0 });
-                }
+                // Update individual macro fields for maximum compatibility with Strapi 5 nested state
+                const macros = result.macros;
+                onFormChange({ target: { name: 'macros.protein', value: Number(macros.protein), type: 'number' } });
+                onFormChange({ target: { name: 'macros.carbs', value: Number(macros.carbs), type: 'number' } });
+                onFormChange({ target: { name: 'macros.fat', value: Number(macros.fat), type: 'number' } });
+                onFormChange({ target: { name: 'macros.fiber', value: Number(macros.fiber), type: 'number' } });
 
-                // Update macros component as a single object to ensure Strapi 5 sees it correctly
-                console.log('[MACRO-CALC V5.4 - REDUX FIX] Attempting to set macros object:', JSON.stringify(result.macros));
-                setFormValue('macros', result.macros);
-
-                // Fallback: also try to set individual fields in case Strapi 5 requires it for nested state tracking
-                setFormValue('macros.protein', result.macros.protein);
-                setFormValue('macros.carbs', result.macros.carbs);
-                setFormValue('macros.fat', result.macros.fat);
-                setFormValue('macros.fiber', result.macros.fiber);
-
-                console.log('[MACRO-CALC V5.4 - REDUX FIX] All form fields updated via Redux.');
+                console.log('[MACRO-CALC V5.5] Form fields updated.');
             } else {
-                console.warn('[MACRO-CALC V5.0 - STABILITY] API did not return valid macros structure:', result);
+                console.warn('[MACRO-CALC V5.5] API did not return valid macros:', result);
             }
         } catch (err: any) {
-            console.error('[MACRO-CALC V5.0 - STABILITY] Failed to calculate macros:', err);
-            // If the server is 503ing, give the user a clear hint
-            if (err.response?.status === 503) {
-                alert('Serwer jest przeciążony lub trwa restart (503). Spróbuj ponownie za 30 sekund.');
+            console.error('[MACRO-CALC V5.5] Failed to calculate macros:', err);
+            if (err.response?.status === 405) {
+                alert('Błąd 405: Serwer nie pozwala na tę operację. Trwa aktualizacja konfiguracji...');
+            } else if (err.response?.status === 503) {
+                alert('Serwer jest przeciążony (503). Spróbuj ponownie za chwilę.');
             }
         } finally {
             setIsCalculating(false);

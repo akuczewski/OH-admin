@@ -28,4 +28,25 @@ export default {
             },
         ],
     },
+    'content-api': {
+        type: 'content-api',
+        routes: [
+            {
+                method: 'POST',
+                path: '/calculate-macros',
+                handler: 'ingredient.calculateMacros',
+                config: {
+                    auth: false,
+                },
+            },
+            {
+                method: 'GET',
+                path: '/search',
+                handler: 'ingredient.search',
+                config: {
+                    auth: false,
+                },
+            },
+        ],
+    },
 };

@@ -42,17 +42,17 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
         let totalFiber = 0;
 
         for (const ing of ingredients) {
-            // Find the ingredient details by slug or name if id is missing
             let item: any = null;
-            if (ing.slug) {
-                // @ts-ignore
+            // Lookup by slug, name or documentId
+            if (ing.documentId) {
+                item = await (strapi as any).documents('api::skladnik.skladnik').findOne({ documentId: ing.documentId });
+            } else if (ing.slug) {
                 const results = await (strapi as any).documents('api::skladnik.skladnik').findMany({
                     filters: { slug: ing.slug } as any,
                     limit: 1
                 });
                 item = results[0];
             } else if (ing.name) {
-                // @ts-ignore
                 const results = await (strapi as any).documents('api::skladnik.skladnik').findMany({
                     filters: { name: ing.name } as any,
                     limit: 1
@@ -62,7 +62,11 @@ export default ({ strapi }: { strapi: Core.Strapi }) => ({
 
             if (item) {
                 const amount = parseFloat(ing.amount) || 0;
-                const multiplier = amount / 100;
+                let multiplier = amount / 100;
+
+                if (item.unitType === 'piece' && item.averagePieceWeight) {
+                    multiplier = (amount * item.averagePieceWeight) / 100;
+                }
                 
                 totalKcal += (item.kcal || 0) * multiplier;
                 totalProtein += (item.protein || 0) * multiplier;
