@@ -77,6 +77,7 @@ interface StrapiHabit {
     videoUrl: string | null;
     profiles: { id: number; documentId: string; name: string; slug: string }[];
     image: any;
+    media?: { url: string; mime: string; name?: string }[];
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
@@ -92,8 +93,7 @@ async function fetchAllHabitsFromStrapi(): Promise<StrapiHabit[]> {
             params: {
                 'pagination[page]': page,
                 'pagination[pageSize]': pageSize,
-                'populate': 'profiles,image',
-                'filters[publishedAt][$notNull]': true,
+                'populate': '*',
             }
         });
 
@@ -147,8 +147,19 @@ function transformHabitForFirestore(habit: StrapiHabit): Record<string, any> {
     // Handle image — extract URL if present
     if (habit.image && typeof habit.image === 'object') {
         const img = habit.image;
-        if (img.url) doc.imageUrl = img.url;
+        if (img.url) doc.image = img.url;
         if (img.formats?.thumbnail?.url) doc.thumbnailUrl = img.formats.thumbnail.url;
+    } else if (typeof habit.image === 'string' && habit.image) {
+        doc.image = habit.image;
+    }
+
+    // Handle media files (videos, additional images)
+    if (Array.isArray(habit.media) && habit.media.length > 0) {
+        const base = (process.env.STRAPI_URL || 'https://useful-sparkle-79935e08b6.strapiapp.com').replace(/\/$/, '');
+        doc.media = habit.media.map(m => ({
+            url: m.url?.startsWith('http') ? m.url : `${base}${m.url}`,
+            mime: m.mime || '',
+        }));
     }
 
     return doc;
