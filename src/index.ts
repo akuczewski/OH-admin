@@ -370,263 +370,45 @@ export default {
   },
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
-    console.log('--- [MASTER SEEDER] Initializing internal recovery... ---');
+    console.log('--- [MASTER SEEDER] Internal recovery is DISABLED (Manual management only) ---');
 
-    const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+    /* 
+       Auto-importer logic was disabled on 2026-04-27 to prevent overwriting manual expert changes.
+       To run recovery/sync, use dedicated maintenance scripts instead of bootstrap.
+    */
 
+    // ==================== PERMISSION GUARD ====================
     try {
-      // 1. Ingredients Check
-      // @ts-ignore
-      const ingCount = await strapi.documents('api::skladnik.skladnik').count();
-      if (ingCount === 0) {
-        console.log('--- [MASTER SEEDER] Step 1: Loading Golden Ingredients ---');
-        const goldenPath = path.join(process.cwd(), 'data/golden-ingredients.json');
-        if (fs.existsSync(goldenPath)) {
-          const golden = JSON.parse(fs.readFileSync(goldenPath, 'utf8'));
-          for (const ing of golden) {
-            // @ts-ignore
-            await strapi.documents('api::skladnik.skladnik').create({
-              data: { ...ing, slug: makeSlug(ing.name) } as any
-            });
-          }
-          console.log(`--- [MASTER SEEDER] Created ${golden.length} golden ingredients. ---`);
-        }
-      } else {
-        console.log(`--- [MASTER SEEDER] Found ${ingCount} ingredients, skipping Step 1. ---`);
-      }
-
-      // 2. Ingredients Check (Continued)
-      console.log('--- [MASTER SEEDER] Step 2: Processing Recipes & Missing Ingredients ---');
-      const recipesPath = path.join(process.cwd(), 'data/recipes.json');
-      if (fs.existsSync(recipesPath)) {
-        const recipes = JSON.parse(fs.readFileSync(recipesPath, 'utf8'));
-        
-        const ingMap = new Map<string, string>();
-        // @ts-ignore
-        const currentIngs = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
-        for (const i of (currentIngs as any)) {
-          ingMap.set(normalizeForMatch(i.name), i.documentId);
-        }
-
-        // Cache existing recipes to avoid duplicates
-        // @ts-ignore
-        const existingRecipes = await strapi.documents('api::recipe.recipe').findMany({ fields: ['name'], limit: -1 });
-        const existingRecipeNames = new Set((existingRecipes as any).map((r: any) => r.name));
-
-        for (const recipeData of recipes) {
-          const recipeName = (recipeData.name || '').replace(/\n/g, '').trim();
-          
-          if (existingRecipeNames.has(recipeName)) {
-            continue; // Skip already imported
-          }
-
-          await sleep(30); // Even more breath for Postgres
-          
-          const components = [];
-          for (const ing of recipeData.ingredients) {
-            const cleanName = cleanIngredientName(ing.name);
-            const norm = normalizeForMatch(cleanName);
-            const slug = makeSlug(cleanName);
-            
-            if (isGarbage(cleanName)) continue;
-
-            let docId = ingMap.get(norm);
-            if (!docId) {
-              // Create missing
-              try {
-                // @ts-ignore
-                const newIng = await strapi.documents('api::skladnik.skladnik').create({
-                  data: {
-                    name: cleanName, slug, category: 'inne', kcal: 0, protein: 0, carbs: 0, fat: 0, fiber: 0,
-                    unitType: (ing.unit === 'szt' || ing.unit === 'opakowanie') ? 'piece' : 'weight'
-                  } as any
-                });
-                docId = (newIng as any).documentId;
-                ingMap.set(norm, docId!);
-              } catch (e) {}
-            }
-
-            components.push({
-              __component: 'shared.ingredient',
-              name: cleanName,
-              slug,
-              ingredient: docId,
-              amount: ing.amount || 0,
-              unit: ing.unit || 'g',
-              weight: ing.weight || 0,
-            });
-          }
-
-          if (components.length > 0) {
-            try {
-              // @ts-ignore
-              const usedIngIds = components.map(c => c.ingredient).filter(Boolean);
-
-              // @ts-ignore
-              const newRecipe = await strapi.documents('api::recipe.recipe').create({
-                data: {
-                  name: recipeName, description: recipeData.description || '', preparation: recipeData.preparation || '',
-                  prepTime: recipeData.prepTime || 0, servings: recipeData.servings || 1, mealSlots: recipeData.mealSlot || [],
-                  ingredients: components, 
-                  used_ingredients: usedIngIds, // <--- Link relations
-                  kcal: 0, macros: { protein: 0, carbs: 0, fat: 0, fiber: 0 },
-                  tags: Array.isArray(recipeData.tags) ? recipeData.tags.join(', ') : '',
-                } as any
-              });
-              // @ts-ignore
-              await strapi.documents('api::recipe.recipe').publish({ documentId: (newRecipe as any).documentId });
-            } catch (e: any) {
-              console.warn(`--- [MASTER SEEDER] Failed to create recipe [${recipeName}]: ${e.message} ---`);
-            }
-          }
-        }
-        console.log(`--- [MASTER SEEDER] Finished importing recipes. ---`);
-      }
-
-      // 3. Sync relations for existing recipes (One-time fix)
-      console.log('--- [MASTER SEEDER] Step 3: Syncing relations for existing recipes... ---');
-      // @ts-ignore
-      const recipesToFix = await strapi.documents('api::recipe.recipe').findMany({
-        populate: {
-          ingredients: {
-            populate: { ingredient: true }
-          },
-          used_ingredients: {
-            fields: ['documentId']
-          }
-        },
-        limit: -1
+      console.log('--- [PERMISSION GUARD] Ensuring public access to ingredients search... ---');
+      const publicRole = await strapi.query('plugin::users-permissions.role').findOne({
+        where: { type: 'public' }
       });
+      
+      if (publicRole) {
+        const targetAction = 'api::skladnik.skladnik.find';
+        const existingPermission = await strapi.query('plugin::users-permissions.permission').findOne({
+          where: {
+            role: publicRole.id,
+            action: targetAction
+          }
+        });
 
-      let fixCount = 0;
-      for (const r of (recipesToFix as any)) {
-        const componentIngIds = r.ingredients?.map((i: any) => i.ingredient?.documentId).filter(Boolean) || [];
-        const currentRelIds = r.used_ingredients?.map((i: any) => i.documentId) || [];
-        
-        if (componentIngIds.length > 0 && currentRelIds.length === 0) {
-          // @ts-ignore
-          await strapi.documents('api::recipe.recipe').update({
-            documentId: r.documentId,
-            data: { used_ingredients: componentIngIds } as any
+        if (!existingPermission) {
+          await strapi.query('plugin::users-permissions.permission').create({
+            data: {
+              action: targetAction,
+              role: publicRole.id
+            }
           });
-          fixCount++;
-          await sleep(20);
+          console.log(`[PERMISSION GUARD] Granted ${targetAction} permission to Public role.`);
+        } else {
+          console.log(`[PERMISSION GUARD] Permission ${targetAction} already exists.`);
         }
       }
-      console.log(`--- [MASTER SEEDER] Synced relations for ${fixCount} recipes. ---`);
-      
-      // 4. AI ENRICHMENT AGENT — DISABLED (data manually curated in production, do not overwrite)
-      console.log('--- [MASTER SEEDER] Step 4: AI Enrichment DISABLED (data manually curated) ---');
-      // const apiKey = process.env.OPENAI_API_KEY;
-      // if (apiKey) {
-      //   const openai = new OpenAI({ apiKey });
-      //   const missingIngs = await strapi.documents('api::skladnik.skladnik').findMany({
-      //     filters: { $or: [{ kcal: 0 }, { kcal: { $null: true } }] } as any,
-      //     limit: 300
-      //   });
-      //   const toEnrich = (missingIngs as any).filter((i: any) => i.isAiEnriched !== true);
-      //   if (toEnrich.length > 0) {
-      //     const BATCH_SIZE = 5;
-      //     for (let i = 0; i < toEnrich.length; i += BATCH_SIZE) {
-      //       const chunk = toEnrich.slice(i, i + BATCH_SIZE);
-      //       await Promise.all(chunk.map((ing: any) => enrichIngredientWithAI(ing, strapi, openai)));
-      //     }
-      //   }
-      // }
-
-      // 5. FULL FIREBASE SYNC (To ensure everything is in Firestore)
-      console.log('--- [MASTER SEEDER] Step 5: Full Firebase Synchronization... ---');
-      
-      // A. Fetch All Ingredients & Build RAM Map
-      // @ts-ignore
-      const allSkladniki = await strapi.documents('api::skladnik.skladnik').findMany({ limit: -1 });
-      const ingCache = new Map<string, any>();
-      
-      const CHUNK_SIZE = 400;
-      for (let i = 0; i < (allSkladniki as any).length; i += CHUNK_SIZE) {
-        const chunk = (allSkladniki as any).slice(i, i + CHUNK_SIZE);
-        const batch = db.batch();
-        for (const ing of chunk) {
-          ingCache.set(ing.documentId, ing);
-          const ref = db.collection('ingredients').doc(ing.documentId);
-          batch.set(ref, { ...ing, id: ing.documentId }, { merge: true });
-        }
-        await batch.commit();
-        console.log(`--- [MASTER SEEDER] Committed batch for ingredients ${i} to ${i + chunk.length} ---`);
-      }
-      console.log(`--- [MASTER SEEDER] Pushed ${allSkladniki.length} ingredients to Firebase. ---`);
-
-      // B. Sync Recipes with Deep Populate & Image Mapping
-      // @ts-ignore
-      const allRecipes = await strapi.documents('api::recipe.recipe').findMany({ 
-        populate: { 
-          ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
-          image: true,
-          macros: true
-        },
-        limit: -1 
-      });
-      
-      let recipeSyncCount = 0;
-      for (const r of (allRecipes as any)) {
-        const ref = db.collection('recipes').doc(r.documentId);
-        
-        // Ponowne przeliczenie makr z użyciem Cache (RAM)
-        const macros = await calculateRecipeMacros(r, strapi, ingCache);
-        
-        const dataToSync: any = { 
-          ...r, 
-          id: r.documentId,
-          kcal: macros?.kcal || r.kcal || 0,
-          macros: macros || r.macros || { protein: 0, carbs: 0, fat: 0, fiber: 0 },
-          // Obsługa obrazka (wyciągamy absolutny URL)
-          image: normalizeImageUrl(r.image)
-        };
-        
-        // Mapujemy komponenty składników (id zamiast ingredient)
-        if (dataToSync.ingredients) {
-          dataToSync.ingredients = dataToSync.ingredients.map((ing: any) => ({
-            ...ing,
-            id: ing.ingredient?.documentId || ing.ingredient || ""
-          }));
-        }
-
-        await ref.set(dataToSync, { merge: true });
-        recipeSyncCount++;
-        
-        if (recipeSyncCount % 20 === 0) {
-          console.log(`--- [MASTER SEEDER] Synced ${recipeSyncCount} recipes... ---`);
-        }
-      }
-      console.log(`--- [MASTER SEEDER] Successfully pushed ${allRecipes.length} recipes to Firebase. ---`);
-
-      // 6. FULL ARTICLE SYNC
-      console.log('--- [MASTER SEEDER] Step 6: Full Article Synchronization... ---');
-      // @ts-ignore
-      const allArticles = await strapi.documents('api::article.article').findMany({
-        status: 'published',
-        populate: ['thumbnail', 'profiles'],
-        limit: -1
-      });
-
-      const articleBatch = db.batch();
-      for (const article of (allArticles as any)) {
-        const ref = db.collection('articles').doc(article.documentId);
-        const data = {
-          ...article,
-          id: article.documentId,
-          thumbnail: article.thumbnail?.url || article.thumbnail || ""
-        };
-        articleBatch.set(ref, data, { merge: true });
-      }
-      if ((allArticles as any).length > 0) {
-        await articleBatch.commit();
-        console.log(`--- [MASTER SEEDER] Successfully pushed ${allArticles.length} articles. ---`);
-      }
-      console.log('--- [MASTER SEEDER] Recovery complete. ---');
-    } catch (error: any) {
-      console.error('--- [MASTER SEEDER ERROR] ---', error.message);
+    } catch (err: any) {
+      console.error('[PERMISSION GUARD ERROR]', err.message);
     }
+  },
 
     // ==================== PERMISSION GUARD ====================
     try {
