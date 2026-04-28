@@ -216,6 +216,11 @@ export default {
             data.used_ingredients = ingredientIds;
           }
         }
+
+        // Auto-sync mealSlot (enumeration) z mealSlots (json) przy tworzeniu/edycji
+        if (!data.mealSlot && Array.isArray(data.mealSlots) && data.mealSlots.length > 0) {
+          data.mealSlot = data.mealSlots[0];
+        }
       }
 
       let result;
