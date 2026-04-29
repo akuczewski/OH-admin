@@ -15,7 +15,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 import axios from 'axios';
 
 const STRAPI_URL = process.env.STRAPI_URL || 'https://useful-sparkle-79935e08b6.strapiapp.com';
-const STRAPI_API_TOKEN = process.env.STRAPI_API_TOKEN;
+const STRAPI_API_TOKEN = process.env.EXPO_PUBLIC_STRAPI_TOKEN || process.env.STRAPI_API_TOKEN;
 
 const VALID_SLOTS = ['sniadanie', 'przekaska', 'obiad', 'kolacja'];
 

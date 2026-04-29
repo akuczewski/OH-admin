@@ -233,10 +233,30 @@ export default {
 
       if (collectionName && ['create', 'update', 'delete', 'publish', 'unpublish'].includes(action)) {
         try {
-          const docId = (result as any).documentId;
-          if (action === 'delete' || action === 'unpublish') {
+          // KROK 1A: Bezpieczne pobranie docId
+          const docId = (result as any)?.documentId ?? (params as any)?.documentId ?? (params as any)?.id;
+
+          if (!docId) {
+            console.error(`[FIREBASE SYNC ERROR] No docId for action=${action} uid=${uid}`);
+            return result;
+          }
+
+          // KROK 1B: Obsługa unpublish (również przez update)
+          const isUnpublishViaUpdate = action === 'update' && (params as any)?.data?.publishedAt === null;
+          
+          if (action === 'delete' || action === 'unpublish' || isUnpublishViaUpdate) {
             await db.collection(collectionName).doc(docId).delete();
+            console.log(`[FIREBASE SYNC] Deleted ${uid} ${docId} from Firestore (${isUnpublishViaUpdate ? 'unpublish via update' : action})`);
           } else {
+            // Synchronizujemy tylko jeśli dokument jest opublikowany (lub to akcja create/update, która docelowo ma być opublikowana)
+            // W Strapi v5 documentId jest kluczem, a status publikacji sprawdzamy w result
+            const isPublished = !!(result as any).publishedAt;
+
+            if (!isPublished) {
+              console.log(`[FIREBASE SYNC] Skipping sync for draft/unpublished ${uid} ${docId}`);
+              return result;
+            }
+
             // @ts-ignore
             const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
               documentId: docId,
