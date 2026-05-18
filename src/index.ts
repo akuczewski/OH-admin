@@ -9,6 +9,7 @@ const collectionsToSync = {
   'api::article.article': 'articles',
   'api::skin-care.skin-care': 'skincare',
   'api::training.training': 'training',
+  'api::habit.habit': 'habits',
 };
 
 // ==================== MACRO CALCULATOR ====================
@@ -258,12 +259,13 @@ export default {
             }
 
             // @ts-ignore
-            const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({ 
+            const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({
               documentId: docId,
-              populate: uid === 'api::recipe.recipe' ? { 
+              populate: uid === 'api::recipe.recipe' ? {
                 ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
                 image: true,
-                macros: true
+                macros: true,
+                profiles: { fields: ['slug', 'name'] }
               } : '*'
             });
 
@@ -278,6 +280,11 @@ export default {
               }
               if (!dataToSync.mealSlot && Array.isArray(dataToSync.mealSlots) && dataToSync.mealSlots.length > 0) {
                 dataToSync.mealSlot = dataToSync.mealSlots[0];
+              }
+              if (Array.isArray(fullDoc.profiles)) {
+                dataToSync.assignedProfiles = fullDoc.profiles.map((p: any) => p.slug || p.name);
+              } else {
+                dataToSync.assignedProfiles = [];
               }
             }
 
