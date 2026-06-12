@@ -249,9 +249,14 @@ export default {
             await db.collection(collectionName).doc(docId).delete();
             console.log(`[FIREBASE SYNC] Deleted ${uid} ${docId} from Firestore (${isUnpublishViaUpdate ? 'unpublish via update' : action})`);
           } else {
-            // Synchronizujemy tylko jeśli dokument jest opublikowany (lub to akcja create/update, która docelowo ma być opublikowana)
-            // W Strapi v5 documentId jest kluczem, a status publikacji sprawdzamy w result
-            const isPublished = !!(result as any).publishedAt;
+            // Synchronizujemy tylko jeśli dokument jest opublikowany.
+            // UWAGA (Strapi v5): akcja `publish` zwraca { documentId, entries: [...] },
+            // a nie encję — publishedAt trzeba czytać z entries[0]. Sprawdzanie
+            // result.publishedAt wprost powodowało ciche skipowanie KAŻDEGO publisha.
+            const publishedEntity: any = action === 'publish'
+              ? (result as any)?.entries?.[0]
+              : result;
+            const isPublished = !!publishedEntity?.publishedAt;
 
             if (!isPublished) {
               console.log(`[FIREBASE SYNC] Skipping sync for draft/unpublished ${uid} ${docId}`);
@@ -261,6 +266,7 @@ export default {
             // @ts-ignore
             const fullDoc: any = await (strapi.documents(uid as any) as any).findOne({
               documentId: docId,
+              status: 'published',
               populate: uid === 'api::recipe.recipe' ? {
                 ingredients: { populate: { ingredient: { fields: ['documentId'] } } },
                 image: true,
