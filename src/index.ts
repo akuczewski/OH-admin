@@ -10,6 +10,7 @@ const collectionsToSync = {
   'api::skin-care.skin-care': 'skincare',
   'api::training.training': 'training',
   'api::habit.habit': 'habits',
+  'api::creator.creator': 'creators',
 };
 
 // ==================== MACRO CALCULATOR ====================
@@ -292,6 +293,9 @@ export default {
               } else {
                 dataToSync.assignedProfiles = [];
               }
+            } else if (uid === 'api::creator.creator') {
+              // Twórca: znormalizuj URL zdjęcia, by apka dostała gotowy string
+              dataToSync.image = normalizeImageUrl(fullDoc.image);
             }
 
             await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });

@@ -8,10 +8,7 @@ export interface SharedIngredient extends Struct.ComponentSchema {
   };
   attributes: {
     amount: Schema.Attribute.Decimal;
-    ingredient: Schema.Attribute.Relation<
-      'oneToOne',
-      'api::ingredient.ingredient'
-    >;
+    ingredient: Schema.Attribute.Relation<'oneToOne', 'api::skladnik.skladnik'>;
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<'plugin::ingredient-lookup.ingredient'>;
@@ -24,10 +21,14 @@ export interface SharedIngredient extends Struct.ComponentSchema {
         'lyzka',
         'lyzeczka',
         'szklanka',
+        '\u0142y\u017Cka',
+        '\u0142y\u017Ceczka',
+        'szklanka',
         'szczypta',
         'plaster',
         'garstka',
         'opakowanie',
+        'sztuka',
       ]
     > &
       Schema.Attribute.Required;

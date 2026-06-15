@@ -1,0 +1,56 @@
+{
+  "kind": "collectionType",
+  "collectionName": "creators",
+  "info": {
+    "singularName": "creator",
+    "pluralName": "creators",
+    "displayName": "Twórca treści",
+    "description": "Eksperci i twórcy treści prezentowani w aplikacji (Twórcy treści)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "role": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "text"
+    },
+    "image": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "multiple": false
+    },
+    "imageFit": {
+      "type": "enumeration",
+      "enum": [
+        "cover",
+        "contain"
+      ],
+      "default": "cover"
+    },
+    "imageAlign": {
+      "type": "enumeration",
+      "enum": [
+        "top",
+        "center"
+      ],
+      "default": "center"
+    },
+    "avatarBg": {
+      "type": "string",
+      "default": "#EDE5D8"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

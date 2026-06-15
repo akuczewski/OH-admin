@@ -464,6 +464,73 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCreatorCreator extends Struct.CollectionTypeSchema {
+  collectionName: 'creators';
+  info: {
+    description: 'Eksperci i tw\u00F3rcy tre\u015Bci prezentowani w aplikacji (Tw\u00F3rcy tre\u015Bci)';
+    displayName: 'Tw\u00F3rca tre\u015Bci';
+    pluralName: 'creators';
+    singularName: 'creator';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    avatarBg: Schema.Attribute.String & Schema.Attribute.DefaultTo<'#EDE5D8'>;
+    bio: Schema.Attribute.Text;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    image: Schema.Attribute.Media<'images'>;
+    imageAlign: Schema.Attribute.Enumeration<['top', 'center']> &
+      Schema.Attribute.DefaultTo<'center'>;
+    imageFit: Schema.Attribute.Enumeration<['cover', 'contain']> &
+      Schema.Attribute.DefaultTo<'cover'>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::creator.creator'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    role: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiFoodItemFoodItem extends Struct.CollectionTypeSchema {
+  collectionName: 'food_items';
+  info: {
+    description: 'Tombstone - kept to prevent Postgres DROP TABLE crash';
+    displayName: 'LEGACY_FOOD_ITEM (DO NOT USE)';
+    pluralName: 'food-items';
+    singularName: 'food-item';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::food-item.food-item'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiHabitHabit extends Struct.CollectionTypeSchema {
   collectionName: 'habits';
   info: {
@@ -515,11 +582,41 @@ export interface ApiHabitHabit extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiIngredientCatalogIngredientCatalog
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'ingredients_v2';
+  info: {
+    description: 'Tombstone - kept to prevent Postgres DROP TABLE crash';
+    displayName: 'LEGACY_CATALOG (DO NOT USE)';
+    pluralName: 'ingredient-catalogs';
+    singularName: 'ingredient-catalog';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::ingredient-catalog.ingredient-catalog'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiIngredientIngredient extends Struct.CollectionTypeSchema {
   collectionName: 'ingredients';
   info: {
-    description: 'Baza sk\u0142adnik\u00F3w wykorzystywana przez przepisy';
-    displayName: 'Sk\u0142adnik / Ingredient';
+    description: 'Legacy table kept to prevent Strapi boot loop due to Postgres dependencies.';
+    displayName: 'LEGACY_INGREDIENT (DO NOT USE)';
     pluralName: 'ingredients';
     singularName: 'ingredient';
   };
@@ -527,28 +624,17 @@ export interface ApiIngredientIngredient extends Struct.CollectionTypeSchema {
     draftAndPublish: false;
   };
   attributes: {
-    averagePieceWeight: Schema.Attribute.Integer;
-    carbs: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    category: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
-    fat: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    fiber: Schema.Attribute.Decimal & Schema.Attribute.Required;
-    kcal: Schema.Attribute.Integer & Schema.Attribute.Required;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
       'api::ingredient.ingredient'
     > &
       Schema.Attribute.Private;
-    name: Schema.Attribute.String & Schema.Attribute.Required;
-    protein: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    name: Schema.Attribute.String;
     publishedAt: Schema.Attribute.DateTime;
-    recipes: Schema.Attribute.Relation<'manyToMany', 'api::recipe.recipe'>;
-    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
-    unitType: Schema.Attribute.Enumeration<['weight', 'volume', 'piece']> &
-      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -677,6 +763,9 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Private;
     macros: Schema.Attribute.Component<'shared.macros', false>;
+    mealSlot: Schema.Attribute.Enumeration<
+      ['sniadanie', 'przekaska', 'obiad', 'kolacja']
+    >;
     mealSlots: Schema.Attribute.JSON;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     preparation: Schema.Attribute.RichText;
@@ -698,7 +787,7 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     used_ingredients: Schema.Attribute.Relation<
       'manyToMany',
-      'api::ingredient.ingredient'
+      'api::skladnik.skladnik'
     >;
   };
 }
@@ -736,6 +825,48 @@ export interface ApiSkinCareSkinCare extends Struct.CollectionTypeSchema {
     > &
       Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    videoUrl: Schema.Attribute.String;
+  };
+}
+
+export interface ApiSkladnikSkladnik extends Struct.CollectionTypeSchema {
+  collectionName: 'skladniks';
+  info: {
+    description: 'Baza sk\u0142adnik\u00F3w do przepis\u00F3w';
+    displayName: 'Sk\u0142adnik';
+    pluralName: 'skladniks';
+    singularName: 'skladnik';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    averagePieceWeight: Schema.Attribute.Integer;
+    carbs: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    category: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    fat: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    fiber: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    isAiEnriched: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    kcal: Schema.Attribute.Integer & Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::skladnik.skladnik'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    protein: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    recipes: Schema.Attribute.Relation<'manyToMany', 'api::recipe.recipe'>;
+    slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
+    unitType: Schema.Attribute.Enumeration<['weight', 'volume', 'piece']> &
+      Schema.Attribute.Required;
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
@@ -1332,13 +1463,17 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
+      'api::creator.creator': ApiCreatorCreator;
+      'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::habit.habit': ApiHabitHabit;
+      'api::ingredient-catalog.ingredient-catalog': ApiIngredientCatalogIngredientCatalog;
       'api::ingredient.ingredient': ApiIngredientIngredient;
       'api::instruction.instruction': ApiInstructionInstruction;
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
       'api::profile.profile': ApiProfileProfile;
       'api::recipe.recipe': ApiRecipeRecipe;
       'api::skin-care.skin-care': ApiSkinCareSkinCare;
+      'api::skladnik.skladnik': ApiSkladnikSkladnik;
       'api::symptom.symptom': ApiSymptomSymptom;
       'api::training.training': ApiTrainingTraining;
       'plugin::content-releases.release': PluginContentReleasesRelease;
