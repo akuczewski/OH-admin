@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "faq_items",
+  "info": {
+    "singularName": "faq-item",
+    "pluralName": "faq-items",
+    "displayName": "Pomoc — pytanie FAQ",
+    "description": "Najczęstsze pytania pokazywane w aplikacji (Profil → Pomoc)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "answer": {
+      "type": "text",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

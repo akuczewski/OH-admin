@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "privacy_sections",
+  "info": {
+    "singularName": "privacy-section",
+    "pluralName": "privacy-sections",
+    "displayName": "Prywatność — sekcja",
+    "description": "Sekcje polityki prywatności pokazywane w aplikacji (Profil → Prywatność)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "body": {
+      "type": "text",
+      "required": true
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

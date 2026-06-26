@@ -11,6 +11,9 @@ const collectionsToSync = {
   'api::training.training': 'training',
   'api::habit.habit': 'habits',
   'api::creator.creator': 'creators',
+  'api::privacy-section.privacy-section': 'privacy_sections',
+  'api::faq-item.faq-item': 'faq_items',
+  'api::screen-text.screen-text': 'screen_texts',
 };
 
 // ==================== MACRO CALCULATOR ====================

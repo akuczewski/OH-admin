@@ -15,14 +15,14 @@
  */
 import dotenv from 'dotenv';
 import path from 'path';
-// Token Strapi i klucz admin SDK w root repo
-dotenv.config({ path: path.join(__dirname, '../../../.env') });
+// Monorepo: token Strapi w apps/mobile/.env, klucz admin SDK w root repo
+dotenv.config({ path: path.join(__dirname, '../../../../apps/mobile/.env') });
 
 import axios from 'axios';
 import admin from 'firebase-admin';
 
 if (!admin.apps.length) {
-    const serviceAccountPath = path.join(__dirname, '../../../oh-club-firebase-adminsdk-fbsvc-1b7912aba5.json');
+    const serviceAccountPath = path.join(__dirname, '../../../../oh-club-firebase-adminsdk-fbsvc-1b7912aba5.json');
     admin.initializeApp({
         credential: admin.credential.cert(serviceAccountPath),
     });
@@ -43,7 +43,32 @@ const COLLECTIONS: Record<string, string> = {
     quotes: 'motivation-quotes',
     profiles: 'profiles',
     habits: 'habits',
+    creators: 'creators',
+    privacy_sections: 'privacy-sections',
+    faq_items: 'faq-items',
+    screen_texts: 'screen-texts',
 };
+
+/**
+ * Normalizacja URL obrazu — odwzorowuje normalizeImageUrl z src/index.ts.
+ * Twórcy w apce oczekują `image` jako gotowego stringa (mapCreatorDoc), a nie
+ * obiektu media Strapi — middleware robi to przy publish, więc backfill też musi.
+ */
+function normalizeImageUrl(image: any): string {
+    const url = image?.url || (typeof image === 'string' ? image : '');
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    const strapiUrl = (STRAPI_URL || 'http://localhost:1337').replace(/\/$/, '');
+    return `${strapiUrl}${url.startsWith('/') ? url : `/${url}`}`;
+}
+
+/** Per-kolekcja: transformacje doprowadzające dokument do kształtu czytanego przez apkę. */
+function transformForCollection(col: string, item: any): any {
+    if (col === 'creators') {
+        return { ...item, image: normalizeImageUrl(item.image) };
+    }
+    return item;
+}
 
 const api = axios.create({
     baseURL: `${STRAPI_URL}/api`,
@@ -88,7 +113,7 @@ async function main() {
     let batch = db.batch();
     for (const item of items) {
         if (!item.documentId) continue;
-        batch.set(db.collection(col).doc(item.documentId), { ...item }, { merge: true });
+        batch.set(db.collection(col).doc(item.documentId), transformForCollection(col, { ...item }), { merge: true });
         synced++;
         if (synced % 400 === 0) { // limit batcha Firestore to 500 operacji
             await batch.commit();

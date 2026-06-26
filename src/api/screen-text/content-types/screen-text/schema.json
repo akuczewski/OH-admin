@@ -1,0 +1,24 @@
+{
+  "kind": "collectionType",
+  "collectionName": "screen_texts",
+  "info": {
+    "singularName": "screen-text",
+    "pluralName": "screen-texts",
+    "displayName": "Tekst ekranu (klucz/wartość)",
+    "description": "Teksty stałe ekranów (banery, tytuły modali, podtytuły kafelków) edytowalne na żywo"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "key": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "value": {
+      "type": "text",
+      "required": true
+    }
+  }
+}
