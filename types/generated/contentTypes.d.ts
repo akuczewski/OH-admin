@@ -502,6 +502,37 @@ export interface ApiCreatorCreator extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiFaqItemFaqItem extends Struct.CollectionTypeSchema {
+  collectionName: 'faq_items';
+  info: {
+    description: 'Najcz\u0119stsze pytania pokazywane w aplikacji (Profil \u2192 Pomoc)';
+    displayName: 'Pomoc \u2014 pytanie FAQ';
+    pluralName: 'faq-items';
+    singularName: 'faq-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    answer: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::faq-item.faq-item'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    question: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiFoodItemFoodItem extends Struct.CollectionTypeSchema {
   collectionName: 'food_items';
   info: {
@@ -704,6 +735,38 @@ export interface ApiMotivationQuoteMotivationQuote
   };
 }
 
+export interface ApiPrivacySectionPrivacySection
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'privacy_sections';
+  info: {
+    description: 'Sekcje polityki prywatno\u015Bci pokazywane w aplikacji (Profil \u2192 Prywatno\u015B\u0107)';
+    displayName: 'Prywatno\u015B\u0107 \u2014 sekcja';
+    pluralName: 'privacy-sections';
+    singularName: 'privacy-section';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    body: Schema.Attribute.Text & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::privacy-section.privacy-section'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProfileProfile extends Struct.CollectionTypeSchema {
   collectionName: 'profiles';
   info: {
@@ -789,6 +852,38 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
       'manyToMany',
       'api::skladnik.skladnik'
     >;
+  };
+}
+
+export interface ApiScreenTextScreenText extends Struct.CollectionTypeSchema {
+  collectionName: 'screen_texts';
+  info: {
+    description: 'Teksty sta\u0142e ekran\u00F3w (banery, tytu\u0142y modali, podtytu\u0142y kafelk\u00F3w) edytowalne na \u017Cywo';
+    displayName: 'Tekst ekranu (klucz/warto\u015B\u0107)';
+    pluralName: 'screen-texts';
+    singularName: 'screen-text';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    key: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::screen-text.screen-text'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    value: Schema.Attribute.Text & Schema.Attribute.Required;
   };
 }
 
@@ -1464,14 +1559,17 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
       'api::creator.creator': ApiCreatorCreator;
+      'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::habit.habit': ApiHabitHabit;
       'api::ingredient-catalog.ingredient-catalog': ApiIngredientCatalogIngredientCatalog;
       'api::ingredient.ingredient': ApiIngredientIngredient;
       'api::instruction.instruction': ApiInstructionInstruction;
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
+      'api::privacy-section.privacy-section': ApiPrivacySectionPrivacySection;
       'api::profile.profile': ApiProfileProfile;
       'api::recipe.recipe': ApiRecipeRecipe;
+      'api::screen-text.screen-text': ApiScreenTextScreenText;
       'api::skin-care.skin-care': ApiSkinCareSkinCare;
       'api::skladnik.skladnik': ApiSkladnikSkladnik;
       'api::symptom.symptom': ApiSymptomSymptom;
