@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "inspiracje",
+  "info": {
+    "singularName": "inspiracja",
+    "pluralName": "inspiracje",
+    "displayName": "Inspiracja",
+    "description": "Przepisy partnerskie prezentowane w apce jako 'Zainspiruj się'"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "photo": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "multiple": false,
+      "required": true
+    },
+    "ingredients": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.ingredient"
+    },
+    "preparation": {
+      "type": "richtext",
+      "required": true
+    },
+    "author": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::creator.creator"
+    },
+    "tag": {
+      "type": "string"
+    }
+  }
+}

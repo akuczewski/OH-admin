@@ -672,6 +672,40 @@ export interface ApiIngredientIngredient extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiInspiracjaInspiracja extends Struct.CollectionTypeSchema {
+  collectionName: 'inspiracje';
+  info: {
+    description: "Przepisy partnerskie prezentowane w apce jako 'Zainspiruj si\u0119'";
+    displayName: 'Inspiracja';
+    pluralName: 'inspiracje';
+    singularName: 'inspiracja';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    author: Schema.Attribute.Relation<'manyToOne', 'api::creator.creator'>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    ingredients: Schema.Attribute.Component<'shared.ingredient', true>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::inspiracja.inspiracja'
+    > &
+      Schema.Attribute.Private;
+    photo: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    preparation: Schema.Attribute.RichText & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    tag: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiInstructionInstruction extends Struct.SingleTypeSchema {
   collectionName: 'instructions';
   info: {
@@ -1564,6 +1598,7 @@ declare module '@strapi/strapi' {
       'api::habit.habit': ApiHabitHabit;
       'api::ingredient-catalog.ingredient-catalog': ApiIngredientCatalogIngredientCatalog;
       'api::ingredient.ingredient': ApiIngredientIngredient;
+      'api::inspiracja.inspiracja': ApiInspiracjaInspiracja;
       'api::instruction.instruction': ApiInstructionInstruction;
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
       'api::privacy-section.privacy-section': ApiPrivacySectionPrivacySection;
