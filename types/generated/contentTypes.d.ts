@@ -834,6 +834,44 @@ export interface ApiProfileProfile extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiPromoCodePromoCode extends Struct.CollectionTypeSchema {
+  collectionName: 'promo_codes';
+  info: {
+    description: 'Jednorazowe kody promocyjne (1 miesi\u0105c za darmo) do rozdania na stronie /odbierz';
+    displayName: 'Kod promocyjny';
+    pluralName: 'promo-codes';
+    singularName: 'promo-code';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    claimed: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<false>;
+    claimedAt: Schema.Attribute.DateTime;
+    code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::promo-code.promo-code'
+    > &
+      Schema.Attribute.Private;
+    platform: Schema.Attribute.Enumeration<['ios', 'android']> &
+      Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    redeemUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
   collectionName: 'recipes';
   info: {
@@ -1603,6 +1641,7 @@ declare module '@strapi/strapi' {
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
       'api::privacy-section.privacy-section': ApiPrivacySectionPrivacySection;
       'api::profile.profile': ApiProfileProfile;
+      'api::promo-code.promo-code': ApiPromoCodePromoCode;
       'api::recipe.recipe': ApiRecipeRecipe;
       'api::screen-text.screen-text': ApiScreenTextScreenText;
       'api::skin-care.skin-care': ApiSkinCareSkinCare;

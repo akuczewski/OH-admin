@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "promo_codes",
+  "info": {
+    "singularName": "promo-code",
+    "pluralName": "promo-codes",
+    "displayName": "Kod promocyjny",
+    "description": "Jednorazowe kody promocyjne (1 miesiąc za darmo) do rozdania na stronie /odbierz"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "platform": {
+      "type": "enumeration",
+      "enum": ["ios", "android"],
+      "required": true
+    },
+    "redeemUrl": {
+      "type": "string",
+      "required": true
+    },
+    "claimed": {
+      "type": "boolean",
+      "required": true,
+      "default": false
+    },
+    "claimedAt": {
+      "type": "datetime"
+    }
+  }
+}
