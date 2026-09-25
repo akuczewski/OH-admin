@@ -464,6 +464,96 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiConsultationCodeConsultationCode
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'consultation_codes';
+  info: {
+    description: 'Jednorazowe kody rabatowe na konsultacje, generowane w apce (basic 10% / premium 30%). Wydawane wy\u0142\u0105cznie przez custom akcj\u0119 /consultation-codes/claim.';
+    displayName: 'Kod rabatowy na konsultacj\u0119';
+    pluralName: 'consultation-codes';
+    singularName: 'consultation-code';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    code: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    discountPercent: Schema.Attribute.Integer & Schema.Attribute.Required;
+    firebaseUid: Schema.Attribute.String & Schema.Attribute.Required;
+    issuedAt: Schema.Attribute.DateTime;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::consultation-code.consultation-code'
+    > &
+      Schema.Attribute.Private;
+    order: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::consultation-order.consultation-order'
+    >;
+    publishedAt: Schema.Attribute.DateTime;
+    redeemedAt: Schema.Attribute.DateTime;
+    tier: Schema.Attribute.Enumeration<['basic', 'premium']> &
+      Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiConsultationOrderConsultationOrder
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'consultation_orders';
+  info: {
+    description: '\u0179r\u00F3d\u0142o prawdy o sprzeda\u017Cy konsultacji. Eksport CSV (status=paid, zakres dat, grupowanie po ekspercie) = podstawa rozliczenia z ekspertem.';
+    displayName: 'Zam\u00F3wienie konsultacji';
+    pluralName: 'consultation-orders';
+    singularName: 'consultation-order';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    calendlyUrlSent: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    discountCode: Schema.Attribute.Relation<
+      'oneToOne',
+      'api::consultation-code.consultation-code'
+    >;
+    duplicateCodeUse: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
+    email: Schema.Attribute.String & Schema.Attribute.Required;
+    emailSentAt: Schema.Attribute.DateTime;
+    expert: Schema.Attribute.Relation<'manyToOne', 'api::expert.expert'>;
+    fakturowniaInvoiceId: Schema.Attribute.String;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::consultation-order.consultation-order'
+    > &
+      Schema.Attribute.Private;
+    priceGrosze: Schema.Attribute.Integer & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    status: Schema.Attribute.Enumeration<
+      ['pending', 'paid', 'failed', 'refunded']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'pending'>;
+    stripePaymentIntentId: Schema.Attribute.String;
+    stripeSessionId: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiCreatorCreator extends Struct.CollectionTypeSchema {
   collectionName: 'creators';
   info: {
@@ -499,6 +589,54 @@ export interface ApiCreatorCreator extends Struct.CollectionTypeSchema {
     updatedAt: Schema.Attribute.DateTime;
     updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
+  };
+}
+
+export interface ApiExpertExpert extends Struct.CollectionTypeSchema {
+  collectionName: 'experts';
+  info: {
+    description: 'Eksperci do p\u0142atnych konsultacji kupowanych na landingu (dietetyk, kosmetolog, ...). Rozszerzalne bez zmian w kodzie.';
+    displayName: 'Ekspert (konsultacje)';
+    pluralName: 'experts';
+    singularName: 'expert';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    active: Schema.Attribute.Boolean &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<true>;
+    avatarEmoji: Schema.Attribute.String;
+    calendlyUrl: Schema.Attribute.String & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    expertPayoutGrosze: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<12450>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::expert.expert'
+    > &
+      Schema.Attribute.Private;
+    name: Schema.Attribute.String & Schema.Attribute.Required;
+    photo: Schema.Attribute.Media<'images'>;
+    priceGrosze: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<24900>;
+    publishedAt: Schema.Attribute.DateTime;
+    sortOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    specialization: Schema.Attribute.String & Schema.Attribute.Required;
+    title: Schema.Attribute.String;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    vatTreatment: Schema.Attribute.Enumeration<['exempt', 'standard23']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'exempt'>;
   };
 }
 
@@ -1630,7 +1768,10 @@ declare module '@strapi/strapi' {
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
       'api::article.article': ApiArticleArticle;
+      'api::consultation-code.consultation-code': ApiConsultationCodeConsultationCode;
+      'api::consultation-order.consultation-order': ApiConsultationOrderConsultationOrder;
       'api::creator.creator': ApiCreatorCreator;
+      'api::expert.expert': ApiExpertExpert;
       'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::food-item.food-item': ApiFoodItemFoodItem;
       'api::habit.habit': ApiHabitHabit;

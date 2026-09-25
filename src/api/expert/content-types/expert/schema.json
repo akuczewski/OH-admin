@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "experts",
+  "info": {
+    "singularName": "expert",
+    "pluralName": "experts",
+    "displayName": "Ekspert (konsultacje)",
+    "description": "Eksperci do płatnych konsultacji kupowanych na landingu (dietetyk, kosmetolog, ...). Rozszerzalne bez zmian w kodzie."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "name": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "specialization": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "avatarEmoji": {
+      "type": "string"
+    },
+    "photo": {
+      "type": "media",
+      "allowedTypes": ["images"],
+      "multiple": false
+    },
+    "calendlyUrl": {
+      "type": "string",
+      "required": true
+    },
+    "priceGrosze": {
+      "type": "integer",
+      "required": true,
+      "default": 24900
+    },
+    "expertPayoutGrosze": {
+      "type": "integer",
+      "required": true,
+      "default": 12450
+    },
+    "vatTreatment": {
+      "type": "enumeration",
+      "enum": ["exempt", "standard23"],
+      "required": true,
+      "default": "exempt"
+    },
+    "active": {
+      "type": "boolean",
+      "required": true,
+      "default": true
+    },
+    "sortOrder": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

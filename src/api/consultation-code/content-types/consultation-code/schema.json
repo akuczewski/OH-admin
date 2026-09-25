@@ -1,0 +1,45 @@
+{
+  "kind": "collectionType",
+  "collectionName": "consultation_codes",
+  "info": {
+    "singularName": "consultation-code",
+    "pluralName": "consultation-codes",
+    "displayName": "Kod rabatowy na konsultację",
+    "description": "Jednorazowe kody rabatowe na konsultacje, generowane w apce (basic 10% / premium 30%). Wydawane wyłącznie przez custom akcję /consultation-codes/claim."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true
+    },
+    "tier": {
+      "type": "enumeration",
+      "enum": ["basic", "premium"],
+      "required": true
+    },
+    "discountPercent": {
+      "type": "integer",
+      "required": true
+    },
+    "firebaseUid": {
+      "type": "string",
+      "required": true
+    },
+    "issuedAt": {
+      "type": "datetime"
+    },
+    "redeemedAt": {
+      "type": "datetime"
+    },
+    "order": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::consultation-order.consultation-order"
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "consultation_orders",
+  "info": {
+    "singularName": "consultation-order",
+    "pluralName": "consultation-orders",
+    "displayName": "Zamówienie konsultacji",
+    "description": "Źródło prawdy o sprzedaży konsultacji. Eksport CSV (status=paid, zakres dat, grupowanie po ekspercie) = podstawa rozliczenia z ekspertem."
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "expert": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::expert.expert"
+    },
+    "email": {
+      "type": "string",
+      "required": true
+    },
+    "priceGrosze": {
+      "type": "integer",
+      "required": true
+    },
+    "discountCode": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::consultation-code.consultation-code"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": ["pending", "paid", "failed", "refunded"],
+      "required": true,
+      "default": "pending"
+    },
+    "stripeSessionId": {
+      "type": "string"
+    },
+    "stripePaymentIntentId": {
+      "type": "string"
+    },
+    "fakturowniaInvoiceId": {
+      "type": "string"
+    },
+    "calendlyUrlSent": {
+      "type": "string"
+    },
+    "emailSentAt": {
+      "type": "datetime"
+    },
+    "duplicateCodeUse": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}
