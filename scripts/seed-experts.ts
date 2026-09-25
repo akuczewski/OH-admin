@@ -32,7 +32,7 @@ interface ExpertSeed {
     specialization: string;
     description: string;
     avatarEmoji: string;
-    // PLACEHOLDER — podmień na realne publiczne linki Calendly po założeniu kont.
+    // dietetyk: realny link (25.09.2026). kosmetolog: WCIĄŻ PLACEHOLDER.
     calendlyUrl: string;
     priceGrosze: number;
     expertPayoutGrosze: number;
@@ -49,7 +49,7 @@ const EXPERTS: ExpertSeed[] = [
         description:
             'Indywidualna konsultacja dotycząca odżywiania, poziomu energii, apetytu i diety dopasowanej do cyklu. Online, ok. 50 minut.',
         avatarEmoji: '🥗',
-        calendlyUrl: 'https://calendly.com/oh-club-dietetyk/konsultacja',
+        calendlyUrl: 'https://calendly.com/klaudiakubrak-dietetyk/konsultacja',
         priceGrosze: 24900,
         expertPayoutGrosze: 12450,
         vatTreatment: 'exempt',
@@ -95,7 +95,7 @@ async function main() {
         console.log(`✅ Utworzono "${expert.name}" (${expert.specialization}, ${expert.priceGrosze / 100} zł)`);
     }
 
-    console.log('\n⚠️  Podmień placeholder calendlyUrl na realne linki Calendly w Strapi admin.');
+    console.log('\n⚠️  Kosmetolog wciąż ma placeholder calendlyUrl — podmień w Strapi admin.');
 }
 
 main().catch((err) => {
