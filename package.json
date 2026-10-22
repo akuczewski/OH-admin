@@ -16,9 +16,9 @@
     "seed:ingredients": "ts-node scripts/seed-ingredients.ts"
   },
   "dependencies": {
-    "@strapi/plugin-cloud": "5.36.0",
-    "@strapi/plugin-users-permissions": "5.36.0",
-    "@strapi/strapi": "5.36.0",
+    "@strapi/plugin-cloud": "5.37.1",
+    "@strapi/plugin-users-permissions": "5.37.1",
+    "@strapi/strapi": "5.37.1",
     "@tunghtml/strapi-plugin-export-import-clsx": "^1.2.0",
     "better-sqlite3": "12.4.1",
     "csv-parse": "^6.2.1",
