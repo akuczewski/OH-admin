@@ -1,5 +1,23 @@
 import type { Schema, Struct } from '@strapi/strapi';
 
+export interface ConsultationBenefit extends Struct.ComponentSchema {
+  collectionName: 'components_consultation_benefits';
+  info: {
+    description: 'Punkt sekcji "Co dostajesz" na stronie eksperta (landing + apka).';
+    displayName: 'Korzy\u015B\u0107 konsultacji';
+    icon: 'check';
+  };
+  attributes: {
+    icon: Schema.Attribute.Enumeration<
+      ['chat', 'chart', 'clipboard', 'leaf', 'pill', 'calendar']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'chat'>;
+    subtitle: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
 export interface SharedIngredient extends Struct.ComponentSchema {
   collectionName: 'components_shared_ingredients';
   info: {
@@ -53,6 +71,7 @@ export interface SharedMacros extends Struct.ComponentSchema {
 declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
+      'consultation.benefit': ConsultationBenefit;
       'shared.ingredient': SharedIngredient;
       'shared.macros': SharedMacros;
     }

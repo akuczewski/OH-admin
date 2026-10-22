@@ -1,0 +1,24 @@
+{
+    "collectionName": "components_consultation_benefits",
+    "info": {
+        "displayName": "Korzyść konsultacji",
+        "icon": "check",
+        "description": "Punkt sekcji \"Co dostajesz\" na stronie eksperta (landing + apka)."
+    },
+    "options": {},
+    "attributes": {
+        "title": {
+            "type": "string",
+            "required": true
+        },
+        "subtitle": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "enumeration",
+            "enum": ["chat", "chart", "clipboard", "leaf", "pill", "calendar"],
+            "required": true,
+            "default": "chat"
+        }
+    }
+}

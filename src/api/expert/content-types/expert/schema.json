@@ -16,6 +16,13 @@
       "type": "string",
       "required": true
     },
+    "displayName": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "displayName"
+    },
     "title": {
       "type": "string"
     },
@@ -25,6 +32,19 @@
     },
     "description": {
       "type": "text"
+    },
+    "shortDescription": {
+      "type": "text",
+      "maxLength": 200
+    },
+    "durationMinutes": {
+      "type": "integer",
+      "min": 1
+    },
+    "benefits": {
+      "type": "component",
+      "repeatable": true,
+      "component": "consultation.benefit"
     },
     "avatarEmoji": {
       "type": "string"

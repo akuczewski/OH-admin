@@ -608,11 +608,20 @@ export interface ApiExpertExpert extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<true>;
     avatarEmoji: Schema.Attribute.String;
+    benefits: Schema.Attribute.Component<'consultation.benefit', true>;
     calendlyUrl: Schema.Attribute.String & Schema.Attribute.Required;
     createdAt: Schema.Attribute.DateTime;
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     description: Schema.Attribute.Text;
+    displayName: Schema.Attribute.String;
+    durationMinutes: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 1;
+        },
+        number
+      >;
     expertPayoutGrosze: Schema.Attribute.Integer &
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<12450>;
@@ -628,6 +637,11 @@ export interface ApiExpertExpert extends Struct.CollectionTypeSchema {
       Schema.Attribute.Required &
       Schema.Attribute.DefaultTo<24900>;
     publishedAt: Schema.Attribute.DateTime;
+    shortDescription: Schema.Attribute.Text &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    slug: Schema.Attribute.UID<'displayName'>;
     sortOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
     specialization: Schema.Attribute.String & Schema.Attribute.Required;
     title: Schema.Attribute.String;
