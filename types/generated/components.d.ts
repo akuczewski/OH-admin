@@ -18,6 +18,71 @@ export interface ConsultationBenefit extends Struct.ComponentSchema {
   };
 }
 
+export interface DietMacroTargets extends Struct.ComponentSchema {
+  collectionName: 'components_diet_macro_targets';
+  info: {
+    description: 'Zakres % kalorii z bia\u0142ka, w\u0119glowodan\u00F3w i t\u0142uszczu dla programu (SPEC-dieta-silnik 3c).';
+    displayName: 'Cel makrosk\u0142adnik\u00F3w';
+    icon: 'chartPie';
+  };
+  attributes: {
+    carbsMax: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    carbsMin: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    fatMax: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    fatMin: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    proteinMax: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+    proteinMin: Schema.Attribute.Integer &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
+  };
+}
+
 export interface SharedIngredient extends Struct.ComponentSchema {
   collectionName: 'components_shared_ingredients';
   info: {
@@ -27,9 +92,20 @@ export interface SharedIngredient extends Struct.ComponentSchema {
   attributes: {
     amount: Schema.Attribute.Decimal;
     ingredient: Schema.Attribute.Relation<'oneToOne', 'api::skladnik.skladnik'>;
+    maxAdjustPercentOverride: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
     name: Schema.Attribute.String &
       Schema.Attribute.Required &
       Schema.Attribute.CustomField<'plugin::ingredient-lookup.ingredient'>;
+    scalingOverride: Schema.Attribute.Enumeration<
+      ['locked', 'limited', 'flexible', 'functional']
+    >;
     slug: Schema.Attribute.String;
     unit: Schema.Attribute.Enumeration<
       [
@@ -72,6 +148,7 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'consultation.benefit': ConsultationBenefit;
+      'diet.macro-targets': DietMacroTargets;
       'shared.ingredient': SharedIngredient;
       'shared.macros': SharedMacros;
     }

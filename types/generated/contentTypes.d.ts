@@ -976,6 +976,7 @@ export interface ApiProfileProfile extends Struct.CollectionTypeSchema {
       'api::profile.profile'
     > &
       Schema.Attribute.Private;
+    macroTargets: Schema.Attribute.Component<'diet.macro-targets', false>;
     mainColor: Schema.Attribute.String;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
@@ -1057,6 +1058,8 @@ export interface ApiRecipeRecipe extends Struct.CollectionTypeSchema {
     name: Schema.Attribute.String & Schema.Attribute.Required;
     preparation: Schema.Attribute.RichText;
     prepTime: Schema.Attribute.Integer;
+    preserveProportions: Schema.Attribute.Boolean &
+      Schema.Attribute.DefaultTo<false>;
     profiles: Schema.Attribute.Relation<'manyToMany', 'api::profile.profile'>;
     publishedAt: Schema.Attribute.DateTime;
     servings: Schema.Attribute.Integer &
@@ -1179,10 +1182,21 @@ export interface ApiSkladnikSkladnik extends Struct.CollectionTypeSchema {
       'api::skladnik.skladnik'
     > &
       Schema.Attribute.Private;
+    maxAdjustPercent: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 100;
+          min: 0;
+        },
+        number
+      >;
     name: Schema.Attribute.String & Schema.Attribute.Required;
     protein: Schema.Attribute.Decimal & Schema.Attribute.Required;
     publishedAt: Schema.Attribute.DateTime;
     recipes: Schema.Attribute.Relation<'manyToMany', 'api::recipe.recipe'>;
+    scalingTier: Schema.Attribute.Enumeration<
+      ['locked', 'limited', 'flexible', 'functional']
+    >;
     slug: Schema.Attribute.UID<'name'> & Schema.Attribute.Required;
     unitType: Schema.Attribute.Enumeration<['weight', 'volume', 'piece']> &
       Schema.Attribute.Required;

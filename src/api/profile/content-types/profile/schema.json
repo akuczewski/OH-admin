@@ -32,6 +32,11 @@
                 "images"
             ],
             "multiple": false
+        },
+        "macroTargets": {
+            "type": "component",
+            "repeatable": false,
+            "component": "diet.macro-targets"
         }
     }
 }

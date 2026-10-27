@@ -1,0 +1,17 @@
+{
+    "collectionName": "components_diet_macro_targets",
+    "info": {
+        "displayName": "Cel makroskładników",
+        "icon": "chartPie",
+        "description": "Zakres % kalorii z białka, węglowodanów i tłuszczu dla programu (SPEC-dieta-silnik 3c)."
+    },
+    "options": {},
+    "attributes": {
+        "proteinMin": { "type": "integer", "required": true, "min": 0, "max": 100 },
+        "proteinMax": { "type": "integer", "required": true, "min": 0, "max": 100 },
+        "carbsMin": { "type": "integer", "required": true, "min": 0, "max": 100 },
+        "carbsMax": { "type": "integer", "required": true, "min": 0, "max": 100 },
+        "fatMin": { "type": "integer", "required": true, "min": 0, "max": 100 },
+        "fatMax": { "type": "integer", "required": true, "min": 0, "max": 100 }
+    }
+}

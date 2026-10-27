@@ -44,6 +44,20 @@
         },
         "weight": {
             "type": "decimal"
+        },
+        "scalingOverride": {
+            "type": "enumeration",
+            "enum": [
+                "locked",
+                "limited",
+                "flexible",
+                "functional"
+            ]
+        },
+        "maxAdjustPercentOverride": {
+            "type": "integer",
+            "min": 0,
+            "max": 100
         }
     }
 }

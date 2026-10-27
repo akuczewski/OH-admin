@@ -57,6 +57,20 @@
     "averagePieceWeight": {
       "type": "integer"
     },
+    "scalingTier": {
+      "type": "enumeration",
+      "enum": [
+        "locked",
+        "limited",
+        "flexible",
+        "functional"
+      ]
+    },
+    "maxAdjustPercent": {
+      "type": "integer",
+      "min": 0,
+      "max": 100
+    },
     "isAiEnriched": {
       "type": "boolean",
       "default": false

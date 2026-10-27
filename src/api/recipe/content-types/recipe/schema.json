@@ -79,6 +79,10 @@
             "relation": "manyToMany",
             "target": "api::skladnik.skladnik",
             "inversedBy": "recipes"
+        },
+        "preserveProportions": {
+            "type": "boolean",
+            "default": false
         }
     }
 }
