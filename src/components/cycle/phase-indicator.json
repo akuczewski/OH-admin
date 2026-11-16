@@ -1,0 +1,13 @@
+{
+    "collectionName": "components_cycle_phase_indicators",
+    "info": {
+        "displayName": "Wskaźnik fazy",
+        "icon": "chartBubble",
+        "description": "Np. Energia ↓, Apetyt ↑ (pigułki na Home)"
+    },
+    "options": {},
+    "attributes": {
+        "label": { "type": "string", "required": true },
+        "direction": { "type": "enumeration", "enum": ["up", "down"], "required": true }
+    }
+}

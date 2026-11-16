@@ -592,6 +592,54 @@ export interface ApiCreatorCreator extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCyclePhaseCyclePhase extends Struct.CollectionTypeSchema {
+  collectionName: 'cycle_phases';
+  info: {
+    description: "Tre\u015Bci o fazach cyklu w aplikacji: wska\u017Aniki na Home, opis 'Co si\u0119 dzieje teraz?' i typowe objawy (Tw\u00F3j cykl, Dziennik dnia)";
+    displayName: 'Faza cyklu';
+    pluralName: 'cycle-phases';
+    singularName: 'cycle-phase';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text & Schema.Attribute.Required;
+    indicators: Schema.Attribute.Component<'cycle.phase-indicator', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 3;
+        },
+        number
+      >;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::cycle-phase.cycle-phase'
+    > &
+      Schema.Attribute.Private;
+    phase: Schema.Attribute.Enumeration<
+      ['menstruation', 'follicular', 'ovulation', 'luteal']
+    > &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    publishedAt: Schema.Attribute.DateTime;
+    typicalSymptoms: Schema.Attribute.Component<'cycle.typical-symptom', true> &
+      Schema.Attribute.SetMinMax<
+        {
+          max: 5;
+        },
+        number
+      >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiExpertExpert extends Struct.CollectionTypeSchema {
   collectionName: 'experts';
   info: {
@@ -1799,6 +1847,7 @@ declare module '@strapi/strapi' {
       'api::consultation-code.consultation-code': ApiConsultationCodeConsultationCode;
       'api::consultation-order.consultation-order': ApiConsultationOrderConsultationOrder;
       'api::creator.creator': ApiCreatorCreator;
+      'api::cycle-phase.cycle-phase': ApiCyclePhaseCyclePhase;
       'api::expert.expert': ApiExpertExpert;
       'api::faq-item.faq-item': ApiFaqItemFaqItem;
       'api::food-item.food-item': ApiFoodItemFoodItem;

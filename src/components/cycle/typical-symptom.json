@@ -1,0 +1,19 @@
+{
+    "collectionName": "components_cycle_typical_symptoms",
+    "info": {
+        "displayName": "Typowy objaw fazy",
+        "icon": "heart",
+        "description": "Objaw z listy Dziennika dnia, częsty w tej fazie"
+    },
+    "options": {},
+    "attributes": {
+        "symptom": {
+            "type": "enumeration",
+            "required": true,
+            "enum": [
+                "wzdęcia", "zmęczenie", "zachcianki na słodycze", "drażliwość", "bolesny okres", "nowe wypryski",
+                "tkliwość piersi", "skurcze", "ból głowy", "ból pleców", "większy apetyt", "płaczliwość", "niepokój"
+            ]
+        }
+    }
+}

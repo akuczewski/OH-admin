@@ -14,6 +14,7 @@ const collectionsToSync = {
   'api::privacy-section.privacy-section': 'privacy_sections',
   'api::faq-item.faq-item': 'faq_items',
   'api::screen-text.screen-text': 'screen_texts',
+  'api::cycle-phase.cycle-phase': 'cycle_phases',
 };
 
 // ==================== MACRO CALCULATOR ====================

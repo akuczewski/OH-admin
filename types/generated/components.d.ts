@@ -18,6 +18,49 @@ export interface ConsultationBenefit extends Struct.ComponentSchema {
   };
 }
 
+export interface CyclePhaseIndicator extends Struct.ComponentSchema {
+  collectionName: 'components_cycle_phase_indicators';
+  info: {
+    description: 'Np. Energia \u2193, Apetyt \u2191 (pigu\u0142ki na Home)';
+    displayName: 'Wska\u017Anik fazy';
+    icon: 'chartBubble';
+  };
+  attributes: {
+    direction: Schema.Attribute.Enumeration<['up', 'down']> &
+      Schema.Attribute.Required;
+    label: Schema.Attribute.String & Schema.Attribute.Required;
+  };
+}
+
+export interface CycleTypicalSymptom extends Struct.ComponentSchema {
+  collectionName: 'components_cycle_typical_symptoms';
+  info: {
+    description: 'Objaw z listy Dziennika dnia, cz\u0119sty w tej fazie';
+    displayName: 'Typowy objaw fazy';
+    icon: 'heart';
+  };
+  attributes: {
+    symptom: Schema.Attribute.Enumeration<
+      [
+        'wzd\u0119cia',
+        'zm\u0119czenie',
+        'zachcianki na s\u0142odycze',
+        'dra\u017Cliwo\u015B\u0107',
+        'bolesny okres',
+        'nowe wypryski',
+        'tkliwo\u015B\u0107 piersi',
+        'skurcze',
+        'b\u00F3l g\u0142owy',
+        'b\u00F3l plec\u00F3w',
+        'wi\u0119kszy apetyt',
+        'p\u0142aczliwo\u015B\u0107',
+        'niepok\u00F3j',
+      ]
+    > &
+      Schema.Attribute.Required;
+  };
+}
+
 export interface DietMacroTargets extends Struct.ComponentSchema {
   collectionName: 'components_diet_macro_targets';
   info: {
@@ -148,6 +191,8 @@ declare module '@strapi/strapi' {
   export module Public {
     export interface ComponentSchemas {
       'consultation.benefit': ConsultationBenefit;
+      'cycle.phase-indicator': CyclePhaseIndicator;
+      'cycle.typical-symptom': CycleTypicalSymptom;
       'diet.macro-targets': DietMacroTargets;
       'shared.ingredient': SharedIngredient;
       'shared.macros': SharedMacros;

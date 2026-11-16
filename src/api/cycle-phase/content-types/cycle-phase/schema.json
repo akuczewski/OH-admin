@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "cycle_phases",
+  "info": {
+    "singularName": "cycle-phase",
+    "pluralName": "cycle-phases",
+    "displayName": "Faza cyklu",
+    "description": "Treści o fazach cyklu w aplikacji: wskaźniki na Home, opis 'Co się dzieje teraz?' i typowe objawy (Twój cykl, Dziennik dnia)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "phase": {
+      "type": "enumeration",
+      "enum": ["menstruation", "follicular", "ovulation", "luteal"],
+      "required": true,
+      "unique": true
+    },
+    "indicators": {
+      "type": "component",
+      "repeatable": true,
+      "component": "cycle.phase-indicator",
+      "max": 3
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "typicalSymptoms": {
+      "type": "component",
+      "repeatable": true,
+      "component": "cycle.typical-symptom",
+      "max": 5
+    }
+  }
+}
