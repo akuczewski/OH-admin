@@ -15,6 +15,7 @@ const collectionsToSync = {
   'api::faq-item.faq-item': 'faq_items',
   'api::screen-text.screen-text': 'screen_texts',
   'api::cycle-phase.cycle-phase': 'cycle_phases',
+  'api::partner-offer.partner-offer': 'partner_offers',
 };
 
 // ==================== MACRO CALCULATOR ====================
@@ -300,6 +301,9 @@ export default {
             } else if (uid === 'api::creator.creator') {
               // Twórca: znormalizuj URL zdjęcia, by apka dostała gotowy string
               dataToSync.image = normalizeImageUrl(fullDoc.image);
+            } else if (uid === 'api::partner-offer.partner-offer') {
+              // Oferta partnera: logo jako gotowy URL (apka nie zna formatu mediów Strapi)
+              dataToSync.logo = normalizeImageUrl(fullDoc.logo);
             }
 
             await db.collection(collectionName).doc(docId).set(dataToSync, { merge: true });

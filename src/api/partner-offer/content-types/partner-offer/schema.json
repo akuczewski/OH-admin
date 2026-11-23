@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "partner_offers",
+  "info": {
+    "singularName": "partner-offer",
+    "pluralName": "partner-offers",
+    "displayName": "Oferta partnera",
+    "description": "Kody rabatowe i prezenty od partnerów na ekranie Prezenty w aplikacji. Opublikuj = widoczna w apce, cofnij publikację = znika."
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "partner": {
+      "type": "string",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "code": {
+      "type": "string"
+    },
+    "conditions": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "buttonLabel": {
+      "type": "string",
+      "default": "Przejdź do sklepu"
+    },
+    "recommendedBy": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "media",
+      "allowedTypes": [
+        "images"
+      ],
+      "multiple": false
+    },
+    "audience": {
+      "type": "enumeration",
+      "enum": [
+        "wszystkie",
+        "care"
+      ],
+      "default": "care",
+      "required": true
+    },
+    "validUntil": {
+      "type": "date"
+    },
+    "order": {
+      "type": "integer",
+      "default": 0
+    }
+  }
+}

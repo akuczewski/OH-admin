@@ -969,6 +969,50 @@ export interface ApiMotivationQuoteMotivationQuote
   };
 }
 
+export interface ApiPartnerOfferPartnerOffer
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'partner_offers';
+  info: {
+    description: 'Kody rabatowe i prezenty od partner\u00F3w na ekranie Prezenty w aplikacji. Opublikuj = widoczna w apce, cofnij publikacj\u0119 = znika.';
+    displayName: 'Oferta partnera';
+    pluralName: 'partner-offers';
+    singularName: 'partner-offer';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    audience: Schema.Attribute.Enumeration<['wszystkie', 'care']> &
+      Schema.Attribute.Required &
+      Schema.Attribute.DefaultTo<'care'>;
+    buttonLabel: Schema.Attribute.String &
+      Schema.Attribute.DefaultTo<'Przejd\u017A do sklepu'>;
+    code: Schema.Attribute.String;
+    conditions: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::partner-offer.partner-offer'
+    > &
+      Schema.Attribute.Private;
+    logo: Schema.Attribute.Media<'images'>;
+    order: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    partner: Schema.Attribute.String & Schema.Attribute.Required;
+    publishedAt: Schema.Attribute.DateTime;
+    recommendedBy: Schema.Attribute.String;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    url: Schema.Attribute.String;
+    validUntil: Schema.Attribute.Date;
+  };
+}
+
 export interface ApiPrivacySectionPrivacySection
   extends Struct.CollectionTypeSchema {
   collectionName: 'privacy_sections';
@@ -1857,6 +1901,7 @@ declare module '@strapi/strapi' {
       'api::inspiracja.inspiracja': ApiInspiracjaInspiracja;
       'api::instruction.instruction': ApiInstructionInstruction;
       'api::motivation-quote.motivation-quote': ApiMotivationQuoteMotivationQuote;
+      'api::partner-offer.partner-offer': ApiPartnerOfferPartnerOffer;
       'api::privacy-section.privacy-section': ApiPrivacySectionPrivacySection;
       'api::profile.profile': ApiProfileProfile;
       'api::promo-code.promo-code': ApiPromoCodePromoCode;
